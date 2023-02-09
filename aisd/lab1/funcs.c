@@ -18,6 +18,31 @@ int getInt(int* n)
 	}while(input==0);
 }
 
+void form_vector(int* b, matr matrix)
+{
+	for(int i=0; i<matrix.m; i++)
+	{
+		int k=0, num=matrix.matr[i].line[0], total=0;
+		while(num!=0)
+		{
+			k+=num%10;
+			num=num/10;
+		}
+		for(int j=0; j<matrix.matr[i].n; j++)
+		{
+			int s=0;
+			num=matrix.matr[i].line[j];
+			while(num!=0)
+			{
+				s+=num%10;
+				num=num/10;
+			}
+			if(s==k || s==-k) total+=matrix.matr[i].line[j];
+		}
+		b[i]=total;
+	}
+}
+
 int number_check(int* m)
 {
 	int input;

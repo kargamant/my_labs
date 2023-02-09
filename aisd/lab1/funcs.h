@@ -6,5 +6,6 @@ void erase(matr matrix);
 int getInt(int* n);
 int input(matr* matrix);
 int number_check(int* m);
+void form_vector(int* b, matr matrix);
 
 #endif
