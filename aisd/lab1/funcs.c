@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "structs.h"
 
+//Correct input of integer
 int getInt(int* n)
 {
 	int input;
@@ -18,31 +19,42 @@ int getInt(int* n)
 	}while(input==0);
 }
 
+//sum of digits
+int digit_sum(int num)
+{
+	int k=0;
+	while(num!=0)
+	{
+		k+=num%10;
+		num=num/10;
+	}
+	return k;
+}
+
+//Main solution function. Forming vector.
 void form_vector(int* b, matr matrix)
 {
 	for(int i=0; i<matrix.m; i++)
 	{
-		int k=0, num=matrix.matr[i].line[0], total=0;
-		while(num!=0)
+		if(matrix.matr[i].n==0) 
 		{
-			k+=num%10;
-			num=num/10;
+			b[i]=0;
+			continue;
 		}
+		int k=0, num=matrix.matr[i].line[0], total=0;
+		k=digit_sum(num);
 		for(int j=0; j<matrix.matr[i].n; j++)
 		{
 			int s=0;
 			num=matrix.matr[i].line[j];
-			while(num!=0)
-			{
-				s+=num%10;
-				num=num/10;
-			}
+			s=digit_sum(num);
 			if(s==k || s==-k) total+=matrix.matr[i].line[j];
 		}
 		b[i]=total;
 	}
 }
 
+//Checking if we got positive number or is it negative or end of file
 int number_check(int* m)
 {
 	int input;
@@ -59,6 +71,7 @@ int number_check(int* m)
 	return 0;
 }
 
+//Input of matrix
 int input(matr* matrix)
 {
 	int m, n, input;
@@ -77,10 +90,12 @@ int input(matr* matrix)
 
 		if(n!=0) printf("Enter elements of line: ");
 		for(int j=0; j<n; j++) getInt(matrix->matr[i].line+j);
+		
 	}
 	return 0;
 }
 
+//Output of matrix
 void output(const char* message, matr matrix)
 {
 	printf("%s\n", message);
@@ -94,6 +109,7 @@ void output(const char* message, matr matrix)
 	}
 }
 
+//Freeing space used by matrix
 void erase(matr matrix)
 {
 	for(int i=0; i<matrix.m; i++)
