@@ -6,10 +6,8 @@
 int main()
 {
 	//input of matrix
-	int in;
 	matr matrix={0, NULL};
-	in=input(&matrix);
-	if(in) 
+	if(input(&matrix)) 
 	{
 		erase(matrix);
 		return 1;
@@ -21,9 +19,8 @@ int main()
 	
 	//Output and erasing
 	printf("\nResult vector b: ");
-	for(int i=0; i<matrix.m; i++) printf("%d ", b[i]);
-	const char message[13]="\nyour matrix:";
-	output(message, matrix);
+	for(int* gr=b; gr-b<matrix.m; ++gr) printf("%d ", *gr);
+	output(matrix);
 	erase(matrix);
 	free(b);
 	b=NULL;

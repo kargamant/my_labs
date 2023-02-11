@@ -32,25 +32,25 @@ int digit_sum(int num)
 }
 
 //function for summing forming elements
-//int sum_line();
+int sum_line(Line* ptr, int k)
+{
+	int total=0;
+	for(int* gr=ptr->line; gr-ptr->line<ptr->n; ++gr)
+	{
+		int s=digit_sum(*gr);
+		if(s==k) total+=*gr;
+	}
+	return total;
+}
 
 //Main solution function. Forming vector.
 void form_vector(int* b, matr matrix)
 {
-	for(int i=0; i<matrix.m; i++)
+	for(Line* ptr=matrix.matr; ptr-matrix.matr<matrix.m; ++ptr)
 	{
-		if(matrix.matr[i].n==0) continue;
-		int k=0, num=matrix.matr[i].line[0], total=0;
-		k=digit_sum(num);
-		//to be put in other function
-		for(int j=0; j<matrix.matr[i].n; j++)
-		{
-			int s=0;
-			num=matrix.matr[i].line[j];
-			s=digit_sum(num);
-			if(s==k) total+=matrix.matr[i].line[j];
-		}
-		b[i]=total;
+		if(ptr->n==0) continue;
+		int k=digit_sum(*(ptr->line));	
+		b[ptr-matrix.matr]=sum_line(ptr, k);
 	}
 }
 
@@ -74,51 +74,36 @@ int number_check(int* m)
 //Input of matrix
 int input(matr* matrix)
 {
-	int m, n, input;
+	//input amount of lines and allocating memory for lines
+	int m, n;
 	printf("Enter number of lines:");
-	input=number_check(&m);
-	if(input) return 1;
+	if(number_check(&m)) return 1;
 	matrix->m=m;
+	if(m==0) return 0;
 	matrix->matr=(Line*)calloc(m, sizeof(Line));
-	Line* ptr=matrix->matr;
-	for(int i=0; i<m; i++, ++ptr)
+	
+	//input size of every line, allocating and input elements of line
+	for(Line* ptr=matrix->matr; ptr-matrix->matr<m; ++ptr)
 	{
-		printf("\nEnter number of elements in line %d:", i+1);
-		input=number_check(&n);
-		if(input) return 1;
+		printf("\nEnter number of elements in line %d:", ptr-matrix->matr+1);
+		if(number_check(&n)) return 1;
 		ptr->n=n;
+		if(n==0) continue;
 		ptr->line=(int*)calloc(n, sizeof(int));
-		int* gr=ptr->line;
 
-		if(n!=0) printf("Enter elements of line: ");
-		for(int j=0; j<n; j++, ++gr) getInt(gr);
+		printf("Enter elements of line: ");
+		for(int* gr=ptr->line; gr-ptr->line<n; ++gr) getInt(gr);
 	}
-//	matrix->matr=(Line*)malloc(m*sizeof(Line));
-//	for(int i=0; i<m; i++)
-//	{
-//		printf("\nEnter number of elements in line %d:", i+1);
-//		input=number_check(&n);
-//		if(input) return 1;
-//		matrix->matr[i].n=n;
-//		matrix->matr[i].line=(int*)malloc(n*sizeof(int));
-//
-//		if(n!=0) printf("Enter elements of line: ");
-//		for(int j=0; j<n; j++) getInt(matrix->matr[i].line+j);
-//		
-//	}
 	return 0;
 }
 
 //Output of matrix
-void output(const char* message, matr matrix)
+void output(matr matrix)
 {
-	printf("%s\n", message);
-	for(int i=0; i<matrix.m; i++)
+	printf("\nyour matrix:\n");
+	for(Line* ptr=matrix.matr; ptr-matrix.matr<matrix.m; ++ptr)
 	{
-		for(int j=0; j<matrix.matr[i].n; j++)
-		{
-			printf("%d ", matrix.matr[i].line[j]);
-		}
+		for(int* gr=ptr->line; gr-ptr->line<ptr->n; ++gr) printf("%d ", *gr);
 		printf("\n");
 	}
 }
@@ -126,9 +111,6 @@ void output(const char* message, matr matrix)
 //Freeing space used by matrix
 void erase(matr matrix)
 {
-	for(int i=0; i<matrix.m; i++)
-	{
-		free(matrix.matr[i].line);
-	}
+	for(Line* ptr=matrix.matr; ptr-matrix.matr<matrix.m; ++ptr) free(ptr->line);
 	free(matrix.matr);
 }
