@@ -9,10 +9,14 @@ int main()
 	int in;
 	matr matrix={0, NULL};
 	in=input(&matrix);
-	if(in) return 1;
+	if(in) 
+	{
+		erase(matrix);
+		return 1;
+	}
 	
 	//solution
-	int b[matrix.m];
+	int* b=(int*)calloc(matrix.m, matrix.m*sizeof(int));
 	form_vector(b, matrix);	
 	
 	//Output and erasing
@@ -21,5 +25,7 @@ int main()
 	const char message[13]="\nyour matrix:";
 	output(message, matrix);
 	erase(matrix);
+	free(b);
+	b=NULL;
 	return 0;
 }

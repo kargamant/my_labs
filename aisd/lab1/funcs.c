@@ -28,27 +28,27 @@ int digit_sum(int num)
 		k+=num%10;
 		num=num/10;
 	}
-	return k;
+	return k>0? k:-k;
 }
+
+//function for summing forming elements
+//int sum_line();
 
 //Main solution function. Forming vector.
 void form_vector(int* b, matr matrix)
 {
 	for(int i=0; i<matrix.m; i++)
 	{
-		if(matrix.matr[i].n==0) 
-		{
-			b[i]=0;
-			continue;
-		}
+		if(matrix.matr[i].n==0) continue;
 		int k=0, num=matrix.matr[i].line[0], total=0;
 		k=digit_sum(num);
+		//to be put in other function
 		for(int j=0; j<matrix.matr[i].n; j++)
 		{
 			int s=0;
 			num=matrix.matr[i].line[j];
 			s=digit_sum(num);
-			if(s==k || s==-k) total+=matrix.matr[i].line[j];
+			if(s==k) total+=matrix.matr[i].line[j];
 		}
 		b[i]=total;
 	}
@@ -79,19 +79,33 @@ int input(matr* matrix)
 	input=number_check(&m);
 	if(input) return 1;
 	matrix->m=m;
-	matrix->matr=(Line*)malloc(m*sizeof(Line));
-	for(int i=0; i<m; i++)
+	matrix->matr=(Line*)calloc(m, sizeof(Line));
+	Line* ptr=matrix->matr;
+	for(int i=0; i<m; i++, ++ptr)
 	{
 		printf("\nEnter number of elements in line %d:", i+1);
 		input=number_check(&n);
 		if(input) return 1;
-		matrix->matr[i].n=n;
-		matrix->matr[i].line=(int*)malloc(n*sizeof(int));
+		ptr->n=n;
+		ptr->line=(int*)calloc(n, sizeof(int));
+		int* gr=ptr->line;
 
 		if(n!=0) printf("Enter elements of line: ");
-		for(int j=0; j<n; j++) getInt(matrix->matr[i].line+j);
-		
+		for(int j=0; j<n; j++, ++gr) getInt(gr);
 	}
+//	matrix->matr=(Line*)malloc(m*sizeof(Line));
+//	for(int i=0; i<m; i++)
+//	{
+//		printf("\nEnter number of elements in line %d:", i+1);
+//		input=number_check(&n);
+//		if(input) return 1;
+//		matrix->matr[i].n=n;
+//		matrix->matr[i].line=(int*)malloc(n*sizeof(int));
+//
+//		if(n!=0) printf("Enter elements of line: ");
+//		for(int j=0; j<n; j++) getInt(matrix->matr[i].line+j);
+//		
+//	}
 	return 0;
 }
 
