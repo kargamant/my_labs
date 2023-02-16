@@ -92,7 +92,8 @@ int input(matr* matrix)
 		ptr->line=(int*)calloc(n, sizeof(int));
 
 		printf("Enter elements of line: ");
-		for(int* gr=ptr->line; gr-ptr->line<n; ++gr) getInt(gr);
+		int flag=0;
+		for(int* gr=ptr->line; gr-ptr->line<n; ++gr) getInt(gr);	
 	}
 	return 0;
 }
