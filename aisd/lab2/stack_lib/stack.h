@@ -5,13 +5,14 @@ typedef struct Stack
 {
 	int top;
 	int n;
-	void* stk;
+	char* stk;
 }Stack;
 Stack* create(int n);
-int push(Stack* stk, int a);
+int push(Stack* stk, char a);
 char pop(Stack* stk);
-int getTop(Stack* stk);
 int isFull(Stack* stk);
 int isEmpty(Stack* stk);
+void erase(Stack* stk);
+void output(Stack* stk);
 
 #endif
