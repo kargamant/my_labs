@@ -10,11 +10,6 @@ List* create_list()
 	List* list=(List*)calloc(1, sizeof(List));
 	list->head=NULL;
 	list->end=NULL;
-//	while(n!=0)
-//	{
-//		push_l(list, 0);
-//		n--;
-//	}
 	return list;
 }
 
@@ -30,13 +25,16 @@ Item* create_item()
 void del(List* list)
 {
 	Item* ptr=list->head;
-	while(ptr->next)
+	if(ptr!=NULL)
 	{
-		Item* n=ptr->next;
+		while(ptr->next)
+		{
+			Item* n=ptr->next;
+			free(ptr);
+			ptr=n;
+		}
 		free(ptr);
-		ptr=n;
 	}
-	free(ptr);
 	free(list);
 }
 
@@ -52,8 +50,8 @@ void push_l(List* list, char c)
 	}
 	else
 	{
-		list->end->next=ptr;
-		list->end=ptr;
+		ptr->next=list->head;
+		list->head=ptr;
 	}
 }
 
@@ -61,7 +59,7 @@ void push_l(List* list, char c)
 int enter(List* list)
 {
 	char c;
-	while((c=getchar())!='\n' && c!=EOF) push(list, c);
+	while((c=getchar())!='\n' && c!=EOF) push_l(list, c);
 	if(c==EOF) return 1;
 	else return 0;
 }
