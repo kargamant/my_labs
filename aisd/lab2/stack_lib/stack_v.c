@@ -1,50 +1,34 @@
+#include "stack_v.h"
 #include "stack.h"
 #include <stdlib.h>
 #include <stdio.h>
 
-Stack* create(int n)
+Stk* create(int n)
 {
-	Stack* stk=(Stack*)calloc(1, sizeof(Stack));
+	if(n==0) return NULL;
+	Stk* stk=(Stack*)calloc(1, sizeof(Stack));
 	stk->top=0;
 	stk->n=n;
 	stk->stk=(char*)calloc(n, n*sizeof(char));
 	return stk;
 }
 
-int isFull(Stack* stk)
+int push(Stk* stk, char a)
 {
-	return stk->top==stk->n;
-}
-
-int isEmpty(Stack* stk)
-{
-	return stk->top==0;
-}
-
-int push(Stack* stk, char a)
-{
-	if(isFull(stk))
-	{
-		printf("stack is full\n");
-		return 1;
-	}
+	if(stk->top==stk->n) return ERR_FULL;
 	stk->stk[stk->top]=a;
 	stk->top++;
-	return 0;
+	return ERR_OK;
 }
 
-char pop(Stack* stk)
+char pop(Stk* stk)
 {
-	if(isEmpty(stk)) 
-	{
-		printf("stack is empty\n");
-		return '\0';
-	}
+	if(stk->top==0) return ERR_EMPTY; 
 	stk->top--;
 	return stk->stk[stk->top];
 }
 
-void erase(Stack* stk)
+void erase(Stk* stk)
 {
 	free(stk->stk);
 	stk->stk=NULL;
@@ -52,7 +36,7 @@ void erase(Stack* stk)
 	stk=NULL;
 }
 
-void output(Stack* stk)
+void output(Stk* stk)
 {
 	for(char* gr=stk->stk; gr-stk->stk<stk->top; ++gr) printf("%c ", *gr);
 	printf("\n");

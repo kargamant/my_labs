@@ -1,18 +1,19 @@
 #ifndef STACK 
 #define STACK
 
-typedef struct Stack
+typedef struct Stack Stk;
+Stk* create(int n);
+int push(Stk* stk, char a);
+char pop(Stk* stk);
+void erase(Stk* stk);
+void output(Stk* stk);
+typedef enum ERR
 {
-	int top;
-	int n;
-	char* stk;
-}Stack;
-Stack* create(int n);
-int push(Stack* stk, char a);
-char pop(Stack* stk);
-int isFull(Stack* stk);
-int isEmpty(Stack* stk);
-void erase(Stack* stk);
-void output(Stack* stk);
+	ERR_OK,
+	ERR_EOF,
+	ERR_FULL,
+	ERR_EMPTY
+}ERR;
+
 
 #endif

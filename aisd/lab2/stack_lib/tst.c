@@ -7,13 +7,15 @@ int main()
 	printf("Enter size of stack: ");
 	int n;
 	scanf("%d", &n);
-	Stack* stk=create(n);
+	Stk* stk=create(n);
 	push(stk, 'a');
 	push(stk, 'b');
 	push(stk, 'c');
 	output(stk);
 	printf("%c\n", pop(stk));
+	output(stk);
 	printf("%c\n", pop(stk));
+	output(stk);
 	printf("%c\n", pop(stk));
 	output(stk);
 	erase(stk);
