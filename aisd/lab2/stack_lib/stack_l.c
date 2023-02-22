@@ -12,6 +12,11 @@ Stk* create(int n)
 	return stk;
 }
 
+int isEmpty(Stk* stk)
+{
+	return stk->top==NULL;
+}
+
 int push(Stk* stk, char* a)
 {
 	push_l(stk->stk, a);

@@ -14,6 +14,16 @@ Stk* create(int n)
 	return stk;
 }
 
+int isFull(Stk* stk)
+{
+	return stk->top==stk->n;
+}
+
+int isEmpty(Stk* stk)
+{
+	return stk->top==0;
+}
+
 int push(Stk* stk, char* a)
 {
 	if(stk->top==stk->n) return ERR_FULL;

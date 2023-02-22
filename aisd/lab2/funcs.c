@@ -81,22 +81,32 @@ char* form_inf(char* pref)
 		{
 			char* a=pop(oper);
 			char* b=pop(oper);
-			//printf("a, sizeof a: %s %d\n", a, sizeof(a));
-			//printf("sizechar, size, strlen: %d %d %d\n", sizeof(char*), sizeof(a), strlen(a));
-			//How to get rid of strlen?
 			int len_a=strlen(a);
 			int len_b=strlen(b);
-			char* adding=(char*)calloc(len_a+len_b+2, len_a+len_b+2);
-			for(int i=0; i<len_a; i++) adding[i]=a[i];
-			adding[len_a]=*c;
-			for(int i=len_a+1; i<len_a+len_b+1; i++) adding[i]=b[i-len_a-1];
+			if(*c!='*' && *c!='/' && !isEmpty(exp))
+			{
+				char* adding=(char*)calloc(len_a+len_b+4, len_a+len_b+4);
+				adding[0]='(';
+				for(int i=1; i<len_a+1; i++) adding[i]=a[i-1];
+				adding[len_a+1]=*c;
+				for(int i=len_a+2; i<len_a+len_b+2; i++) adding[i]=b[i-len_a-2];
+				adding[len_a+len_b+2]=')';
+				push(oper, adding);
+			}
+			else
+			{
+				char* adding=(char*)calloc(len_a+len_b+2, len_a+len_b+2);
+				for(int i=0; i<len_a; i++) adding[i]=a[i];
+				adding[len_a]=*c;
+				for(int i=len_a+1; i<len_a+len_b+1; i++) adding[i]=b[i-len_a-1];
+				push(oper, adding);
+			}
 			free(a);
 			free(b);
 			free(c);
 			c=NULL;
 			a=NULL;
-			b=NULL;
-			push(oper, adding);
+			b=NULL;	
 		}
 		c=pop(exp);
 	}
