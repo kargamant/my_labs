@@ -5,7 +5,7 @@ typedef struct Stack
 {
 	int top;
 	int n;
-	char* stk;
+	char** stk;
 }Stack;
 
 #endif

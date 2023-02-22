@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+//just for testing
 int main()
 {
 	printf("Enter size of stack: ");

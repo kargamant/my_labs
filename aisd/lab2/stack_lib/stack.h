@@ -3,8 +3,8 @@
 
 typedef struct Stack Stk;
 Stk* create(int n);
-int push(Stk* stk, char a);
-char pop(Stk* stk);
+int push(Stk* stk, char* a);
+char* pop(Stk* stk);
 void erase(Stk* stk);
 void output(Stk* stk);
 typedef enum ERR

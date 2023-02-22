@@ -39,7 +39,7 @@ void del(List* list)
 }
 
 //добавление элемента в список на последнее место
-void push_l(List* list, char c)
+void push_l(List* list, char* c)
 {
 	Item* ptr=create_item();	
 	ptr->c=c;
@@ -58,9 +58,9 @@ void push_l(List* list, char c)
 //ввод списка
 int enter(List* list)
 {
-	char c;
-	while((c=getchar())!='\n' && c!=EOF) push_l(list, c);
-	if(c==EOF) return 1;
+	char* c;
+	while((*c=getchar())!='\n' && *c!=EOF) push_l(list, c);
+	if(*c==EOF) return 1;
 	else return 0;
 }
 
@@ -71,7 +71,7 @@ void show(List* list)
 	Item* ptr=list->head;
 	while(ptr)
 	{
-		printf("%c", ptr->c);
+		printf("%c", *(ptr->c));
 		ptr=ptr->next;
 	}
 	printf("\"\n");

@@ -12,17 +12,17 @@ Stk* create(int n)
 	return stk;
 }
 
-int push(Stk* stk, char a)
+int push(Stk* stk, char* a)
 {
 	push_l(stk->stk, a);
 	stk->top=stk->stk->head;
 	return ERR_OK;
 }
 
-char pop(Stk* stk)
+char* pop(Stk* stk)
 {
-	if(stk->top==NULL) return ERR_EMPTY;
-	char value = stk->top->c;
+	if(stk->top==NULL) return NULL;
+	char* value = stk->top->c;
 	Item* new_top=stk->top->next;
 	free(stk->top);
 	stk->top=new_top;
