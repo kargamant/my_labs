@@ -9,16 +9,12 @@ int main()
 	{
 		printf("Enter prefix expression: ");
 		char* ptr=enter();	
-		if(!ptr) break;
-		/*
-		//Probably can count signs and letters. And compare their amount. 
+		if(!ptr) break;	
 		if(check_exp(ptr))
 		{
-			printf("Incorrect form of prefix expression.\nTry again.\n");
+			printf("Wrong expresion. Try again.\n");
 			continue;
-		}*/
-		//solution
-		//printf("Your infix expression: \"%s\"\n");
+		}
 		char* result=form_inf(ptr);
 		printf("infix expression: %s\n", result);
 		free(result);

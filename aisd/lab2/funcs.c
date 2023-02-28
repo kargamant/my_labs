@@ -45,22 +45,23 @@ int isOper(char c)
 	return 0;
 }
 
-/*
+int is_prefix(char* ptr)
+{
+	return isSign(ptr[0]) && isOper(ptr[strlen(ptr)-1]) && isOper(ptr[strlen(ptr)-2]);	
+}
+
 int check_exp(char* ptr)
 {
-	for(int i=0; i<strlen(ptr)-2; i+=3)
+	int si=0, op=0;
+	for(char* gr=ptr; gr-ptr<strlen(ptr); ++gr)
 	{
-		//(*gr>=65 && *gr<=90)||(*gr>=97 && *gr<=122)||(*gr>=42 && *gr<=47 && *gr!=44 && *gr!=46)
-		if((ptr[i]>=42 && ptr[i]<=47 && ptr[i]!=44 && ptr[i]!=46) && (ptr[i+1]>=65 && ptr[i+2]<=90) && (ptr[i+2]>=97 && ptr[i+2]<=122)) continue;
-		else return 1;
+		op+=isOper(*gr);
+		si+=isSign(*gr);
+		if(!isSign(*gr)&& !isOper(*gr)) return 1;
 	}
+	if((op-si)!=1) return 1;
+	else if(!is_prefix(ptr)) return 1;
 	return 0;
-}*/
-int mystrlen(char* s)
-{
-	char* ptr=s;
-	while(ptr) ++ptr;
-	return ptr-s;
 }
 
 char* form_inf(char* pref)

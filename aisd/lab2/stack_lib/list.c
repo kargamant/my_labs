@@ -55,6 +55,7 @@ void push_l(List* list, char* c)
 	}
 }
 
+/*
 //ввод списка
 int enter(List* list)
 {
@@ -62,7 +63,7 @@ int enter(List* list)
 	while((*c=getchar())!='\n' && *c!=EOF) push_l(list, c);
 	if(*c==EOF) return 1;
 	else return 0;
-}
+}*/
 
 //вывод списка
 void show(List* list)
