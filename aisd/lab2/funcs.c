@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
+//string parsing
 char* enter()
 {
 	//printf("Enter string: ");
@@ -33,23 +34,25 @@ char* enter()
 	return ptr;
 }
 
+//bool func for sign
 int isSign(char c)
 {
-	if(c>=42 && c<=47 && c!=44 && c!=46) return 1;
-	return 0;
+	return (c>=42 && c<=47 && c!=44 && c!=46);
 }
 
+//bool func for operand
 int isOper(char c)
 {
-	if((c>=65 && c<=90) || (c>=97 && c<=122)) return 1;
-	return 0;
+	return ((c>=65 && c<=90) || (c>=97 && c<=122));
 }
 
+//checking if checked expression is not infix, postfix or smth else
 int is_prefix(char* ptr)
 {
 	return isSign(ptr[0]) && isOper(ptr[strlen(ptr)-1]) && isOper(ptr[strlen(ptr)-2]);	
 }
 
+//checking basic correctness of expression
 int check_exp(char* ptr)
 {
 	int si=0, op=0;
@@ -64,8 +67,10 @@ int check_exp(char* ptr)
 	return 0;
 }
 
+//stack solution with 2 stacks
 char* form_inf(char* pref)
 {
+	//stack of whole expression
 	Stk* exp=create(strlen(pref));
 	int signs=0;
 	for(int i=0; i<strlen(pref); i++) 
@@ -75,6 +80,8 @@ char* form_inf(char* pref)
 		push(exp, t);
 		signs+=isOper(*t);
 	}
+
+	//stack to store operands
 	Stk* oper=create(signs);
 	char* c=pop(exp);
 	while(c)
@@ -82,6 +89,7 @@ char* form_inf(char* pref)
 		if(isOper(*c)) push(oper, c);
 		else
 		{
+			//forming new part of expression and pushing it to oper
 			char* a=pop(oper);
 			char* b=pop(oper);
 			int len_a=strlen(a);

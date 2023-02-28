@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+//allocating block of memory for stack structure
 Stk* create(int n)
 {
 	Stk* stk=(Stk*)calloc(1, sizeof(Stk));
@@ -12,11 +13,13 @@ Stk* create(int n)
 	return stk;
 }
 
+//bool func for empty stack
 int isEmpty(Stk* stk)
 {
 	return stk->top==NULL;
 }
 
+//pushing element to the top of the stack
 int push(Stk* stk, char* a)
 {
 	push_l(stk->stk, a);
@@ -24,6 +27,7 @@ int push(Stk* stk, char* a)
 	return ERR_OK;
 }
 
+//taking element from the top of the stack
 char* pop(Stk* stk)
 {
 	if(stk->top==NULL) return NULL;
@@ -35,6 +39,7 @@ char* pop(Stk* stk)
 	return value;
 }
 
+//erasing stack and it's items
 void erase(Stk* stk)
 {
 	del(stk->stk);
@@ -42,6 +47,7 @@ void erase(Stk* stk)
 	stk=NULL;
 }
 
+//output
 void output(Stk* stk)
 {
 	show(stk->stk);

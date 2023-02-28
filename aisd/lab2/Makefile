@@ -7,7 +7,7 @@ vector:
 	gcc -o prog prog.o -L. -lstack
 	mv stack_v.o binaries
 	mv funcs.o binaries
-	mv prog.o binaries
+	mv prog.o binaries	
 list:
 	gcc -c stack_lib/stack_l.c stack_lib/list.c funcs.c -fpic
 	gcc stack_l.o list.o funcs.o -shared -o libstack.so

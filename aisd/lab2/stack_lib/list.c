@@ -4,7 +4,7 @@
 
 //From lab6 in previous term
 
-//выделение блока памяти для списка
+//allocating new block of memory for list
 List* create_list()
 {
 	List* list=(List*)calloc(1, sizeof(List));
@@ -13,7 +13,7 @@ List* create_list()
 	return list;
 }
 
-//выделение блока памяти для элемента списка
+//allocating new block of memory for single item
 Item* create_item()
 {
 	Item* item=(Item*)malloc(sizeof(Item));
@@ -21,7 +21,7 @@ Item* create_item()
 	return item; 
 }
 
-//очистка списка и его содержимого
+//erasing list and it's items
 void del(List* list)
 {
 	Item* ptr=list->head;
@@ -38,7 +38,7 @@ void del(List* list)
 	free(list);
 }
 
-//добавление элемента в список на последнее место
+//pushing element to end of the list
 void push_l(List* list, char* c)
 {
 	Item* ptr=create_item();	
@@ -56,16 +56,18 @@ void push_l(List* list, char* c)
 }
 
 /*
-//ввод списка
+
+//Input of a list
 int enter(List* list)
 {
 	char* c;
 	while((*c=getchar())!='\n' && *c!=EOF) push_l(list, c);
 	if(*c==EOF) return 1;
 	else return 0;
-}*/
+}
+*/
 
-//вывод списка
+//Output of a list
 void show(List* list)
 {
 	printf("\"");
