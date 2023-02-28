@@ -13,6 +13,8 @@ int main()
 		if(check_exp(ptr))
 		{
 			printf("Wrong expresion. Try again.\n");
+			free(ptr);
+			ptr=NULL;
 			continue;
 		}
 		char* result=form_inf(ptr);

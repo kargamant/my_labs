@@ -67,13 +67,15 @@ int check_exp(char* ptr)
 char* form_inf(char* pref)
 {
 	Stk* exp=create(strlen(pref));
-	Stk* oper=create(3);
+	int signs=0;
 	for(int i=0; i<strlen(pref); i++) 
 	{
 		char* t=calloc(2, 2*sizeof(char));
 		*t=pref[i];
 		push(exp, t);
+		signs+=isOper(*t);
 	}
+	Stk* oper=create(signs);
 	char* c=pop(exp);
 	while(c)
 	{
@@ -101,7 +103,7 @@ char* form_inf(char* pref)
 				adding[len_a]=*c;
 				for(int i=len_a+1; i<len_a+len_b+1; i++) adding[i]=b[i-len_a-1];
 				push(oper, adding);
-			}
+			}	
 			free(a);
 			free(b);
 			free(c);
