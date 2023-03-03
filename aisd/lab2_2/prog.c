@@ -6,11 +6,12 @@
 
 int main()
 {
-	int e=0, o=0;
+	int e=0, o=0;	
 	printf("Enter sizes of stacks exp and oper: ");
 	scanf("%d %d", &e, &o);
 	scanf("%*c");		
-
+	Stk* exp=create(e);
+	Stk* oper=create(o);	
 	do
 	{
 		printf("Enter prefix expression: ");
@@ -33,19 +34,14 @@ int main()
 			goto res;
 		}
 
-		Stk* exp=create(e);
-		Stk* oper=create(o);
+		
 		result=form_inf(ptr, exp, oper);
 		if(!result)
 		{
-			erase(exp);
-			erase(oper);
 			free(ptr);
 			ptr=NULL;
 			continue;
 		}
-		erase(exp);
-		erase(oper);	
 		res:
 		printf("infix expression: %s\n", result);
 		if(strlen(ptr)!=1) free(result);
@@ -54,6 +50,7 @@ int main()
 		ptr=NULL;
 	}while(1);
 	printf("Got EOF. Programm stopped.\n");
-	
+	erase(exp);
+	erase(oper);
 	return 0;
 }

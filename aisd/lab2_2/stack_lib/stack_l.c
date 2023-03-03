@@ -7,7 +7,7 @@
 //allocating block of memory for stack structure
 Stk* create(int n)
 {
-	Stk* stk=(Stk*)calloc(1, sizeof(Stk));
+	Stk* stk=(Stk*)malloc(sizeof(Stk));
 	stk->stk=create_list();
 	stk->top=stk->stk->end;
 	return stk;

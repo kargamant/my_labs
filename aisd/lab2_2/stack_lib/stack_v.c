@@ -8,8 +8,7 @@
 Stk* create(int n)
 {
 	if(n==0) return NULL;
-	//calloc -> malloc
-	Stk* stk=(Stack*)calloc(1, sizeof(Stack));
+	Stk* stk=(Stack*)malloc(sizeof(Stack));
 	stk->top=0;
 	stk->n=n;
 	stk->stk=(char**)calloc(n, n*sizeof(char*));
@@ -48,7 +47,6 @@ char* pop(Stk* stk)
 //erasing stack and it's elements
 void erase(Stk* stk)
 {
-	//for(int i=0; i<stk->top; i++) free(stk->stk[i]);
 	free(stk->stk);
 	stk->stk=NULL;
 	free(stk);
