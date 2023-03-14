@@ -8,7 +8,7 @@ int main()
 	do
 	{
 		printf("Enter FileName with table: ");
-		const char* FileName=enter();
+		char* FileName=enter();
 		if(!FileName) break;
 		FILE *fd=fopen(FileName, "r");
 		if(!fd)
@@ -17,7 +17,16 @@ int main()
 			continue;
 		}
 		Table* t=input(fd);	
+		if(!t)
+		{
+			printf("Error. Got wrong data while parsing. Try again.\n");
+			continue;
+		}
 		fclose(fd);
+		output(t);	
+		erase(t);
+		free(FileName);
+		FileName=NULL;
 		//printf("Data: %d", msize);
 	}while(1);
 	printf("Program stopped.\n");

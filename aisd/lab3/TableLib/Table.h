@@ -29,7 +29,8 @@ typedef struct Table
 }Table;
 
 Table* input(FILE* fd);
-
+void erase(Table* t);
+void output(Table* t);
 
 
 #endif

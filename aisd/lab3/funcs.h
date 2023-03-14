@@ -3,5 +3,6 @@
 
 char* enter();
 char* enterf(FILE* fd);
+int GetIntf(FILE* fd);
 
 #endif
