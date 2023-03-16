@@ -10,6 +10,7 @@ int main()
 	do
 	{
 		int p=menue();
+		if(p==9) break;
 		int res=console(p, t);
 		if(res==CERR_EOF) break;
 	}while(1);

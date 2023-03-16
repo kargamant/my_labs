@@ -146,7 +146,8 @@ int menue()
 		"add\n",
 		"delete by key\n",
 		"delete by version\n",
-		"save changes\n"
+		"save changes\n",
+		"quit\n"
 	};
 	
 	initscr();
@@ -155,7 +156,7 @@ int menue()
 		clear();
 		refresh();
 		//system("clear");	
-		for(int i=1; i<9; i++)
+		for(int i=1; i<10; i++)
 		{
 			arrow(i, pos);
 			printw("%s", options[i-1]);
@@ -164,8 +165,16 @@ int menue()
 		key=getch();
 		//printw("%d", key);
 		//printw("\n%d\n", key);
-		if(key==115 && pos!=8) pos++;
-		else if(key==119 && pos!=1) pos--;
+		if(key==115) 
+		{
+			pos=(pos+1)%10;
+			if(!pos) pos=1;
+		}
+		else if(key==119) 
+		{
+			pos=(10+(pos-1)%10)%10;
+			if(!pos) pos=9;
+		}
 	}
 	endwin();
 	return pos;
@@ -195,13 +204,48 @@ int console(int input, Table* t)
 	switch(input)
 	{
 		case 1:
-			erased(t);
+			//erased(t);
+			//scanf("%*[^\n]");
 		//	if(t) 
 		//	{
 		//		output(t);
 		//		erased(t);
 		//	}
-			t=fimport();
+			*t=*fimport();
+			//printf("t, nt: %p %p\n", t, nt);
+			//output(t);
+			//erased(nt);
+			/*
+			Table* nt=fimport();
+			t=(Table*)malloc(sizeof(Table));
+			t->msize=nt->msize;
+			t->csize=nt->csize;
+			t->ks=(KeySpace*)malloc(t->msize*sizeof(KeySpace));
+			KeySpace* ptr=t->ks;
+			KeySpace* nptr=nt->ks;
+			while(ptr-t->ks<t->csize)
+			{
+				ptr->key=nptr->key;
+				ptr->node=(Node*)malloc(sizeof(Node));
+				Node* gr=ptr->node;
+				Node* ngr=nptr->node;
+				while(ngr)
+				{
+					gr->rel=ngr->rel;
+					gr->item=(Item*)malloc(sizeof(Item));
+					gr->item->data=strdup(ngr->item->data);
+					gr->item->ks=ptr;
+					gr->next=(Node*)malloc(sizeof(Node));
+					gr=gr->next;
+					ngr=ngr->next;
+				}
+				free(gr);
+				gr=NULL;
+				++ptr;
+				++nptr;
+			}*/
+
+			//erased(nt);
 			if(t) output(t);
 		
 			printf("Input any value to continue or EOF to stop.\n");
