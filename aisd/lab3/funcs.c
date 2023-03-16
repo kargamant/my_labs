@@ -65,7 +65,7 @@ int GetIntf(FILE* fd)
 	in=fscanf(fd, "%d", &data);
 	if(in==EOF) 
 	{
-		printf("End of file reached.\n");
+		//printf("End of file reached.\n");
 		return -1;
 	}
 	else if(in==0)
@@ -80,3 +80,5 @@ int GetIntf(FILE* fd)
 	}
 	else return data;
 }
+
+//int console()

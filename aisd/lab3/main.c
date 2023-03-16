@@ -23,7 +23,10 @@ int main()
 			continue;
 		}
 		fclose(fd);
-		output(t);	
+		output(t);
+		DelByVersion(t, 31, 7);
+		//DelByKey(t, 73);
+		output(t);
 		erase(t);
 		free(FileName);
 		FileName=NULL;

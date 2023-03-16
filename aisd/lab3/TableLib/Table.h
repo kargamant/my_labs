@@ -2,6 +2,7 @@
 #define TABLE_H
 #include <stdio.h>
 
+//structures
 typedef struct Item
 {
 	char* data;
@@ -28,9 +29,26 @@ typedef struct Table
 	KeySpace* ks;
 }Table;
 
+//methods
 Table* input(FILE* fd);
 void erase(Table* t);
 void output(Table* t);
+void outputks(KeySpace* ptr);
+void outputnd(Node* gr);
+int DelByKey(Table* t, int key);
+int DelByVersion(Table* t, int key, int rel);
+int add(Table* t, int key, char* c);
+KeySpace* SearchByKey(Table* t, int key);
+Node* SearchByVersion(Table* t, int key, int rel);
 
+//error codes constants
+typedef enum ERR
+{
+	ERR_OK,
+	ERR_EMPTY,
+	ERR_FULL,
+	ERR_NO_FOUND,
+	ERR_DUP
+}ERR;
 
 #endif
