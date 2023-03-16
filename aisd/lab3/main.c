@@ -5,6 +5,8 @@
 
 int main()
 {
+	menue();
+	/*
 	do
 	{
 		printf("Enter FileName with table: ");
@@ -24,14 +26,15 @@ int main()
 		}
 		fclose(fd);
 		output(t);
-		DelByVersion(t, 31, 7);
+		DelByKey(t, 31);
 		//DelByKey(t, 73);
 		output(t);
+		TableWrite(t, FileName);
 		erase(t);
 		free(FileName);
 		FileName=NULL;
 		//printf("Data: %d", msize);
 	}while(1);
-	printf("Program stopped.\n");
+	printf("Program stopped.\n");*/
 	return 0;
 }

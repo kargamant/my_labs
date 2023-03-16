@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "TableLib/Table.h"
+#include "funcs.h"
+#include <conio.h>
 
 //string parsing from lab2
 char* enter()
@@ -81,4 +84,71 @@ int GetIntf(FILE* fd)
 	else return data;
 }
 
-//int console()
+void TableWrite(Table* t, char* fn)
+{
+	FILE* fd=fopen(fn, "w");
+	fprintf(fd, "%d\n", t->msize);
+	KeySpace* ptr=t->ks;
+	while(ptr-t->ks<t->csize)
+	{
+		fprintf(fd, "%d ", ptr->key);
+		Node* gr=ptr->node;
+		while(gr)
+		{
+			fprintf(fd, "%s ", gr->item->data);
+			gr=gr->next;
+		}
+		fprintf(fd, "\n");
+		++ptr;
+	}
+	fclose(fd);
+}
+
+void menue()
+{
+	int key=0, pos=1;
+	system("cls");
+	const char* options[]={
+		"import table from file.\n",
+		"output table.\n",
+		"search by key.\n",
+		"search by version\n",
+		"add\n",
+		"delete by key\n",
+		"delete by version\n",
+		"save changes\n"
+	};
+	while(key!=13)
+	{
+		system("cls");
+		for(int i=1; i<9; i++)
+		{
+			arrow(i, pos);
+			printf("%s", options[i-1]);
+		}
+		key=getch(0);
+		if(key==80 && pos!=8) pos++;
+		else if(key==72 && pos!=1) pos--;
+	}
+}
+
+int arrow(int cur, int pos)
+{
+	if(cur==pos) printf(">>>");
+}
+
+/*
+int console(int input)
+{
+	//0 - menue
+	//1 - input
+	//2 - output
+	//3 - search by key
+	//4 - search by version
+	//5 - add
+	//6 - del by key
+	//7 - del by version
+	//8 - save changes
+}*/
+
+
