@@ -137,7 +137,7 @@ int add(Table* t, int key, char* c)
 		KeySpace* newks=&((t->ks)[t->csize]);
 		newks->key=key;
 		newks->node=(Node*)malloc(sizeof(Node));
-		newks->node->rel=0;
+		newks->node->rel=1;
 		newks->node->item=(Item*)malloc(sizeof(Item));
 		newks->node->item->data=nc;
 		newks->node->item->ks=newks;

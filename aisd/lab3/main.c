@@ -5,7 +5,17 @@
 
 int main()
 {
-	menue();
+	Table* t=fimport();
+	if(!t) goto endp;
+	do
+	{
+		int p=menue();
+		int res=console(p, t);
+		if(res==CERR_EOF) break;
+	}while(1);
+	erased(t);
+	endp: printf("Program stopped.\n");
+	//printf("%d", p);
 	/*
 	do
 	{
