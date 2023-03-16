@@ -8,7 +8,6 @@
 //string parsing from lab2
 char* enter()
 {
-	//scanf("%*[^\n]");
 	char buf[81]={0};
 	char* ptr=(char*)malloc(1);
 	*ptr='\0';
@@ -69,7 +68,6 @@ int GetIntf(FILE* fd)
 	in=fscanf(fd, "%d", &data);
 	if(in==EOF) 
 	{
-		//printf("End of file reached.\n");
 		return -1;
 	}
 	else if(in==0)
@@ -112,6 +110,7 @@ int getInt(int* n)
 	}while(input==0 || *n<0);
 }
 
+//function for saving table at .txt file
 Table* TableWrite(Table* t, char* fn)
 {
 	FILE* fd=fopen(fn, "w");
@@ -134,6 +133,7 @@ Table* TableWrite(Table* t, char* fn)
 	return t;
 }
 
+//interactive arrow menue
 int menue()
 {
 	int key=0, pos=1;
@@ -154,8 +154,6 @@ int menue()
 	while(key!=10)
 	{
 		clear();
-		refresh();
-		//system("clear");	
 		for(int i=1; i<10; i++)
 		{
 			arrow(i, pos);
@@ -163,8 +161,6 @@ int menue()
 			refresh();
 		}
 		key=getch();
-		//printw("%d", key);
-		//printw("\n%d\n", key);
 		if(key==115) 
 		{
 			pos=(pos+1)%10;
@@ -180,6 +176,7 @@ int menue()
 	return pos;
 }
 
+//displaying arrow in a specific position
 int arrow(int cur, int pos)
 {
 	if(cur==pos)
@@ -189,9 +186,12 @@ int arrow(int cur, int pos)
 	}
 }
 
-
+//MVC paradigm
+//------------------------
+//Main Controller function
 int console(int input, Table* t)
 {
+	//cases represent kind of view functions/decorators of available table methods
 	//1 - input
 	//2 - output
 	//3 - search by key
@@ -204,18 +204,9 @@ int console(int input, Table* t)
 	switch(input)
 	{
 		case 1:
-			//erased(t);
-			//scanf("%*[^\n]");
-		//	if(t) 
-		//	{
-		//		output(t);
-		//		erased(t);
-		//	}
 			*t=*fimport();
-			//printf("t, nt: %p %p\n", t, nt);
-			//output(t);
-			//erased(nt);
 			/*
+			//old version. Could be useful.
 			Table* nt=fimport();
 			t=(Table*)malloc(sizeof(Table));
 			t->msize=nt->msize;
@@ -244,21 +235,15 @@ int console(int input, Table* t)
 				++ptr;
 				++nptr;
 			}*/
-
 			//erased(nt);
 			if(t) output(t);
 		
-			printf("Input any value to continue or EOF to stop.\n");
-			cont=scanf("%d", &i);
-			scanf("%*[^\n]");
-			if(cont==EOF) return CERR_EOF;
+			EndView();
 			break;
 		case 2:
 			output(t);
-			printf("Input any value to continue or EOF to stop.\n");
-			cont=scanf("%d", &i);
-			scanf("%*[^\n]");
-			if(cont==EOF) return CERR_EOF;
+
+			EndView();
 			break;
 		case 3:
 			printf("Enter a key: ");
@@ -269,10 +254,7 @@ int console(int input, Table* t)
 			if(result) outputks(result);
 			else printf("No KeySpace was found.\n");
 			
-			printf("Input any value to continue or EOF to stop.\n");
-			cont=scanf("%d", &i);
-			scanf("%*[^\n]");
-			if(cont==EOF) return CERR_EOF;
+			EndView();
 			break;
 		case 4:
 			printf("Enter a key: ");
@@ -291,15 +273,13 @@ int console(int input, Table* t)
 			}
 			else printf("No element found after this key and rel.\n");
 
-			printf("Input any value to continue or EOF to stop.\n");
-			cont=scanf("%d", &i);
-			scanf("%*[^\n]");
-			if(cont==EOF) return CERR_EOF;
+			EndView();
 			break;
 		case 5:
 			printf("Enter a key: ");
 			in=getInt(&key);
 			if(in) return CERR_EOF;
+
 			printf("Enter data: ");
 			char* data=enter();
 			if(!data) return CERR_EOF;
@@ -308,10 +288,8 @@ int console(int input, Table* t)
 			if(i==ERR_FULL) printf("Error. Table is full.\n");
 			output(t);
 			free(data);
-			printf("Input any value to continue or EOF to stop.\n");
-			cont=scanf("%d", &i);
-			scanf("%*[^\n]");
-			if(cont==EOF) return CERR_EOF;
+
+			EndView();
 			break;
 		case 6:
 			printf("Enter a key: ");
@@ -322,10 +300,7 @@ int console(int input, Table* t)
 			if(i==ERR_NO_FOUND) printf("Error. No such key in table.\n");
 			else output(t);
 
-			printf("Input any value to continue or EOF to stop.\n");
-			cont=scanf("%d", &i);
-			scanf("%*[^\n]");
-			if(cont==EOF) return CERR_EOF;
+			EndView();
 			break;	
 		case 7:
 			printf("Enter a key: ");
@@ -340,28 +315,24 @@ int console(int input, Table* t)
 			if(i==ERR_NO_FOUND) printf("Error. No such key or version in table.\n");
 			else output(t);
 
-			printf("Input any value to continue or EOF to stop.\n");
-			cont=scanf("%d", &i);
-			scanf("%*[^\n]");
-			if(cont==EOF) return CERR_EOF;
+			EndView();	
 			break;
 		case 8:
 			scanf("%*c");
 			printf("Enter a filename where table will be saved: ");
 			char* fn=enter();
+			
 			Table* p=TableWrite(t, fn);
 			if(!p) printf("Error. Wrong filename.\n");
 			else printf("Modified table was saved at %s\n", fn);
 			free(fn);
 			
-			printf("Input any value to continue or EOF to stop.\n");
-			cont=scanf("%d", &i);
-			scanf("%*[^\n]");
-			if(cont==EOF) return CERR_EOF;
+			EndView();	
 			break;
 	}
 }
 
+//view of file import function
 Table* fimport()
 {
 	do
@@ -382,13 +353,19 @@ Table* fimport()
 			continue;
 		}
 		fclose(fd);
-		//output(t);
-		//printf("Press any key to continue or ctrl+d to stop program.\n");
-		//int in=scanf("%s");
-		//if(in==EOF)return NULL; 
 		free(FileName);
 		FileName=NULL;
 		return t;
-		//printf("Data: %d", msize);
 	}while(1);
+}
+
+//Function that ends view
+int EndView()
+{
+	int i=0;
+	printf("Input any value to continue or EOF to stop.\n");
+	int cont=scanf("%d", &i);
+	scanf("%*[^\n]");
+	if(cont==EOF) return CERR_EOF;
+	return CERR_OK;
 }

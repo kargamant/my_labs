@@ -4,6 +4,7 @@
 #include <string.h>
 #include "../funcs.h"
 
+//parsing table from text file
 Table* input(FILE* fd)
 {
 	Table* t=(Table*)malloc(sizeof(Table));
@@ -49,6 +50,7 @@ Table* input(FILE* fd)
 	return t;
 }
 
+//full clearing of table
 void erased(Table* t)
 {
 	KeySpace* ptr=t->ks;
@@ -69,6 +71,7 @@ void erased(Table* t)
 	free(t);
 }
 
+//diffrent outputs. for table, keyspace and node
 void output(Table* t)
 {
 	printf("msize: %d\n", t->msize);
@@ -93,6 +96,7 @@ void outputnd(Node* gr)
 	printf("{%d, %s} ", gr->rel, gr->item->data);
 }
 
+//search all elements by key
 KeySpace* SearchByKey(Table* t, int key)
 {
 	KeySpace* ptr=t->ks;
@@ -104,6 +108,7 @@ KeySpace* SearchByKey(Table* t, int key)
 	return NULL;
 }
 
+//search one specific element by key and it's version
 Node* SearchByVersion(Table* t, int key, int rel)
 {
 	KeySpace* ptr=t->ks;
@@ -112,21 +117,20 @@ Node* SearchByVersion(Table* t, int key, int rel)
 	{
 		if(ptr->key==key)
 		{
-			f=1;
-			break;
+			Node* gr=ptr->node;
+			while(gr)
+			{
+				if(gr->rel==rel) return gr;
+				gr=gr->next;
+			}
+			return NULL;
 		}
 		++ptr;
-	}
-	if(!f) return NULL;
-	Node* gr=ptr->node;
-	while(gr)
-	{
-		if(gr->rel==rel) return gr;
-		gr=gr->next;
 	}
 	return NULL;
 }
 
+//adding new element
 int add(Table* t, int key, char* c)
 {	
 	KeySpace* ks=SearchByKey(t, key);
@@ -159,7 +163,7 @@ int add(Table* t, int key, char* c)
 	return ERR_OK;
 }
 
-
+//deleting all elements by key
 int DelByKey(Table* t, int key)
 {
 	KeySpace* ks=SearchByKey(t, key);
@@ -178,6 +182,7 @@ int DelByKey(Table* t, int key)
 	return ERR_OK;
 }
 
+//deleting one specific element by key and it's version
 int DelByVersion(Table* t, int key, int rel)
 {
 	KeySpace* ks=SearchByKey(t, key);

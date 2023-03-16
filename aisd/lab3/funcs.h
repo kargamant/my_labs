@@ -11,6 +11,7 @@ int console(int input, Table* t);
 Table* fimport();
 KeySpace* keysearch(Table* t);
 Node* versionsearch(Table* t);
+int EndView();
 typedef enum CERR
 {
 	CERR_OK,
