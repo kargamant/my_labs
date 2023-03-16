@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "TableLib/Table.h"
 #include "funcs.h"
-#include <conio.h>
+#include <ncurses.h>
 
 //string parsing from lab2
 char* enter()
@@ -107,7 +107,7 @@ void TableWrite(Table* t, char* fn)
 void menue()
 {
 	int key=0, pos=1;
-	system("cls");
+	system("clear");
 	const char* options[]={
 		"import table from file.\n",
 		"output table.\n",
@@ -118,23 +118,34 @@ void menue()
 		"delete by version\n",
 		"save changes\n"
 	};
-	while(key!=13)
+	
+	initscr();
+	while(key!=10)
 	{
-		system("cls");
+		clear();
+		refresh();
+		//system("clear");	
 		for(int i=1; i<9; i++)
 		{
 			arrow(i, pos);
-			printf("%s", options[i-1]);
+			printw("%s", options[i-1]);
+			refresh();
 		}
-		key=getch(0);
-		if(key==80 && pos!=8) pos++;
-		else if(key==72 && pos!=1) pos--;
+		key=getch();
+		//printw("\n%d\n", key);
+		if(key==115 && pos!=8) pos++;
+		else if(key==119 && pos!=1) pos--;
 	}
+	endwin();
 }
 
 int arrow(int cur, int pos)
 {
-	if(cur==pos) printf(">>>");
+	if(cur==pos)
+	{
+		printw(">>>");
+		refresh();
+	}
 }
 
 /*

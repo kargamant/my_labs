@@ -31,7 +31,7 @@ typedef struct Table
 
 //methods
 Table* input(FILE* fd);
-void erase(Table* t);
+void erased(Table* t);
 void output(Table* t);
 void outputks(KeySpace* ptr);
 void outputnd(Node* gr);

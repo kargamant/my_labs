@@ -49,7 +49,7 @@ Table* input(FILE* fd)
 	return t;
 }
 
-void erase(Table* t)
+void erased(Table* t)
 {
 	KeySpace* ptr=t->ks;
 	while(ptr-t->ks<t->csize)

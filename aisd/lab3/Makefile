@@ -1,2 +1,2 @@
 test:
-	gcc -o main main.c funcs.c TableLib/Table.c
+	gcc -o main main.c funcs.c TableLib/Table.c -lncurses
