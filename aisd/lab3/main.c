@@ -18,6 +18,7 @@ int main()
 		if(res==CERR_EOF) break;
 	}while(1);
 	erased(t);
+	free(t);
 	endp: printf("Program stopped.\n");
 	return 0;
 }

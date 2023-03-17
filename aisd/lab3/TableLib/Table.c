@@ -30,7 +30,6 @@ Table* input(FILE* fd)
 		Node* prev=ptr->node;
 		while(tok)
 		{
-			cur->rel=k;
 			cur->item=(Item*)malloc(sizeof(Item));
 			cur->item->data=strdup(tok);
 			cur->item->ks=ptr;
@@ -41,6 +40,14 @@ Table* input(FILE* fd)
 			else cur->next=NULL;
 			cur=cur->next;
 			k++;
+		}
+		cur=ptr->node;
+		k--;
+		while(k && cur)
+		{
+			cur->rel=k;
+			k--;
+			cur=cur->next;
 		}
 		free(s);
 		s=NULL;
@@ -68,7 +75,7 @@ void erased(Table* t)
 		++ptr;
 	}
 	free(t->ks);
-	free(t);
+	//free(t);
 }
 
 //diffrent outputs. for table, keyspace and node
@@ -150,6 +157,15 @@ int add(Table* t, int key, char* c)
 	}
 	else
 	{
+		Node* gr=(Node*)malloc(sizeof(Node));
+		Node* second=ks->node;
+		gr->rel=second->rel+1;
+		gr->item=(Item*)malloc(sizeof(Item));
+		gr->item->data=nc;
+		gr->item->ks=ks;
+		gr->next=second;
+		ks->node=gr;
+		/*
 		Node* gr=ks->node;
 		while(gr->next) gr=gr->next;
 		int rel=gr->rel +1;
@@ -158,7 +174,7 @@ int add(Table* t, int key, char* c)
 		gr->next->item=(Item*)malloc(sizeof(Item));
 		gr->next->item->data=nc;
 		gr->next->item->ks=ks;
-		gr->next->next=NULL;
+		gr->next->next=NULL;*/
 	}
 	return ERR_OK;
 }
@@ -206,16 +222,17 @@ int DelByVersion(Table* t, int key, int rel)
 			else ks->node=next;
 			free(gr);
 			gr=NULL;
-			break;
+			return ERR_OK;
 		}
 		prev=gr;
 		gr=gr->next;
 	}
 	if(!next) return ERR_NO_FOUND;
+	/*
 	while(next)
 	{
 		next->rel-=1;
 		next=next->next;
 	}
-	return ERR_OK;
+	return ERR_OK;*/
 }

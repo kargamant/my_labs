@@ -7,7 +7,7 @@ int GetIntf(FILE* fd);
 Table* TableWrite(Table* t, char* fn);
 int menue();
 int arrow(int cur, int pos);
-int console(int input, Table* t);
+int console(int p, Table* t);
 Table* fimport();
 KeySpace* keysearch(Table* t);
 Node* versionsearch(Table* t);

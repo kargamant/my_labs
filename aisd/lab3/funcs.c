@@ -189,7 +189,7 @@ int arrow(int cur, int pos)
 //MVC paradigm
 //------------------------
 //Main Controller function
-int console(int input, Table* t)
+int console(int p, Table* t)
 {
 	//cases represent kind of view functions/decorators of available table methods
 	//1 - input
@@ -201,13 +201,38 @@ int console(int input, Table* t)
 	//7 - del by version
 	//8 - save changes
 	int key=0, rel=0, in=0, cont=0, i=0;
-	switch(input)
+	switch(p)
 	{
 		case 1:
-			*t=*fimport();
 			/*
+			erased(t);
+			do
+			{
+				printf("Enter FileName with table: ");
+				char* FileName=enter();
+				if(!FileName) break;
+				FILE *fd=fopen(FileName, "r");
+				if(!fd)
+				{
+					printf("File does not exist or wrong FileName. Try again.\n");
+					continue;
+				}
+				t=input(fd);	
+				if(!t)
+				{
+					printf("Error. Got wrong data while parsing. Try again.\n");
+					continue;
+				}
+				fclose(fd);
+				free(FileName);
+				FileName=NULL;
+				break;
+			}while(1);*/
+			*t=*fimport();
+			
 			//old version. Could be useful.
-			Table* nt=fimport();
+			/*Table* nt=fimport();
+			erased(t);	
 			t=(Table*)malloc(sizeof(Table));
 			t->msize=nt->msize;
 			t->csize=nt->csize;
@@ -224,19 +249,27 @@ int console(int input, Table* t)
 				{
 					gr->rel=ngr->rel;
 					gr->item=(Item*)malloc(sizeof(Item));
-					gr->item->data=strdup(ngr->item->data);
+					gr->item->data=ngr->item->data;
 					gr->item->ks=ptr;
-					gr->next=(Node*)malloc(sizeof(Node));
+					if(ngr->next) gr->next=(Node*)malloc(sizeof(Node));
 					gr=gr->next;
 					ngr=ngr->next;
 				}
-				free(gr);
-				gr=NULL;
+				//free(gr);
+				//gr=NULL;
 				++ptr;
 				++nptr;
-			}*/
-			//erased(nt);
+			}
+			printf("db3\n");
+			printf("%d\n", t->ks->key);
+			printf("%s\n", t->ks->node->item->data);
+			//outputks(t->ks);
+			
+			erased(nt);
+			//outputks(t->ks);
+			//output(t);*/
 			if(t) output(t);
+
 		
 			EndView();
 			break;
