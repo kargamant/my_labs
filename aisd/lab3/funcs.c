@@ -365,6 +365,7 @@ int console(int p, Table* t)
 	}
 }
 
+
 //view of file import function
 Table* fimport()
 {
@@ -391,6 +392,9 @@ Table* fimport()
 		return t;
 	}while(1);
 }
+
+//View functions 
+
 
 //Function that ends view
 int EndView()
