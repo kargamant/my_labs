@@ -6,7 +6,8 @@
 int main()
 {
 	//first initialization of table
-	Table* t=fimport();
+	Table* t=(Table*)malloc(sizeof(Table));
+	console(1, t);
 	if(!t) goto endp;
 	
 	//main cycle
@@ -19,6 +20,7 @@ int main()
 	}while(1);
 	erased(t);
 	free(t);
+	t=NULL;
 	endp: printf("Program stopped.\n");
 	return 0;
 }

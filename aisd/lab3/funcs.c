@@ -190,183 +190,14 @@ int arrow(int cur, int pos)
 //------------------------
 //Main Controller function
 int console(int p, Table* t)
-{
-	//cases represent kind of view functions/decorators of available table methods
-	//1 - input
-	//2 - output
-	//3 - search by key
-	//4 - search by version
-	//5 - add
-	//6 - del by key
-	//7 - del by version
-	//8 - save changes
-	int key=0, rel=0, in=0, cont=0, i=0;
-	switch(p)
-	{
-		case 1:
-			/*
-			erased(t);
-			do
-			{
-				printf("Enter FileName with table: ");
-				char* FileName=enter();
-				if(!FileName) break;
-				FILE *fd=fopen(FileName, "r");
-				if(!fd)
-				{
-					printf("File does not exist or wrong FileName. Try again.\n");
-					continue;
-				}
-				t=input(fd);	
-				if(!t)
-				{
-					printf("Error. Got wrong data while parsing. Try again.\n");
-					continue;
-				}
-				fclose(fd);
-				free(FileName);
-				FileName=NULL;
-				break;
-			}while(1);*/
-			*t=*fimport();
-			
-			//old version. Could be useful.
-			/*Table* nt=fimport();
-			erased(t);	
-			t=(Table*)malloc(sizeof(Table));
-			t->msize=nt->msize;
-			t->csize=nt->csize;
-			t->ks=(KeySpace*)malloc(t->msize*sizeof(KeySpace));
-			KeySpace* ptr=t->ks;
-			KeySpace* nptr=nt->ks;
-			while(ptr-t->ks<t->csize)
-			{
-				ptr->key=nptr->key;
-				ptr->node=(Node*)malloc(sizeof(Node));
-				Node* gr=ptr->node;
-				Node* ngr=nptr->node;
-				while(ngr)
-				{
-					gr->rel=ngr->rel;
-					gr->item=(Item*)malloc(sizeof(Item));
-					gr->item->data=ngr->item->data;
-					gr->item->ks=ptr;
-					if(ngr->next) gr->next=(Node*)malloc(sizeof(Node));
-					gr=gr->next;
-					ngr=ngr->next;
-				}
-				//free(gr);
-				//gr=NULL;
-				++ptr;
-				++nptr;
-			}
-			printf("db3\n");
-			printf("%d\n", t->ks->key);
-			printf("%s\n", t->ks->node->item->data);
-			//outputks(t->ks);
-			
-			erased(nt);
-			//outputks(t->ks);
-			//output(t);*/
-			if(t) output(t);
-
-		
-			EndView();
-			break;
-		case 2:
-			output(t);
-
-			EndView();
-			break;
-		case 3:
-			printf("Enter a key: ");
-			in=getInt(&key);
-			if(in) return CERR_EOF;
-
-			KeySpace* result=SearchByKey(t, key);
-			if(result) outputks(result);
-			else printf("No KeySpace was found.\n");
-			
-			EndView();
-			break;
-		case 4:
-			printf("Enter a key: ");
-			in=getInt(&key);
-			if(in) return CERR_EOF;
-
-			printf("Now enter a version: ");
-			in=getInt(&rel);
-			if(in) return CERR_EOF;
-
-			Node* res=SearchByVersion(t, key, rel);
-			if(res)
-			{
-				outputnd(res);
-				printf("\n");
-			}
-			else printf("No element found after this key and rel.\n");
-
-			EndView();
-			break;
-		case 5:
-			printf("Enter a key: ");
-			in=getInt(&key);
-			if(in) return CERR_EOF;
-
-			printf("Enter data: ");
-			char* data=enter();
-			if(!data) return CERR_EOF;
-
-			i=add(t, key, data);
-			if(i==ERR_FULL) printf("Error. Table is full.\n");
-			output(t);
-			free(data);
-
-			EndView();
-			break;
-		case 6:
-			printf("Enter a key: ");
-			in=getInt(&key);
-			if(in) return CERR_EOF;
-
-			i=DelByKey(t, key);
-			if(i==ERR_NO_FOUND) printf("Error. No such key in table.\n");
-			else output(t);
-
-			EndView();
-			break;	
-		case 7:
-			printf("Enter a key: ");
-			in=getInt(&key);
-			if(in) return CERR_EOF;
-
-			printf("Now enter a version: ");
-			in=getInt(&rel);
-			if(in) return CERR_EOF;
-
-			i=DelByVersion(t, key, rel);
-			if(i==ERR_NO_FOUND) printf("Error. No such key or version in table.\n");
-			else output(t);
-
-			EndView();	
-			break;
-		case 8:
-			scanf("%*c");
-			printf("Enter a filename where table will be saved: ");
-			char* fn=enter();
-			
-			Table* p=TableWrite(t, fn);
-			if(!p) printf("Error. Wrong filename.\n");
-			else printf("Modified table was saved at %s\n", fn);
-			free(fn);
-			
-			EndView();	
-			break;
-	}
+{	
+	int (*view[])(Table*)={NULL, Inputv, Outv, Searchkv, Searchvv, Addv, Delkv, Delvv, Savev};
+	view[p](t);	
 }
 
 
 //view of file import function
+/*
 Table* fimport()
 {
 	do
@@ -391,12 +222,159 @@ Table* fimport()
 		FileName=NULL;
 		return t;
 	}while(1);
-}
+}*/
+
+//1 - input
+//2 - output
+//3 - search by key
+//4 - search by version
+//5 - add
+//6 - del by key
+//7 - del by version
+//8 - save changes
 
 //View functions 
+/*int fimport(Table* t)
+{
 
+}*/
 
-//Function that ends view
+int Inputv(Table* t)
+{
+	if(!t) erased(t);
+	do
+	{
+		printf("Enter FileName with table: ");
+		char* FileName=enter();
+		if(!FileName) return CERR_EOF;
+		FILE *fd=fopen(FileName, "r");
+		if(!fd)
+		{
+			printf("File does not exist or wrong FileName. Try again.\n");
+			continue;
+		}
+			
+		if(input(fd, t)==ERR_WRD)
+		{
+			printf("Error. Got wrong data while parsing. Try again.\n");
+			fclose(fd);
+			free(FileName);
+			FileName=NULL;
+			continue;
+		}
+		fclose(fd);
+		free(FileName);
+		FileName=NULL;
+		return EndView();
+	}while(1);
+}
+
+int Outv(Table* t)
+{
+	output(t);
+	return EndView();
+}
+
+int Searchkv(Table* t)
+{
+	int key=0;
+	printf("Enter a key: ");
+	int in=getInt(&key);
+	if(in) return CERR_EOF;
+
+	KeySpace* result=SearchByKey(t, key);
+	if(result) outputks(result);
+	else printf("No KeySpace was found.\n");
+			
+	return EndView();
+}
+
+int Searchvv(Table* t)
+{
+	int key=0, rel=0;
+	printf("Enter a key: ");
+	int in=getInt(&key);
+	if(in) return CERR_EOF;
+
+	printf("Now enter a version: ");
+	in=getInt(&rel);
+	if(in) return CERR_EOF;
+
+	Node* res=SearchByVersion(t, key, rel);
+	if(res)
+	{
+		outputnd(res);
+		printf("\n");
+	}
+	else printf("No element found after this key and rel.\n");
+
+	return EndView();
+}
+
+int Addv(Table* t)
+{
+	int key=0;
+	printf("Enter a key: ");
+	int in=getInt(&key);
+	if(in) return CERR_EOF;
+
+	printf("Enter data: ");
+	char* data=enter();
+	if(!data) return CERR_EOF;
+
+	in=add(t, key, data);
+	if(in==ERR_FULL) printf("Error. Table is full.\n");
+	output(t);
+	free(data);
+	return EndView();
+}
+
+int Delkv(Table* t)
+{
+	int key=0;
+	printf("Enter a key: ");
+	int in=getInt(&key);
+	if(in) return CERR_EOF;
+
+	in=DelByKey(t, key);
+	if(in==ERR_NO_FOUND) printf("Error. No such key in table.\n");
+	else output(t);
+
+	return EndView();
+}
+
+int Delvv(Table* t)
+{
+	int key=0, rel=0;
+	printf("Enter a key: ");
+	int in=getInt(&key);
+	if(in) return CERR_EOF;
+
+	printf("Now enter a version: ");
+	in=getInt(&rel);
+	if(in) return CERR_EOF;
+
+	in=DelByVersion(t, key, rel);
+	if(in==ERR_NO_FOUND) printf("Error. No such key or version in table.\n");
+	else output(t);
+
+	return EndView();
+}
+
+int Savev(Table* t)
+{
+	scanf("%*c");
+	printf("Enter a filename where table will be saved: ");
+	char* fn=enter();
+			
+	Table* p=TableWrite(t, fn);
+	if(!p) printf("Error. Wrong filename.\n");
+	else printf("Modified table was saved at %s\n", fn);
+	free(fn);
+	return EndView();
+}
+
+//Function that ends a view function
 int EndView()
 {
 	int i=0;

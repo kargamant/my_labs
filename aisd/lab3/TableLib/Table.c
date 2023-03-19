@@ -5,11 +5,11 @@
 #include "../funcs.h"
 
 //parsing table from text file
-Table* input(FILE* fd)
+int input(FILE* fd, Table* t)
 {
-	Table* t=(Table*)malloc(sizeof(Table));
+	//Table* t=(Table*)malloc(sizeof(Table));
 	t->msize=GetIntf(fd);
-	if(t->msize==-1) return NULL;
+	if(t->msize==-1) return ERR_WRD;
 	t->csize=0;
 	t->ks=(KeySpace*)malloc((t->msize)*sizeof(KeySpace));
 	KeySpace* ptr=t->ks;
@@ -54,28 +54,95 @@ Table* input(FILE* fd)
 		t->csize+=1;
 		++ptr;
 	}
-	return t;
+	return ERR_OK;
 }
+/*
+int readt(FILE* fd, Table* t)
+{
+	int nmsize=GetIntf(fd);
+	t->ks=(KeySpace*)realloc(t->ks, nmsize*sizeof(KeySpace));
+	t->msize=nmsize;
+	int ncize=0;
+	KeySpace* ptr=t->ks;
+	//else
+	//{
+	//	for(KeySpace* ptr=t->ks + nmsize; ptr-t->ks<t->csize
+	//}
+	while(ptr-t->ks<t->msize && (ptr->key=GetIntf(fd))!=-1)
+	{
+		char* s=enterf(fd);
+		char* tok=strtok(s, " ");
+		if(!tok) 
+		{
+			printf("Error. No value for key: %d\n", ptr->key);
+			free(s);
+			s=NULL;
+			break;
+		}
+		int k=1;
+		//ptr->node=(Node*)malloc(sizeof(Node));
+		Node* cur=ptr->node;
+		Node* prev=ptr->node;
+		while(tok)
+		{
+			//cur->item=(Item*)malloc(sizeof(Item));
+			cur->item->data=strdup(tok);
+			cur->item->ks=ptr;
+			prev->next=cur;
+			prev=cur;
+			tok=strtok(NULL, " ");
+			if(tok) cur=cur->next;
+			else cur->next=NULL;
+			cur=cur->next;
+			k++;
+		}
+		cur=ptr->node;
+		k--;
+		while(k && cur)
+		{
+			cur->rel=k;
+			k--;
+			cur=cur->next;
+		}
+		free(s);
+		s=NULL;
+		t->csize+=1;
+		++ptr;
+	}
+	return ERR_OK;
+
+}*/
 
 //full clearing of table
 void erased(Table* t)
 {
 	KeySpace* ptr=t->ks;
-	while(ptr-t->ks<t->csize)
+	if(!ptr) 
 	{
-		Node* gr=ptr->node;
-		while(gr)
+		free(t); 
+		t=NULL;
+	}
+	else
+	{
+		while(ptr-t->ks<t->csize)
 		{
-			free(gr->item->data);
-			free(gr->item);
-			Node* next=gr->next;
-			free(gr);
-			gr=next;
+			Node* gr=ptr->node;
+			if(!gr) continue;
+			while(gr)
+			{
+				free(gr->item->data);
+				free(gr->item);
+				Node* next=gr->next;
+				free(gr);
+				gr=next;
+			}
+			++ptr;
 		}
-		++ptr;
 	}
 	free(t->ks);
+	t->ks=NULL;
 	//free(t);
+	//t=NULL;
 }
 
 //diffrent outputs. for table, keyspace and node
