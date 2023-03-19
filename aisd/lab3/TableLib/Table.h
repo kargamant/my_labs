@@ -30,7 +30,7 @@ typedef struct Table
 }Table;
 
 //methods
-int input(FILE* fd, Table* t);
+int input(FILE* fd, Table** t);
 void erased(Table* t);
 void output(Table* t);
 void outputks(KeySpace* ptr);

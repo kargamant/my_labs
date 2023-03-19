@@ -6,7 +6,7 @@
 int main()
 {
 	//first initialization of table
-	Table* t=(Table*)malloc(sizeof(Table));
+	Table* t=(Table*)calloc(3, sizeof(Table));
 	console(1, t);
 	if(!t) goto endp;
 	

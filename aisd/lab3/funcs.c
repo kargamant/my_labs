@@ -19,9 +19,12 @@ char* enter()
 		{
 			free(ptr);
 			ptr=NULL;
-			continue;
+			break;
 		}
-		else if(n==0) scanf("%*c");
+		else if(n==0) 
+		{
+			scanf("%*c");
+		}
 		else 
 		{
 			len+=strlen(buf);
@@ -241,20 +244,32 @@ Table* fimport()
 
 int Inputv(Table* t)
 {
-	if(!t) erased(t);
+	if(t) erased(t);
 	do
 	{
 		printf("Enter FileName with table: ");
 		char* FileName=enter();
-		if(!FileName) return CERR_EOF;
+		if(*FileName==0) 
+		{
+			free(FileName);
+			FileName=enter();
+		}
+		if(!FileName) 
+		{
+			free(FileName);
+			FileName=NULL;
+			return CERR_EOF;
+		}
 		FILE *fd=fopen(FileName, "r");
 		if(!fd)
 		{
 			printf("File does not exist or wrong FileName. Try again.\n");
+			free(FileName);
+			FileName=NULL;
 			continue;
-		}
+		}	
 			
-		if(input(fd, t)==ERR_WRD)
+		if(input(fd, &t)==ERR_WRD)
 		{
 			printf("Error. Got wrong data while parsing. Try again.\n");
 			fclose(fd);

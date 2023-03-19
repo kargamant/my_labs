@@ -5,15 +5,16 @@
 #include "../funcs.h"
 
 //parsing table from text file
-int input(FILE* fd, Table* t)
+int input(FILE* fd, Table** t)
 {
 	//Table* t=(Table*)malloc(sizeof(Table));
-	t->msize=GetIntf(fd);
-	if(t->msize==-1) return ERR_WRD;
-	t->csize=0;
-	t->ks=(KeySpace*)malloc((t->msize)*sizeof(KeySpace));
-	KeySpace* ptr=t->ks;
-	while(ptr-t->ks<t->msize && (ptr->key=GetIntf(fd))!=-1)
+	Table* y=*t;
+	y->msize=GetIntf(fd);
+	if(y->msize==-1) return ERR_WRD;
+	y->csize=0;
+	y->ks=(KeySpace*)malloc((y->msize)*sizeof(KeySpace));
+	KeySpace* ptr=y->ks;
+	while(ptr-y->ks<y->msize && (ptr->key=GetIntf(fd))!=-1)
 	{
 		char* s=enterf(fd);
 		char* tok=strtok(s, " ");
@@ -51,7 +52,7 @@ int input(FILE* fd, Table* t)
 		}
 		free(s);
 		s=NULL;
-		t->csize+=1;
+		y->csize+=1;
 		++ptr;
 	}
 	return ERR_OK;
@@ -117,12 +118,7 @@ int readt(FILE* fd, Table* t)
 void erased(Table* t)
 {
 	KeySpace* ptr=t->ks;
-	if(!ptr) 
-	{
-		free(t); 
-		t=NULL;
-	}
-	else
+	if(ptr) 
 	{
 		while(ptr-t->ks<t->csize)
 		{
@@ -131,16 +127,19 @@ void erased(Table* t)
 			while(gr)
 			{
 				free(gr->item->data);
+				gr->item->data=NULL;
 				free(gr->item);
+				gr->item=NULL;
 				Node* next=gr->next;
 				free(gr);
 				gr=next;
 			}
 			++ptr;
 		}
+		free(t->ks);
+		t->ks=NULL;
 	}
-	free(t->ks);
-	t->ks=NULL;
+	
 	//free(t);
 	//t=NULL;
 }
