@@ -4,6 +4,7 @@
 char* enter();
 char* enterf(FILE* fd);
 int GetIntf(FILE* fd);
+int getInt(int* n);
 Table* TableWrite(Table* t, char* fn);
 int menue();
 int arrow(int cur, int pos);

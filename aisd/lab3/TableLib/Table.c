@@ -269,7 +269,7 @@ int DelByVersion(Table* t, int key, int rel)
 {
 	KeySpace* ks=SearchByKey(t, key);
 	if(!ks) return ERR_NO_FOUND;
-	if(rel==1 && !ks->node->next)
+	if(!ks->node->next)
 	{
 		DelByKey(t, key);
 		return ERR_OK;

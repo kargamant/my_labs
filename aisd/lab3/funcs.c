@@ -135,7 +135,7 @@ Table* TableWrite(Table* t, char* fn)
 	fclose(fd);
 	return t;
 }
-
+/*
 //interactive arrow menue
 int menue()
 {
@@ -161,7 +161,6 @@ int menue()
 		{
 			arrow(i, pos);
 			printw("%s", options[i-1]);
-			refresh();
 		}
 		key=getch();
 		if(key==115) 
@@ -185,9 +184,8 @@ int arrow(int cur, int pos)
 	if(cur==pos)
 	{
 		printw(">>>");
-		refresh();
 	}
-}
+}*/
 
 //MVC paradigm
 //------------------------
@@ -249,17 +247,18 @@ int Inputv(Table* t)
 	{
 		printf("Enter FileName with table: ");
 		char* FileName=enter();
-		if(*FileName==0) 
-		{
-			free(FileName);
-			FileName=enter();
-		}
 		if(!FileName) 
 		{
 			free(FileName);
 			FileName=NULL;
 			return CERR_EOF;
 		}
+		if(*FileName==0) 
+		{
+			free(FileName);
+			FileName=enter();
+		}
+		
 		FILE *fd=fopen(FileName, "r");
 		if(!fd)
 		{
@@ -378,9 +377,9 @@ int Delvv(Table* t)
 
 int Savev(Table* t)
 {
-	scanf("%*c");
 	printf("Enter a filename where table will be saved: ");
 	char* fn=enter();
+	if(!fn) return CERR_EOF;
 			
 	Table* p=TableWrite(t, fn);
 	if(!p) printf("Error. Wrong filename.\n");
