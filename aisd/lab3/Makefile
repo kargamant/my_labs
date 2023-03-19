@@ -5,7 +5,6 @@ txt-arrow:
 	gcc -o main main.o arrow_menue.o -L. -ltable -lncurses
 	mv Table.o binaries
 	mv funcs.o binaries
-	mv libtable.so binaries
 	mv main.o binaries
 	mv arrow_menue.o binaries
 txt:
@@ -15,7 +14,6 @@ txt:
 	gcc -o main main.o menue.o -L. -ltable
 	mv Table.o binaries
 	mv funcs.o binaries
-	mv libtable.so binaries
 	mv main.o binaries
 	mv menue.o binaries
 test:
