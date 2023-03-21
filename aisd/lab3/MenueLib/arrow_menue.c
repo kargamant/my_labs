@@ -8,35 +8,29 @@ int arrow(int cur, int pos)
 	if(cur==pos)
 	{
 		printw(">>>");
+		refresh();
 	}
 }
 
 //interactive arrow menue
-int menue()
+int menue(const char* options[], int n)
 {
 	int key=0, pos=1;
-	system("clear");
-	const char* options[]={
-		"import table from file.\n",
-		"output table.\n",
-		"search by key.\n",
-		"search by version\n",
-		"add\n",
-		"delete by key\n",
-		"delete by version\n",
-		"save changes\n",
-		"quit\n"
-	};
+	system("clear");	
 	
 	initscr();
 	while(key!=10)
 	{
 		clear();
-		for(int i=1; i<10; i++)
+		for(int i=1; i<n+1; i++)
 		{
 			arrow(i, pos);
 			printw("%s", options[i-1]);
+			refresh();
 		}
+		arrow(n+1, pos);
+		printw("%s", "quit");
+		refresh();
 		key=getch();
 		if(key==115) 
 		{

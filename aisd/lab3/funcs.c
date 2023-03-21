@@ -114,10 +114,10 @@ int getInt(int* n)
 }
 
 //function for saving table at .txt file
-Table* TableWrite(Table* t, char* fn)
+int TableWrite(Table* t, char* fn)
 {
 	FILE* fd=fopen(fn, "w");
-	if(!fd) return NULL;
+	if(!fd) return ERR_FIL;
 	fprintf(fd, "%d\n", t->msize);
 	KeySpace* ptr=t->ks;
 	while(ptr-t->ks<t->csize)
@@ -133,59 +133,8 @@ Table* TableWrite(Table* t, char* fn)
 		++ptr;
 	}
 	fclose(fd);
-	return t;
+	return ERR_OK;
 }
-/*
-//interactive arrow menue
-int menue()
-{
-	int key=0, pos=1;
-	system("clear");
-	const char* options[]={
-		"import table from file.\n",
-		"output table.\n",
-		"search by key.\n",
-		"search by version\n",
-		"add\n",
-		"delete by key\n",
-		"delete by version\n",
-		"save changes\n",
-		"quit\n"
-	};
-	
-	initscr();
-	while(key!=10)
-	{
-		clear();
-		for(int i=1; i<10; i++)
-		{
-			arrow(i, pos);
-			printw("%s", options[i-1]);
-		}
-		key=getch();
-		if(key==115) 
-		{
-			pos=(pos+1)%10;
-			if(!pos) pos=1;
-		}
-		else if(key==119) 
-		{
-			pos=(10+(pos-1)%10)%10;
-			if(!pos) pos=9;
-		}
-	}
-	endwin();
-	return pos;
-}
-
-//displaying arrow in a specific position
-int arrow(int cur, int pos)
-{
-	if(cur==pos)
-	{
-		printw(">>>");
-	}
-}*/
 
 //MVC paradigm
 //------------------------
@@ -196,35 +145,7 @@ int console(int p, Table* t)
 	view[p](t);	
 }
 
-
-//view of file import function
-/*
-Table* fimport()
-{
-	do
-	{
-		printf("Enter FileName with table: ");
-		char* FileName=enter();
-		if(!FileName) return NULL;
-		FILE *fd=fopen(FileName, "r");
-		if(!fd)
-		{
-			printf("File does not exist or wrong FileName. Try again.\n");
-			continue;
-		}
-		Table* t=input(fd);	
-		if(!t)
-		{
-			printf("Error. Got wrong data while parsing. Try again.\n");
-			continue;
-		}
-		fclose(fd);
-		free(FileName);
-		FileName=NULL;
-		return t;
-	}while(1);
-}*/
-
+//options
 //1 - input
 //2 - output
 //3 - search by key
@@ -235,10 +156,6 @@ Table* fimport()
 //8 - save changes
 
 //View functions 
-/*int fimport(Table* t)
-{
-
-}*/
 
 int Inputv(Table* t)
 {
@@ -247,7 +164,7 @@ int Inputv(Table* t)
 	{
 		printf("Enter FileName with table: ");
 		char* FileName=enter();
-		if(!FileName) 
+		if(!FileName)
 		{
 			free(FileName);
 			FileName=NULL;
@@ -256,27 +173,29 @@ int Inputv(Table* t)
 		if(*FileName==0) 
 		{
 			free(FileName);
+			FileName=NULL;
 			FileName=enter();
 		}
 		
-		FILE *fd=fopen(FileName, "r");
-		if(!fd)
+		int res=input(FileName, &t);
+		//FILE *fd=fopen(FileName, "r");
+		if(res==ERR_FIL)
 		{
 			printf("File does not exist or wrong FileName. Try again.\n");
 			free(FileName);
 			FileName=NULL;
+			//fclose(fd);
 			continue;
 		}	
-			
-		if(input(fd, &t)==ERR_WRD)
+		if(res==ERR_WRD)
 		{
 			printf("Error. Got wrong data while parsing. Try again.\n");
-			fclose(fd);
+			//fclose(fd);
 			free(FileName);
 			FileName=NULL;
 			continue;
 		}
-		fclose(fd);
+		//fclose(fd);
 		free(FileName);
 		FileName=NULL;
 		return EndView();
@@ -381,8 +300,8 @@ int Savev(Table* t)
 	char* fn=enter();
 	if(!fn) return CERR_EOF;
 			
-	Table* p=TableWrite(t, fn);
-	if(!p) printf("Error. Wrong filename.\n");
+	int p=TableWrite(t, fn);
+	if(p==ERR_FIL) printf("Error. Wrong filename.\n");
 	else printf("Modified table was saved at %s\n", fn);
 	free(fn);
 	return EndView();

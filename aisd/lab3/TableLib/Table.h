@@ -30,7 +30,7 @@ typedef struct Table
 }Table;
 
 //methods
-int input(FILE* fd, Table** t);
+int input(char* fn, Table** t);
 void erased(Table* t);
 void output(Table* t);
 void outputks(KeySpace* ptr);
@@ -49,7 +49,8 @@ typedef enum ERR
 	ERR_FULL,
 	ERR_NO_FOUND,
 	ERR_DUP,
-	ERR_WRD
+	ERR_WRD,
+	ERR_FIL
 }ERR;
 
 #endif

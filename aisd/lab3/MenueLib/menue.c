@@ -1,22 +1,12 @@
 #include <stdlib.h>
-#include "TableLib/Table.h"
-#include "funcs.h"
+#include "../TableLib/Table.h"
+#include "../funcs.h"
 //interactive menue
-int menue()
-{
-	const char* options[]={
-		"import table from file.\n",
-		"output table.\n",
-		"search by key.\n",
-		"search by version\n",
-		"add\n",
-		"delete by key\n",
-		"delete by version\n",
-		"save changes\n",
-	};
+int menue(const char* options[], int n)
+{	
 	for(int i=0; i<15; i++) printf("-");
 	printf("\n");
-	for(int i=1; i<9; i++)
+	for(int i=1; i<n+1; i++)
 	{
 		printf("%d. %s", i, options[i-1]);
 	}
@@ -25,18 +15,18 @@ int menue()
 	printf("\n");
 
 	printf("Choose option: \n");
-	int pos=9;
+	int pos=n+1;
 	do
 	{
 		int in=getInt(&pos);
-		if(in) return 9;
-		else if(pos<1 || pos>8)
+		if(in) return n+1;
+		else if(pos<1 || pos>n)
 		{
 			printf("Incorrect number of option. Try again.\n");
 			continue;
 		}
 		else break;
 	}
-	while(pos<1 || pos>8);
+	while(pos<1 || pos>n);
 	return pos;
 }

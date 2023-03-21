@@ -1,6 +1,6 @@
 #ifndef MENUE_H
 #define MENUE_H
 
-int menue();
+int menue(const char* options[], int n);
 
 #endif

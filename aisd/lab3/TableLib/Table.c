@@ -5,16 +5,25 @@
 #include "../funcs.h"
 
 //parsing table from text file
-int input(FILE* fd, Table** t)
+
+
+int input(char* fn, Table** t)
 {
-	//Table* t=(Table*)malloc(sizeof(Table));
-	Table* y=*t;
-	y->msize=GetIntf(fd);
-	if(y->msize==-1) return ERR_WRD;
-	y->csize=0;
-	y->ks=(KeySpace*)malloc((y->msize)*sizeof(KeySpace));
-	KeySpace* ptr=y->ks;
-	while(ptr-y->ks<y->msize && (ptr->key=GetIntf(fd))!=-1)
+	FILE* fd=fopen(fn, "r");
+	if(!fd) 
+	{
+		return ERR_FIL;
+	}
+	(*t)->msize=GetIntf(fd);
+	if((*t)->msize==-1) 
+	{
+		fclose(fd);
+		return ERR_WRD;
+	}
+	(*t)->csize=0;
+	(*t)->ks=(KeySpace*)malloc(((*t)->msize)*sizeof(KeySpace));
+	KeySpace* ptr=(*t)->ks;
+	while(ptr-(*t)->ks<(*t)->msize && (ptr->key=GetIntf(fd))!=-1)
 	{
 		char* s=enterf(fd);
 		char* tok=strtok(s, " ");
@@ -52,67 +61,13 @@ int input(FILE* fd, Table** t)
 		}
 		free(s);
 		s=NULL;
-		y->csize+=1;
+		(*t)->csize+=1;
 		++ptr;
 	}
+	//printf("%p\n", (*t)->ks);
+	fclose(fd);
 	return ERR_OK;
 }
-/*
-int readt(FILE* fd, Table* t)
-{
-	int nmsize=GetIntf(fd);
-	t->ks=(KeySpace*)realloc(t->ks, nmsize*sizeof(KeySpace));
-	t->msize=nmsize;
-	int ncize=0;
-	KeySpace* ptr=t->ks;
-	//else
-	//{
-	//	for(KeySpace* ptr=t->ks + nmsize; ptr-t->ks<t->csize
-	//}
-	while(ptr-t->ks<t->msize && (ptr->key=GetIntf(fd))!=-1)
-	{
-		char* s=enterf(fd);
-		char* tok=strtok(s, " ");
-		if(!tok) 
-		{
-			printf("Error. No value for key: %d\n", ptr->key);
-			free(s);
-			s=NULL;
-			break;
-		}
-		int k=1;
-		//ptr->node=(Node*)malloc(sizeof(Node));
-		Node* cur=ptr->node;
-		Node* prev=ptr->node;
-		while(tok)
-		{
-			//cur->item=(Item*)malloc(sizeof(Item));
-			cur->item->data=strdup(tok);
-			cur->item->ks=ptr;
-			prev->next=cur;
-			prev=cur;
-			tok=strtok(NULL, " ");
-			if(tok) cur=cur->next;
-			else cur->next=NULL;
-			cur=cur->next;
-			k++;
-		}
-		cur=ptr->node;
-		k--;
-		while(k && cur)
-		{
-			cur->rel=k;
-			k--;
-			cur=cur->next;
-		}
-		free(s);
-		s=NULL;
-		t->csize+=1;
-		++ptr;
-	}
-	return ERR_OK;
-
-}*/
 
 //full clearing of table
 void erased(Table* t)
@@ -269,11 +224,12 @@ int DelByVersion(Table* t, int key, int rel)
 {
 	KeySpace* ks=SearchByKey(t, key);
 	if(!ks) return ERR_NO_FOUND;
-	if(!ks->node->next)
+	if(!ks->node->next && ks->node->rel==rel)
 	{
 		DelByKey(t, key);
 		return ERR_OK;
 	}
+	else if(!ks->node->next) return ERR_NO_FOUND;
 	Node* gr=ks->node;
 	Node* prev=ks->node;
 	Node* next=NULL;
