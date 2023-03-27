@@ -114,6 +114,7 @@ int getInt(int* n)
 }
 
 //function for saving table at .txt file
+/*
 int TableWrite(Table* t, char* fn)
 {
 	FILE* fd=fopen(fn, "w");
@@ -134,7 +135,7 @@ int TableWrite(Table* t, char* fn)
 	}
 	fclose(fd);
 	return ERR_OK;
-}
+}*/
 
 //MVC paradigm
 //------------------------
@@ -177,7 +178,7 @@ int Inputv(Table* t)
 			FileName=enter();
 		}
 		
-		int res=input(FileName, &t);
+		int res=input(FileName, t);
 		//FILE *fd=fopen(FileName, "r");
 		if(res==ERR_FIL)
 		{
@@ -299,6 +300,12 @@ int Savev(Table* t)
 	printf("Enter a filename where table will be saved: ");
 	char* fn=enter();
 	if(!fn) return CERR_EOF;
+	if(*fn==0)
+	{
+		free(fn);
+		fn=NULL;
+		fn=enter();
+	}
 			
 	int p=TableWrite(t, fn);
 	if(p==ERR_FIL) printf("Error. Wrong filename.\n");

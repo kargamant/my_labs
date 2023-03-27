@@ -7,7 +7,8 @@
 int main()
 {
 	//first initialization of table
-	Table* t=(Table*)calloc(3, sizeof(Table));
+	//Table* t=(Table*)calloc(3, sizeof(Table));
+	Table* t=create();
 
 	//options for menue
 	const char* options[]={

@@ -1,11 +1,12 @@
 #ifndef FUNCS_H
 #define FUNCS_H
+#include "TableLib/Table.h"
 
 char* enter();
 char* enterf(FILE* fd);
 int GetIntf(FILE* fd);
 int getInt(int* n);
-int TableWrite(Table* t, char* fn);
+//int TableWrite(Table* t, char* fn);
 int menue();
 int arrow(int cur, int pos);
 int console(int p, Table* t);

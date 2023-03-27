@@ -3,41 +3,24 @@
 #include <stdio.h>
 
 //structures
-typedef struct Item
-{
-	char* data;
-	struct KeySpace* ks;
-}Item;
-
-typedef struct Node
-{
-	int rel;
-	Item* item;
-	struct Node* next;
-}Node;
-
-typedef struct KeySpace
-{
-	unsigned int key;
-	Node* node;
-}KeySpace;
-
-typedef struct Table
-{
-	int msize;
-	int csize;
-	KeySpace* ks;
-}Table;
+typedef struct item Item;
+typedef struct node Node;
+typedef struct keyspace KeySpace;
+typedef struct table Table;
 
 //methods
-int input(char* fn, Table** t);
+Table* create();
+int input(char* fn, Table* t);
+int TableWrite(Table*t, char* fn);
 void erased(Table* t);
 void output(Table* t);
 void outputks(KeySpace* ptr);
 void outputnd(Node* gr);
+void outputndf(Node* gr, char* fn);
 int DelByKey(Table* t, int key);
 int DelByVersion(Table* t, int key, int rel);
 int add(Table* t, int key, char* c);
+int addf(Table* t, int key, char* c, char* fn);
 KeySpace* SearchByKey(Table* t, int key);
 Node* SearchByVersion(Table* t, int key, int rel);
 
@@ -50,7 +33,9 @@ typedef enum ERR
 	ERR_NO_FOUND,
 	ERR_DUP,
 	ERR_WRD,
-	ERR_FIL
+	ERR_FIL,
+	ERR_FREAD,
+	ERR_FWRITE
 }ERR;
 
 #endif

@@ -1,29 +1,32 @@
-#include "Table.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "../funcs.h"
+#include "TableTxt.h"
+#include "Table.h"
 
+Table* create()
+{
+	return (Table*)calloc(3, sizeof(Table));
+}
 //parsing table from text file
-
-
-int input(char* fn, Table** t)
+int input(char* fn, Table* t)
 {
 	FILE* fd=fopen(fn, "r");
 	if(!fd) 
 	{
 		return ERR_FIL;
 	}
-	(*t)->msize=GetIntf(fd);
-	if((*t)->msize==-1) 
+	t->msize=GetIntf(fd);
+	if(t->msize==-1) 
 	{
 		fclose(fd);
 		return ERR_WRD;
 	}
-	(*t)->csize=0;
-	(*t)->ks=(KeySpace*)malloc(((*t)->msize)*sizeof(KeySpace));
-	KeySpace* ptr=(*t)->ks;
-	while(ptr-(*t)->ks<(*t)->msize && (ptr->key=GetIntf(fd))!=-1)
+	t->csize=0;
+	t->ks=(KeySpace*)malloc((t->msize)*sizeof(KeySpace));
+	KeySpace* ptr=t->ks;
+	while(ptr-t->ks<t->msize && (ptr->key=GetIntf(fd))!=-1)
 	{
 		char* s=enterf(fd);
 		char* tok=strtok(s, " ");
@@ -61,10 +64,33 @@ int input(char* fn, Table** t)
 		}
 		free(s);
 		s=NULL;
-		(*t)->csize+=1;
+		t->csize+=1;
 		++ptr;
 	}
 	//printf("%p\n", (*t)->ks);
+	fclose(fd);
+	return ERR_OK;
+}
+
+//writing to txt file
+int TableWrite(Table* t, char* fn)
+{
+	FILE* fd=fopen(fn, "w");
+	if(!fd) return ERR_FIL;
+	fprintf(fd, "%d\n", t->msize);
+	KeySpace* ptr=t->ks;
+	while(ptr-t->ks<t->csize)
+	{
+		fprintf(fd, "%d ", ptr->key);
+		Node* gr=ptr->node;
+		while(gr)
+		{
+			fprintf(fd, "%s ", gr->item->data);
+			gr=gr->next;
+		}
+		fprintf(fd, "\n");
+		++ptr;
+	}
 	fclose(fd);
 	return ERR_OK;
 }
@@ -165,7 +191,12 @@ int add(Table* t, int key, char* c)
 	char* nc=strdup(c);
 	if(!ks)
 	{
-		if(t->csize==t->msize) return ERR_FULL;
+		if(t->csize==t->msize) 
+		{
+			free(nc);
+			nc=NULL;
+			return ERR_FULL;
+		}
 		KeySpace* newks=&((t->ks)[t->csize]);
 		newks->key=key;
 		newks->node=(Node*)malloc(sizeof(Node));
