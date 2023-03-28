@@ -6,9 +6,9 @@ int menue(const char* options[], int n)
 {	
 	for(int i=0; i<15; i++) printf("-");
 	printf("\n");
-	for(int i=1; i<n+1; i++)
+	for(int i=0; i<n; i++)
 	{
-		printf("%d. %s", i, options[i-1]);
+		printf("%d. %s", i, options[i]);
 	}
 	printf("\nEnter EOF to quit.\n");
 	for(int i=0; i<15; i++) printf("-");
@@ -20,13 +20,13 @@ int menue(const char* options[], int n)
 	{
 		int in=getInt(&pos);
 		if(in) return n+1;
-		else if(pos<1 || pos>n)
+		else if(pos<0 || pos>n)
 		{
 			printf("Incorrect number of option. Try again.\n");
 			continue;
 		}
 		else break;
 	}
-	while(pos<1 || pos>n);
+	while(pos<0 || pos>n);
 	return pos;
 }

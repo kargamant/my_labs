@@ -6,6 +6,7 @@ char* enter();
 char* enterf(FILE* fd);
 int GetIntf(FILE* fd);
 int getInt(int* n);
+int fcheck(char* fnd);
 //int TableWrite(Table* t, char* fn);
 int menue();
 int arrow(int cur, int pos);
@@ -15,6 +16,7 @@ KeySpace* keysearch(Table* t);
 Node* versionsearch(Table* t);
 
 //view functions
+int Newv(Table* t);
 int Inputv(Table* t);
 int Outv(Table* t);
 int Searchkv(Table* t);

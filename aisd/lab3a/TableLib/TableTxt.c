@@ -3,11 +3,18 @@
 #include <string.h>
 #include "../funcs.h"
 #include "TableTxt.h"
-#include "Table.h"
+//#include "Table.h"
 
 Table* create()
 {
-	return (Table*)calloc(3, sizeof(Table));
+	return (Table*)calloc(4, sizeof(Table));
+}
+
+int New(int msize, Table* t)
+{
+	t->msize=msize;
+	t->ks=(KeySpace*)malloc(msize*sizeof(KeySpace));
+	return ERR_OK;
 }
 //parsing table from text file
 int input(char* fn, Table* t)
@@ -154,6 +161,7 @@ void outputnd(Node* gr)
 KeySpace* SearchByKey(Table* t, int key)
 {
 	KeySpace* ptr=t->ks;
+	if(!ptr) return NULL;
 	while(ptr-t->ks<t->csize)
 	{
 		if(ptr->key==key) return ptr;
@@ -166,6 +174,7 @@ KeySpace* SearchByKey(Table* t, int key)
 Node* SearchByVersion(Table* t, int key, int rel)
 {
 	KeySpace* ptr=t->ks;
+	if(!ptr) return NULL;
 	int f=0;
 	while(ptr-t->ks<t->csize)
 	{

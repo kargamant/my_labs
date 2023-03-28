@@ -6,30 +6,55 @@
 
 Table* create()
 {
-	return (Table*)calloc(3, sizeof(Table));
+	return (Table*)calloc(4, sizeof(Table));
 }
+
+int New(int msize, Table* t)
+{
+	t->msize=msize;
+	t->ks=(KeySpace*)malloc(msize*sizeof(KeySpace));
+	FILE* fd=fopen(t->fd, "w+b");
+	if(!fd) return ERR_FIL;
+	if(!fwrite(&(t->msize), sizeof(int), 1, fd)) return ERR_FWRITE;
+	fclose(fd);
+	return ERR_OK;
+}
+
 int input(char* fn, Table* t)
 {
 	FILE* fd=fopen(fn, "r+b");
 	if(!fd) return ERR_FIL;
-	if(!fread(&(t->msize), sizeof(int), 1, fd)) return ERR_FREAD;
+	if(!fread(&(t->msize), sizeof(int), 1, fd)) 
+	{
+		fclose(fd);
+		return ERR_FREAD;
+	}
 	t->ks=(KeySpace*)malloc(t->msize*sizeof(KeySpace));
 	KeySpace* ptr=t->ks;
 	while(ptr-t->ks<t->msize && fread(&(ptr->key), sizeof(int), 1, fd))
 	{
 		int m=0;
-		if(!fread(&m, sizeof(int), 1, fd)) return ERR_FREAD;
-		ptr->node=(Node*)malloc(sizeof(Node));
-		Node* gr=ptr->node;
+		if(!fread(&m, sizeof(int), 1, fd)) 
+		{
+			fclose(fd);
+			return ERR_FREAD;
+		}
+		ptr->Node=(Node*)malloc(sizeof(Node));
+		Node* gr=ptr->Node;
 		while(m)
 		{
-			if(!fread(&(gr->rel),sizeof(int), 1, fd)) return ERR_FREAD;
-			if(!fread(&(gr->offset), sizeof(int), 1, fd)) return ERR_FREAD;
-			if(!fread(&(gr->len), sizeof(int), 1, fd)) return ERR_FREAD;
+			if(!fread(&(gr->rel),sizeof(int), 1, fd) || !fread(&(gr->offset), sizeof(int), 1, fd) || !fread(&(gr->len), sizeof(int), 1, fd))
+			{
+				fclose(fd);
+				return ERR_FREAD;
+			}
 			m--;
+			if(!m) break;
 			gr->next=(Node*)malloc(sizeof(Node));
 			gr=gr->next;
 		}
+		//free(gr);
+		//gr=NULL;
 		++ptr;
 		t->csize+=1;
 	}
@@ -40,25 +65,36 @@ int input(char* fn, Table* t)
 int TableWrite(Table* t, char* fn)
 {
 	FILE* fd=fopen(fn, "w+b");
+	if(!fd) return ERR_FIL;
 	rewind(fd);
-	if(!fwrite(&(t->msize), sizeof(int), 1, fd)) return ERR_FWRITE;
+	if(!fwrite(&(t->msize), sizeof(int), 1, fd)) 
+	{
+		fclose(fd);
+		return ERR_FWRITE;
+	}
 	KeySpace* ptr=t->ks;
 	while(ptr-t->ks<t->csize && fwrite(&(ptr->key), sizeof(int), 1, fd))
 	{
-		Node* gr=ptr->node;
+		Node* gr=ptr->Node;
 		int m=0;
 		while(gr)
 		{
 			m++;
 			gr=gr->next;
 		}
-		gr=ptr->node;
-		if(!fwrite(&m, sizeof(int), 1, fd)) return ERR_FWRITE;
+		gr=ptr->Node;
+		if(!fwrite(&m, sizeof(int), 1, fd)) 
+		{
+			fclose(fd);
+			return ERR_FWRITE;
+		}
 		while(gr)
 		{
-			if(!fwrite(&(gr->rel), sizeof(int), 1, fd)) return ERR_FWRITE;
-			if(!fwrite(&(gr->offset), sizeof(int), 1, fd)) return ERR_FWRITE;
-			if(!fwrite(&(gr->len), sizeof(int), 1, fd)) return ERR_FWRITE;
+			if(!fwrite(&(gr->rel), sizeof(int), 1, fd) || !fwrite(&(gr->offset), sizeof(int), 1, fd) || !fwrite(&(gr->len), sizeof(int), 1, fd))
+			{
+				fclose(fd);
+				return ERR_FWRITE;
+			}
 			gr=gr->next;
 		}
 		++ptr;
@@ -73,16 +109,22 @@ void output(Table* t)
 {
 	printf("msize: %d\n", t->msize);
 	printf("csize: %d\n", t->csize);
-	for(KeySpace* ptr=t->ks; ptr-t->ks<t->csize; ++ptr) outputks(ptr);
+	KeySpace* ptr=t->ks;
+	while(ptr-t->ks<t->csize)
+	{
+		outputksf(ptr, t->fi);
+		++ptr;
+	}
+	//for(KeySpace* ptr=t->ks; ptr-t->ks<t->csize; ++ptr) outputksf(ptr, t->fi);
 }
 
-void outputks(KeySpace* ptr)
+void outputksf(KeySpace* ptr, char* fn)
 {
 	printf("key %d | values: ", ptr->key);
-	Node* gr=ptr->node;
+	Node* gr=ptr->Node;
 	while(gr)
 	{
-		outputnd(gr);
+		outputndf(gr, fn);
 		gr=gr->next;
 	}
 	printf("\n");
@@ -91,9 +133,10 @@ void outputks(KeySpace* ptr)
 void outputndf(Node* gr, char* fn)
 {
 	FILE* fd=fopen(fn, "r+b");
-	char* data=(char*)malloc(gr->len*sizeof(char));
+	//char* data=(char*)malloc(gr->len*sizeof(char));
 	fseek(fd, gr->offset, SEEK_SET);
-	fread(&data, sizeof(char), gr->len, fd);
+	char* data=(char*)malloc(gr->len*sizeof(char));
+	fread(data, sizeof(char), gr->len, fd);
 	printf("{%d, %s} ", gr->rel, data);
 	free(data);
 	data=NULL;
@@ -105,7 +148,7 @@ void erased(Table* t)
 	KeySpace* ptr=t->ks;
 	while(ptr-t->ks<t->csize)
 	{
-		Node* gr=ptr->node;
+		Node* gr=ptr->Node;
 		while(gr)
 		{
 			Node* next=gr->next;
@@ -116,11 +159,16 @@ void erased(Table* t)
 	}
 	free(t->ks);
 	t->ks=NULL;
+	free(t->fi);
+	free(t->fd);
+	t->fi=NULL;
+	t->fd=NULL;
 }
 
 KeySpace* SearchByKey(Table* t, int key)
 {
 	KeySpace* ptr=t->ks;
+	if(!ptr) return NULL;
 	while(ptr-t->ks<t->csize)
 	{
 		if(ptr->key==key) return ptr;
@@ -132,12 +180,13 @@ KeySpace* SearchByKey(Table* t, int key)
 Node* SearchByVersion(Table* t, int key, int rel)
 {
 	KeySpace* ptr=t->ks;
+	if(!ptr) return NULL;
 	int f=0;
 	while(ptr-t->ks<t->csize)
 	{
 		if(ptr->key==key)
 		{
-			Node* gr=ptr->node;
+			Node* gr=ptr->Node;
 			while(gr)
 			{
 				if(gr->rel==rel) return gr;
@@ -154,7 +203,7 @@ int DelByKey(Table* t, int key)
 {
 	KeySpace* ks=SearchByKey(t, key);
 	if(!ks) return ERR_NO_FOUND;
-	Node* gr=ks->node;
+	Node* gr=ks->Node;
 	while(gr)
 	{
 		//free(gr->item->data);
@@ -172,14 +221,14 @@ int DelByVersion(Table* t, int key, int rel)
 {
 	KeySpace* ks=SearchByKey(t, key);
 	if(!ks) return ERR_NO_FOUND;
-	if(!ks->node->next && ks->node->rel==rel)
+	if(!ks->Node->next && ks->Node->rel==rel)
 	{
 		DelByKey(t, key);
 		return ERR_OK;
 	}
-	else if(!ks->node->next) return ERR_NO_FOUND;
-	Node* gr=ks->node;
-	Node* prev=ks->node;
+	else if(!ks->Node->next) return ERR_NO_FOUND;
+	Node* gr=ks->Node;
+	Node* prev=ks->Node;
 	Node* next=NULL;
 	while(gr)
 	{
@@ -189,7 +238,7 @@ int DelByVersion(Table* t, int key, int rel)
 			//free(gr->item);
 			next=gr->next;
 			if(prev!=gr) prev->next=next;
-			else ks->node=next;
+			else ks->Node=next;
 			free(gr);
 			gr=NULL;
 			return ERR_OK;
@@ -216,38 +265,32 @@ int addf(Table* t, int key, char* c, char* fn)
 		if(t->csize==t->msize) return ERR_FULL;
 		KeySpace* newks=&((t->ks)[t->csize]);
 		newks->key=key;
-		newks->node=(Node*)malloc(sizeof(Node));
-		newks->node->rel=1;
-		FILE* fd=fopen(fn, "w+b");
-		newks->node->offset=ftell(fd);
-		newks->node->len=strlen(c)+1;
-		fwrite(c, sizeof(char), newks->node->len, fd);
+		newks->Node=(Node*)malloc(sizeof(Node));
+		newks->Node->rel=1;
+		FILE* fd=fopen(t->fi, "a");
+		newks->Node->offset=ftell(fd);
+		printf("offset: %d\n", newks->Node->offset);
+		newks->Node->len=strlen(c)+1;
+		fwrite(c, sizeof(char), newks->Node->len, fd);
 		fclose(fd);
-		newks->node->next=NULL;
+		newks->Node->next=NULL;
 		t->csize+=1;
 	}
 	else
 	{
 		Node* gr=(Node*)malloc(sizeof(Node));
-		Node* second=ks->node;
+		Node* second=ks->Node;
 		gr->rel=second->rel+1;
-		FILE* fd=fopen(fn, "w+b");
+		FILE* fd=fopen(t->fi, "a");
+		//fseek(fd, 0, SEEK_END);
 		gr->offset=ftell(fd);
+		printf("offset: %d\n", gr->offset);
 		gr->len=strlen(c)+1;
+		fseek(fd, gr->offset, SEEK_SET);
 		fwrite(c, sizeof(char), gr->len, fd);
 		fclose(fd);
 		gr->next=second;
-		ks->node=gr;
-		/*
-		Node* gr=ks->node;
-		while(gr->next) gr=gr->next;
-		int rel=gr->rel +1;
-		gr->next=(Node*)malloc(sizeof(Node));
-		gr->next->rel=rel;
-		gr->next->item=(Item*)malloc(sizeof(Item));
-		gr->next->item->data=nc;
-		gr->next->item->ks=ks;
-		gr->next->next=NULL;*/
+		ks->Node=gr;	
 	}
 	return ERR_OK;
 }

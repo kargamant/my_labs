@@ -1,5 +1,5 @@
-#ifndef TABLE_H
-#define TABLE_H
+#ifndef TABLEBIN_H
+#define TABLEBIN_H
 
 typedef struct node
 {
@@ -12,13 +12,15 @@ typedef struct node
 typedef struct keyspace
 {
 	unsigned int key;
-	node* node;
+	node* Node;
 }keyspace;
 
 typedef struct table
 {
 	int msize;
 	int csize;
+	char* fd;
+	char* fi;
 	keyspace* ks;
 }table;
 

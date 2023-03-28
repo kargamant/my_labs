@@ -10,11 +10,14 @@ typedef struct table Table;
 
 //methods
 Table* create();
+int New(int msize, Table* t);
+//int Newf(int msize, Table* t, char* fn);
 int input(char* fn, Table* t);
 int TableWrite(Table*t, char* fn);
 void erased(Table* t);
 void output(Table* t);
 void outputks(KeySpace* ptr);
+void outputksf(KeySpace* ptr, char* fn);
 void outputnd(Node* gr);
 void outputndf(Node* gr, char* fn);
 int DelByKey(Table* t, int key);

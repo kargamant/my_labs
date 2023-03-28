@@ -12,6 +12,7 @@ int main()
 
 	//options for menue
 	const char* options[]={
+		"create table from console.\n",
 		"import table from file.\n",
 		"output table.\n",
 		"search by key.\n",
@@ -26,13 +27,15 @@ int main()
 	//main cycle
 	do
 	{
-		int p=menue(options, 8);
-		if(p==9) break;
+		int p=menue(options, 9);
+		if(p==10) break;
 		int res=console(p, t);
 		if(res==CERR_EOF) break;
 		system("clear");
 	}while(1);
 	erased(t);
+	//free(t->fi);
+	//free(t->fd);
 	free(t);
 	t=NULL;
 	printf("Program stopped.\n");

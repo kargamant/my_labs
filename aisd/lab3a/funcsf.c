@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-//#include "TableLib/Table.h"
+#include "TableLib/TableBin.h"
+#include "TableLib/Table.h"
 #include "funcs.h"
-#include <ncurses.h>
 
-//string parsing from lab2
 char* enter()
 {
 	char buf[81]={0};
@@ -113,51 +112,12 @@ int getInt(int* n)
 	}while(input==0 || *n<0);
 }
 
-//function for saving table at .txt file
-/*
-int TableWrite(Table* t, char* fn)
-{
-	FILE* fd=fopen(fn, "w");
-	if(!fd) return ERR_FIL;
-	fprintf(fd, "%d\n", t->msize);
-	KeySpace* ptr=t->ks;
-	while(ptr-t->ks<t->csize)
-	{
-		fprintf(fd, "%d ", ptr->key);
-		Node* gr=ptr->node;
-		while(gr)
-		{
-			fprintf(fd, "%s ", gr->item->data);
-			gr=gr->next;
-		}
-		fprintf(fd, "\n");
-		++ptr;
-	}
-	fclose(fd);
-	return ERR_OK;
-}*/
-
-//MVC paradigm
-//------------------------
-//Main Controller function
 int console(int p, Table* t)
-{	
+{
+	//maybe i'll add raw data function that will printf all data in binary files in raw view
 	int (*view[])(Table*)={Newv, Inputv, Outv, Searchkv, Searchvv, Addv, Delkv, Delvv, Savev};
-	view[p](t);	
+	view[p](t);
 }
-
-//options
-//0 - create table from console
-//1 - import from file
-//2 - output
-//3 - search by key
-//4 - search by version
-//5 - add
-//6 - del by key
-//7 - del by version
-//8 - save changes
-
-//View functions 
 
 int Newv(Table* t)
 {
@@ -165,39 +125,70 @@ int Newv(Table* t)
 	int msize=0;
 	int in=getInt(&msize);
 	if(in) return CERR_EOF;
-
+	printf("Now enter a filename of creating file: ");
+	t->fd=enter();
+	if(fcheck(t->fd)==CERR_EOF) 
+	{
+		free(t->fd);
+		t->fd=NULL;
+		return CERR_EOF;
+	}
+	printf("And enter a filename where info will be stored: ");
+	t->fi=enter();
+	if(fcheck(t->fi)==CERR_EOF)
+	{
+		free(t->fi);
+		t->fi=NULL;
+		return CERR_EOF;
+	}
+	
 	New(msize, t);
-	printf("Table was succesfully initialized with msize=%d", msize);
+	printf("Table was succesfully initialized with msize=%d\n", msize);
 
 	return EndView();
+}
+
+int fcheck(char* fnd)
+{
+	if(!fnd) 
+	{
+		free(fnd);
+		fnd=NULL;
+		return CERR_EOF;
+	}
+	if(*fnd==0) 
+	{
+		free(fnd);
+		fnd=NULL;
+		fnd=enter();
+	}
+	return CERR_OK;
 }
 int Inputv(Table* t)
 {
 	if(t) erased(t);
 	do
 	{
-		printf("Enter FileName with table: ");
-		char* FileName=enter();
-		if(!FileName)
-		{
-			free(FileName);
-			FileName=NULL;
-			return CERR_EOF;
-		}
-		if(*FileName==0) 
-		{
-			free(FileName);
-			FileName=NULL;
-			FileName=enter();
-		}
-		
-		int res=input(FileName, t);
+		printf("Enter data FileName: ");
+		char* fnd=enter();
+		if(fcheck(fnd)==CERR_EOF) return CERR_EOF;	
+		printf("Now enter info FileName: ");
+		char* fni=enter();
+		if(fcheck(fni)==CERR_EOF) return CERR_EOF;
+		free(t->fd);
+		free(t->fi);
+		t->fd=fnd;
+		t->fi=fni;
+
+		int res=input(fnd, t);
 		//FILE *fd=fopen(FileName, "r");
 		if(res==ERR_FIL)
 		{
 			printf("File does not exist or wrong FileName. Try again.\n");
-			free(FileName);
-			FileName=NULL;
+			free(fnd);
+			fnd=NULL;
+			free(fni);
+			fni=NULL;
 			//fclose(fd);
 			continue;
 		}	
@@ -205,13 +196,13 @@ int Inputv(Table* t)
 		{
 			printf("Error. Got wrong data while parsing. Try again.\n");
 			//fclose(fd);
-			free(FileName);
-			FileName=NULL;
+			free(fnd);
+			fnd=NULL;
+			free(fni);
+			fni=NULL;
 			continue;
 		}
 		//fclose(fd);
-		free(FileName);
-		FileName=NULL;
 		return EndView();
 	}while(1);
 }
@@ -230,7 +221,7 @@ int Searchkv(Table* t)
 	if(in) return CERR_EOF;
 
 	KeySpace* result=SearchByKey(t, key);
-	if(result) outputks(result);
+	if(result) outputksf(result, t->fi);
 	else printf("No KeySpace was found.\n");
 			
 	return EndView();
@@ -250,7 +241,7 @@ int Searchvv(Table* t)
 	Node* res=SearchByVersion(t, key, rel);
 	if(res)
 	{
-		outputnd(res);
+		outputndf(res, t->fi);
 		printf("\n");
 	}
 	else printf("No element found after this key and rel.\n");
@@ -269,7 +260,7 @@ int Addv(Table* t)
 	char* data=enter();
 	if(!data) return CERR_EOF;
 
-	in=add(t, key, data);
+	in=addf(t, key, data, t->fi);
 	if(in==ERR_FULL) printf("Error. Table is full.\n");
 	output(t);
 	free(data);
@@ -310,6 +301,16 @@ int Delvv(Table* t)
 
 int Savev(Table* t)
 {
+	printf("Enter data FileName: ");
+	char* fnd=enter();
+	if(fcheck(fnd)==CERR_EOF) return CERR_EOF;	
+	
+	int p=TableWrite(t, fnd);
+	if(p==ERR_FWRITE || p==ERR_FIL) printf("Error with fwrite or there is no such file.\n");
+	else printf("Modified table data was saved at %s\n", fnd);
+	free(fnd);
+	
+	/*
 	printf("Enter a filename where table will be saved: ");
 	char* fn=enter();
 	if(!fn) return CERR_EOF;
@@ -323,7 +324,7 @@ int Savev(Table* t)
 	int p=TableWrite(t, fn);
 	if(p==ERR_FIL) printf("Error. Wrong filename.\n");
 	else printf("Modified table was saved at %s\n", fn);
-	free(fn);
+	free(fn);*/
 	return EndView();
 }
 
