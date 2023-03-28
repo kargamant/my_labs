@@ -31,8 +31,10 @@ int input(char* fn, Table* t)
 	}
 	t->ks=(KeySpace*)malloc(t->msize*sizeof(KeySpace));
 	KeySpace* ptr=t->ks;
-	while(ptr-t->ks<t->msize && fread(&(ptr->key), sizeof(int), 1, fd))
+	while(ptr-t->ks<t->msize)
 	{
+		fread(&(ptr->key), sizeof(int), 1, fd);
+		if(feof(fd)) break;
 		int m=0;
 		if(!fread(&m, sizeof(int), 1, fd)) 
 		{
@@ -269,28 +271,69 @@ int addf(Table* t, int key, char* c, char* fn)
 		newks->Node->rel=1;
 		FILE* fd=fopen(t->fi, "a");
 		newks->Node->offset=ftell(fd);
-		printf("offset: %d\n", newks->Node->offset);
+		//printf("offset: %d\n", newks->Node->offset);
 		newks->Node->len=strlen(c)+1;
 		fwrite(c, sizeof(char), newks->Node->len, fd);
 		fclose(fd);
 		newks->Node->next=NULL;
 		t->csize+=1;
+		fd=fopen(t->fd, "a");
+		fwrite(&(newks->key), sizeof(int), 1, fd);
+		fwrite(&(newks->Node->rel), sizeof(int), 1, fd);
+		fwrite(&(newks->Node->rel), sizeof(int), 1, fd);
+		fwrite(&(newks->Node->offset), sizeof(int), 1, fd);
+		fwrite(&(newks->Node->len), sizeof(int), 1, fd);
+		fclose(fd);
 	}
 	else
 	{
 		Node* gr=(Node*)malloc(sizeof(Node));
 		Node* second=ks->Node;
 		gr->rel=second->rel+1;
+		gr->next=second;
+		ks->Node=gr;
+
 		FILE* fd=fopen(t->fi, "a");
-		//fseek(fd, 0, SEEK_END);
 		gr->offset=ftell(fd);
-		printf("offset: %d\n", gr->offset);
 		gr->len=strlen(c)+1;
-		fseek(fd, gr->offset, SEEK_SET);
 		fwrite(c, sizeof(char), gr->len, fd);
 		fclose(fd);
-		gr->next=second;
-		ks->Node=gr;	
+		fd=fopen(t->fd, "r+b");	
+		int rk=-1;
+		while(rk!=key) fread(&rk, sizeof(int), 1, fd);
+		int off=ftell(fd);
+		int oldm;
+		fread(&oldm, sizeof(int), 1, fd);
+		fseek(fd, off, SEEK_SET);
+		int newm=oldm+1;
+		fwrite(&newm, sizeof(int), 1, fd);
+		int iff=ftell(fd);
+		//fclose(fd);
+		//fclose(fd);
+		//fd=fopen(t->fd, "a");
+		fseek(fd, 0, SEEK_END);
+		//fd=fopen(t->fd, "a+");
+		int r=73;
+		for(int i=0; i<3; i++) fwrite(&r, sizeof(int), 1, fd);
+		int yff=ftell(fd);
+		
+		//printf("iff yff: %d %d\n", iff, yff);
+		for(int i=1; i<=(yff-iff)/4 -3; i++)
+		{
+			int link;
+			fseek(fd, -4*(3+i), SEEK_END);
+			fread(&link, sizeof(int), 1, fd);
+			fseek(fd, -4*i, SEEK_END);
+			fwrite(&link, sizeof(int), 1, fd);
+		}
+		fseek(fd, iff-yff, SEEK_END);
+		fwrite(&(gr->rel), sizeof(int), 1, fd);
+		fwrite(&(gr->offset), sizeof(int), 1, fd);
+		fwrite(&(gr->len), sizeof(int), 1, fd);
+		fclose(fd);
+		/*
+		fseek(fd, 0, SEEK_END);
+		fseek(fd, -4*sizeof(int), SEEK_END);*/
 	}
 	return ERR_OK;
 }

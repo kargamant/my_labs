@@ -115,7 +115,7 @@ int getInt(int* n)
 int console(int p, Table* t)
 {
 	//maybe i'll add raw data function that will printf all data in binary files in raw view
-	int (*view[])(Table*)={Newv, Inputv, Outv, Searchkv, Searchvv, Addv, Delkv, Delvv, Savev};
+	int (*view[])(Table*)={Newv, Inputv, Outv, Searchkv, Searchvv, Addv, Delkv, Delvv, Savev, Rawv};
 	view[p](t);
 }
 
@@ -325,6 +325,56 @@ int Savev(Table* t)
 	if(p==ERR_FIL) printf("Error. Wrong filename.\n");
 	else printf("Modified table was saved at %s\n", fn);
 	free(fn);*/
+	return EndView();
+}
+
+int Rawv(Table* t)
+{
+	if(!t->fi || !t->fd) 
+	{
+		printf("Error. No files created for this table.\n");
+		return EndView();
+	}
+	printf("Raw data from data file: ");
+	FILE* fd=fopen(t->fd, "r+b");
+	int msize, key, m;
+	fread(&msize, sizeof(int), 1, fd);
+	printf("%d|", msize);
+	for(int i=0; i<t->csize; i++)
+	{
+		fread(&key, sizeof(int), 1, fd);
+		fread(&m, sizeof(int), 1, fd);
+		printf("%d|%d|", key, m);
+		for(int j=0; j<m; j++)
+		{
+			int rel, offset, len;
+			fread(&rel, sizeof(int), 1, fd);
+			fread(&offset, sizeof(int), 1, fd);
+			fread(&len, sizeof(int), 1, fd);
+			printf("%d|%d|%d|", rel, offset, len);
+		}
+	}
+	fclose(fd);
+	printf("\nRaw info from info file: ");
+	KeySpace* ptr=t->ks;
+	while(ptr-t->ks<t->csize)
+	{
+		Node* gr=ptr->Node;
+		while(gr)
+		{
+			FILE* fi=fopen(t->fi, "r+b");
+			char* info=(char*)malloc(gr->len*sizeof(char));
+			fseek(fi, gr->offset, SEEK_SET);
+			fread(info, sizeof(char), gr->len, fi);
+			printf("%s|", info);
+			free(info);
+			info=NULL;
+			gr=gr->next;
+			fclose(fi);
+		}
+		++ptr;
+	}
+	printf("\n");
 	return EndView();
 }
 

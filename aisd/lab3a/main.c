@@ -21,18 +21,21 @@ int main()
 		"delete by key\n",
 		"delete by version\n",
 		"save changes\n",
+		"show raw data and info from files\n",
 	};
 	
 	system("clear");
 	//main cycle
 	do
 	{
-		int p=menue(options, 9);
-		if(p==10) break;
+		int p=menue(options, 10);
+		if(p==11) break;
 		int res=console(p, t);
 		if(res==CERR_EOF) break;
 		system("clear");
 	}while(1);
+	//To be done later
+	//console(8, t);
 	erased(t);
 	//free(t->fi);
 	//free(t->fd);

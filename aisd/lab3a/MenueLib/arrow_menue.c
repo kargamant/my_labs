@@ -15,32 +15,32 @@ int arrow(int cur, int pos)
 //interactive arrow menue
 int menue(const char* options[], int n)
 {
-	int key=0, pos=1;
-	system("clear");	
+	int key=0, pos=0;
+	system("clear");
 	
 	initscr();
 	while(key!=10)
 	{
 		clear();
-		for(int i=1; i<n+1; i++)
+		for(int i=0; i<n; i++)
 		{
 			arrow(i, pos);
 			printw("%s", options[i-1]);
 			refresh();
 		}
-		arrow(n+1, pos);
+		arrow(n, pos);
 		printw("%s", "quit");
 		refresh();
 		key=getch();
 		if(key==115) 
 		{
 			pos=(pos+1)%10;
-			if(!pos) pos=1;
+			if(!pos) pos=0;
 		}
 		else if(key==119) 
 		{
 			pos=(10+(pos-1)%10)%10;
-			if(!pos) pos=9;
+			if(!pos) pos=10;
 		}
 	}
 	endwin();

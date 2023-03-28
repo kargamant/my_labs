@@ -25,6 +25,7 @@ int Addv(Table* t);
 int Delkv(Table* t);
 int Delvv(Table* t);
 int Savev(Table* t);
+int Rawv(Table* t);
 int EndView();
 typedef enum CERR
 {
