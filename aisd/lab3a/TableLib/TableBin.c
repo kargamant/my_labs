@@ -11,6 +11,9 @@ Table* create()
 
 int New(int msize, Table* t)
 {
+	//if(t) erased(t);
+	//free(t->fi);
+	//free(t->fd);
 	t->msize=msize;
 	t->ks=(KeySpace*)malloc(msize*sizeof(KeySpace));
 	FILE* fd=fopen(t->fd, "w+b");
@@ -45,13 +48,17 @@ int input(char* fn, Table* t)
 		Node* gr=ptr->Node;
 		while(m)
 		{
-			if(!fread(&(gr->rel),sizeof(int), 1, fd) || !fread(&(gr->offset), sizeof(int), 1, fd) || !fread(&(gr->len), sizeof(int), 1, fd))
+			if(!fread(&(gr->rel),sizeof(int), 1, fd) || !fread(&(gr->offset), sizeof(int), 1, fd) || !fread(&(gr->len), sizeof(int), 1, fd)) 
 			{
 				fclose(fd);
 				return ERR_FREAD;
 			}
 			m--;
-			if(!m) break;
+			if(!m) 
+			{
+				gr->next=NULL;
+				break;
+			}
 			gr->next=(Node*)malloc(sizeof(Node));
 			gr=gr->next;
 		}
