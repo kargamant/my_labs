@@ -1,5 +1,6 @@
 #ifndef TABLEBIN_H
 #define TABLEBIN_H
+#include <stdio.h>
 
 typedef struct node
 {
@@ -19,8 +20,8 @@ typedef struct table
 {
 	int msize;
 	int csize;
-	char* fd;
-	char* fi;
+	FILE* fd;
+	FILE* fi;
 	keyspace* ks;
 }table;
 

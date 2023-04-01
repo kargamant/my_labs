@@ -114,37 +114,42 @@ int getInt(int* n)
 
 int console(int p, Table* t)
 {
-	//maybe i'll add raw data function that will printf all data in binary files in raw view
 	int (*view[])(Table*)={Newv, Inputv, Outv, Searchkv, Searchvv, Addv, Delkv, Delvv, Savev, Rawv};
 	view[p](t);
 }
 
 int Newv(Table* t)
 {
+	if(t->msize!=0 || t->fi || t->fd) erased(t);
 	printf("Enter msize of your table: ");
 	int msize=0;
 	int in=getInt(&msize);
 	if(in) return CERR_EOF;
 	printf("Now enter a filename of creating file: ");
-	t->fd=enter();
-	if(fcheck(t->fd)==CERR_EOF) 
+	char* fd=enter();
+	if(fcheck(fd)==CERR_EOF) 
 	{
-		free(t->fd);
-		t->fd=NULL;
+		free(fd);
+		fd=NULL;
 		return CERR_EOF;
 	}
 	printf("And enter a filename where info will be stored: ");
-	t->fi=enter();
-	if(fcheck(t->fi)==CERR_EOF)
+	char* fi=enter();
+	if(fcheck(fi)==CERR_EOF)
 	{
-		free(t->fi);
-		t->fi=NULL;
+		free(fi);
+		fi=NULL;
 		return CERR_EOF;
 	}
-	
-	New(msize, t);
-	printf("Table was succesfully initialized with msize=%d\n", msize);
-
+	t->fd=fopen(fd, "w+b");
+	t->fi=fopen(fi, "w+b");
+	int re=New(msize, t);
+	if(re!=ERR_OK) printf("Error. Wrong filename or wrong data in file.\n");
+	printf("Table was succesfully initialized with msize=%d and files %s %s\n", msize, fd, fi);
+	free(fd);
+	free(fi);
+	fd=NULL;
+	fi=NULL;
 	return EndView();
 }
 
@@ -166,19 +171,22 @@ int fcheck(char* fnd)
 }
 int Inputv(Table* t)
 {
-	if(t) erased(t);
+	
 	do
 	{
+		if(t->msize!=0 || t->fi || t->fd) erased(t);
 		printf("Enter data FileName: ");
 		char* fnd=enter();
 		if(fcheck(fnd)==CERR_EOF) return CERR_EOF;	
 		printf("Now enter info FileName: ");
 		char* fni=enter();
 		if(fcheck(fni)==CERR_EOF) return CERR_EOF;
-		free(t->fd);
-		free(t->fi);
-		t->fd=fnd;
-		t->fi=fni;
+		//Using r+b, because if open in w+b file will be truncated.
+		//File will remain, but all content will be removed.
+		t->fd=fopen(fnd, "r+b");
+		t->fi=fopen(fni, "r+b");
+		rewind(t->fd);
+		rewind(t->fi);
 
 		int res=input(fnd, t);
 		//FILE *fd=fopen(FileName, "r");
@@ -203,6 +211,10 @@ int Inputv(Table* t)
 			continue;
 		}
 		//fclose(fd);
+		free(fnd);
+		free(fni);
+		fnd=NULL;
+		fni=NULL;
 		return EndView();
 	}while(1);
 }
@@ -260,7 +272,7 @@ int Addv(Table* t)
 	char* data=enter();
 	if(!data) return CERR_EOF;
 
-	in=addf(t, key, data, t->fi);
+	in=addf(t, key, data, "\0");
 	if(in==ERR_FULL) printf("Error. Table is full.\n");
 	output(t);
 	free(data);
@@ -301,14 +313,14 @@ int Delvv(Table* t)
 
 int Savev(Table* t)
 {
-	printf("Enter data FileName: ");
+	/*printf("Enter data FileName: ");
 	char* fnd=enter();
-	if(fcheck(fnd)==CERR_EOF) return CERR_EOF;	
+	if(fcheck(fnd)==CERR_EOF) return CERR_EOF;*/	
 	
-	int p=TableWrite(t, fnd);
+	int p=TableWrite(t, "\0");
 	if(p==ERR_FWRITE || p==ERR_FIL) printf("Error with fwrite or there is no such file.\n");
-	else printf("Modified table data was saved at %s\n", fnd);
-	free(fnd);
+	else printf("Modified table data was successfully saved\n");
+	//free(fnd);
 	
 	/*
 	printf("Enter a filename where table will be saved: ");
@@ -336,7 +348,8 @@ int Rawv(Table* t)
 		return EndView();
 	}
 	printf("Raw data from data file: ");
-	FILE* fd=fopen(t->fd, "r+b");
+	//FILE* fd=fopen(t->fd, "r+b");
+	FILE* fd=t->fd;
 	int msize, key, m;
 	fread(&msize, sizeof(int), 1, fd);
 	printf("%d|", msize);
@@ -354,7 +367,7 @@ int Rawv(Table* t)
 			printf("%d|%d|%d|", rel, offset, len);
 		}
 	}
-	fclose(fd);
+	//fclose(fd);
 	printf("\nRaw info from info file: ");
 	KeySpace* ptr=t->ks;
 	while(ptr-t->ks<t->csize)
@@ -362,7 +375,8 @@ int Rawv(Table* t)
 		Node* gr=ptr->Node;
 		while(gr)
 		{
-			FILE* fi=fopen(t->fi, "r+b");
+			//FILE* fi=fopen(t->fi, "r+b");
+			FILE* fi=t->fi;
 			char* info=(char*)malloc(gr->len*sizeof(char));
 			fseek(fi, gr->offset, SEEK_SET);
 			fread(info, sizeof(char), gr->len, fi);
@@ -370,7 +384,7 @@ int Rawv(Table* t)
 			free(info);
 			info=NULL;
 			gr=gr->next;
-			fclose(fi);
+			//fclose(fi);
 		}
 		++ptr;
 	}

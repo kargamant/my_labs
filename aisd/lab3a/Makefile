@@ -33,14 +33,14 @@ bin:
 	mv main.o binaries
 	mv menue.o binaries
 bin-arrow:
-	gcc -c TableLib/TableBin.c funcs.c -fpic -lncurses
-	gcc TableBin.o funcs.o -shared -o libtable.so
+	gcc -c TableLib/TableBin.c funcsf.c -fpic -lncurses
+	gcc TableBin.o funcsf.o -shared -o libtable.so
 	gcc -c MenueLib/arrow_menue.c -fpic -lncurses
 	gcc arrow_menue.o -shared -o libmenue.so
-	gcc -c main.c funcs.c TableLib/TableBin.c MenueLib/arrow_menue.c -lncurses
+	gcc -c main.c funcsf.c TableLib/TableBin.c MenueLib/arrow_menue.c -lncurses
 	gcc -o main main.o -L. -ltable -lmenue -lncurses
 	mv TableBin.o binaries
-	mv funcs.o binaries
+	mv funcsf.o binaries
 	mv main.o binaries
 	mv arrow_menue.o binaries
 

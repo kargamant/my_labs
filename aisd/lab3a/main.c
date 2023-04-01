@@ -34,8 +34,8 @@ int main()
 		if(res==CERR_EOF) break;
 		system("clear");
 	}while(1);
+	console(8, t);
 	//To be done later
-	//console(8, t);
 	erased(t);
 	//free(t->fi);
 	//free(t->fd);
