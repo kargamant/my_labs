@@ -20,7 +20,7 @@ typedef struct table
 {
 	int msize;
 	int csize;
-	FILE* fd;
+	char* fd;
 	FILE* fi;
 	keyspace* ks;
 }table;

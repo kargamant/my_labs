@@ -141,14 +141,36 @@ int Newv(Table* t)
 		fi=NULL;
 		return CERR_EOF;
 	}
-	t->fd=fopen(fd, "w+b");
+	t->fd=fd;
 	t->fi=fopen(fi, "w+b");
+	/*
+	char* dir=(char*)malloc(6*sizeof(char));
+	char f[6]="bins/\0";
+	for(int i=0; i<6; i++) dir[i]=f[i];
+	char* fd_dir=(char*)realloc(dir, strlen(dir)+strlen(fd)+1);
+	strcat(fd_dir, fd);
+	//printf("fd_dir: %s\n", fd_dir);
+	t->fd=fd_dir;
+
+	char* ndir=(char*)malloc(6*sizeof(char));
+	for(int i=0; i<6; i++) ndir[i]=f[i];
+	char* fi_dir=(char*)realloc(ndir, strlen(ndir)+strlen(fi)+1);
+	strcat(fi_dir, fi);
+	t->fi=fopen(fi_dir, "w+b");*/
+
 	int re=New(msize, t);
 	if(re!=ERR_OK) printf("Error. Wrong filename or wrong data in file.\n");
 	printf("Table was succesfully initialized with msize=%d and files %s %s\n", msize, fd, fi);
-	free(fd);
+
 	free(fi);
-	fd=NULL;
+	//free(fi_dir);
+	//free(fd);
+	//fd=NULL;
+	//fi_dir=NULL;
+	//free(ndir);
+	//ndir=NULL;
+	//free(dir);
+	//dir=NULL;
 	fi=NULL;
 	return EndView();
 }
@@ -174,7 +196,7 @@ int Inputv(Table* t)
 	
 	do
 	{
-		if(t->msize!=0 || t->fi || t->fd) erased(t);
+		if(t->msize!=0) erased(t);
 		printf("Enter data FileName: ");
 		char* fnd=enter();
 		if(fcheck(fnd)==CERR_EOF) return CERR_EOF;	
@@ -183,13 +205,56 @@ int Inputv(Table* t)
 		if(fcheck(fni)==CERR_EOF) return CERR_EOF;
 		//Using r+b, because if open in w+b file will be truncated.
 		//File will remain, but all content will be removed.
-		t->fd=fopen(fnd, "r+b");
+		t->fd=fnd;
+		FILE* check=fopen(t->fd, "rb");
+		t->fi=fopen(fni, "rb");
+		if(!t->fi || !check) 
+		{
+			if(check) fclose(check);
+			if(t->fi) 
+			{
+				fclose(t->fi);
+				t->fi=NULL;
+			}
+			printf("Warning. One of the files did not exist. But it can be created for new table.\n");
+			printf("Input \"yes\" if you want to create a new table in files that have been entered or any other value to return to menue: ");
+			char* choice=enter();
+			if(!strcmp(choice, "yes")) goto creating;
+			else 
+			{
+				free(choice);
+				free(fni);
+				free(fnd);
+				fnd=NULL;
+				fni=NULL;
+				choice=NULL;
+				t->fd=NULL;
+				t->fi=NULL;
+				return CERR_OK;
+			}
+			creating:
+			if(!t->fi) t->fi=fopen(fni, "w+b");
+			check=fopen(fnd, "w+b");
+			fclose(check);
+			printf("Enter msize of your new table: ");
+			int msize=0;
+			int in=getInt(&msize);
+			if(in) return CERR_EOF;
+			int re=New(msize, t);
+			if(re!=ERR_OK) printf("Error. Wrong filename or wrong data in file.\n");
+			printf("Table was succesfully initialized with msize=%d and files %s %s\n", msize, fnd, fni);
+			free(fni);
+			free(choice);
+			choice=NULL;
+			fni=NULL;
+			return EndView();
+		}
+		fclose(check);
+		fclose(t->fi);
 		t->fi=fopen(fni, "r+b");
-		rewind(t->fd);
 		rewind(t->fi);
 
 		int res=input(fnd, t);
-		//FILE *fd=fopen(FileName, "r");
 		if(res==ERR_FIL)
 		{
 			printf("File does not exist or wrong FileName. Try again.\n");
@@ -197,23 +262,20 @@ int Inputv(Table* t)
 			fnd=NULL;
 			free(fni);
 			fni=NULL;
-			//fclose(fd);
 			continue;
 		}	
 		if(res==ERR_WRD)
 		{
 			printf("Error. Got wrong data while parsing. Try again.\n");
-			//fclose(fd);
 			free(fnd);
 			fnd=NULL;
 			free(fni);
 			fni=NULL;
 			continue;
 		}
-		//fclose(fd);
-		free(fnd);
+		//free(fnd);
 		free(fni);
-		fnd=NULL;
+		//fnd=NULL;
 		fni=NULL;
 		return EndView();
 	}while(1);
@@ -318,8 +380,8 @@ int Savev(Table* t)
 	if(fcheck(fnd)==CERR_EOF) return CERR_EOF;*/	
 	
 	int p=TableWrite(t, "\0");
-	if(p==ERR_FWRITE || p==ERR_FIL) printf("Error with fwrite or there is no such file.\n");
-	else printf("Modified table data was successfully saved\n");
+	if(p==ERR_FWRITE || p==ERR_FIL) printf("Error with fwrite or there is no such file.\n\n");
+	else printf("Modified table data was successfully saved\n\n");
 	//free(fnd);
 	
 	/*
@@ -337,7 +399,8 @@ int Savev(Table* t)
 	if(p==ERR_FIL) printf("Error. Wrong filename.\n");
 	else printf("Modified table was saved at %s\n", fn);
 	free(fn);*/
-	return EndView();
+	//return EndView();
+	return CERR_EOF;
 }
 
 int Rawv(Table* t)
@@ -349,7 +412,7 @@ int Rawv(Table* t)
 	}
 	printf("Raw data from data file: ");
 	//FILE* fd=fopen(t->fd, "r+b");
-	FILE* fd=t->fd;
+	FILE* fd=fopen(t->fd, "r+b");
 	int msize, key, m;
 	fread(&msize, sizeof(int), 1, fd);
 	printf("%d|", msize);
@@ -367,7 +430,7 @@ int Rawv(Table* t)
 			printf("%d|%d|%d|", rel, offset, len);
 		}
 	}
-	//fclose(fd);
+	fclose(fd);
 	printf("\nRaw info from info file: ");
 	KeySpace* ptr=t->ks;
 	while(ptr-t->ks<t->csize)

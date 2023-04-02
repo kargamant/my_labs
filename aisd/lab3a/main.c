@@ -28,8 +28,9 @@ int main()
 	//main cycle
 	do
 	{
-		int p=menue(options, 10);
-		if(p==11) break;
+		//system("ls");
+		int p=menue(options, 8);
+		if(p==9) break;
 		int res=console(p, t);
 		if(res==CERR_EOF) break;
 		system("clear");
