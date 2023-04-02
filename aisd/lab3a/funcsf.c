@@ -120,10 +120,16 @@ int console(int p, Table* t)
 
 int Newv(Table* t)
 {
+	Savev(t);
 	if(t->msize!=0 || t->fi || t->fd) erased(t);
 	printf("Enter msize of your table: ");
 	int msize=0;
-	int in=getInt(&msize);
+	int in=0;
+	do
+	{
+		in=getInt(&msize);
+		if(msize<=0) printf("Error. Size of table must be positive. Try again.\n");
+	}while(msize<=0);
 	if(in) return CERR_EOF;
 	printf("Now enter a filename of creating file: ");
 	char* fd=enter();
@@ -193,7 +199,7 @@ int fcheck(char* fnd)
 }
 int Inputv(Table* t)
 {
-	
+	Savev(t);
 	do
 	{
 		if(t->msize!=0) erased(t);
@@ -378,7 +384,7 @@ int Savev(Table* t)
 	/*printf("Enter data FileName: ");
 	char* fnd=enter();
 	if(fcheck(fnd)==CERR_EOF) return CERR_EOF;*/	
-	
+	if(!t->fd) return CERR_EOF;	
 	int p=TableWrite(t, "\0");
 	if(p==ERR_FWRITE || p==ERR_FIL) printf("Error with fwrite or there is no such file.\n\n");
 	else printf("Modified table data was successfully saved\n\n");
