@@ -34,13 +34,13 @@ int menue(const char* options[], int n)
 		key=getch();
 		if(key==115) 
 		{
-			pos=(pos+1)%10;
+			pos=(pos+1)%n;
 			if(!pos) pos=0;
 		}
 		else if(key==119) 
 		{
-			pos=(10+(pos-1)%10)%10;
-			if(!pos) pos=10;
+			pos=(n+(pos-1)%n)%n;
+			if(!pos) pos=n-1;
 		}
 	}
 	endwin();
