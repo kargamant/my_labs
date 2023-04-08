@@ -308,6 +308,8 @@ int addf(Table* t, int key, char* c, char* fn)
 		gr->offset=ftell(fd);
 		gr->len=strlen(c)+1;
 		fwrite(c, sizeof(char), gr->len, fd);
+
+		//Old code
 		//fclose(fd);
 		/*fd=t->fd;	
 		int rk=-1;
