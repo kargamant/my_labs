@@ -1,12 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-//#include "TableLib/Table.h"
-#include "funcs.h"
+//#include "HashLib/HashBin.h"
 #include "HashLib/Hash.h"
-#include <ncurses.h>
+#include "funcsbin.h"
 
-//string parsing from lab2
 char* enter()
 {
 	char buf[81]={0};
@@ -114,50 +112,11 @@ int getInt(int* n)
 	}while(input==0 || *n<0);
 }
 
-//function for saving table at .txt file
-/*
-int TableWrite(Table* t, char* fn)
-{
-	FILE* fd=fopen(fn, "w");
-	if(!fd) return ERR_FIL;
-	fprintf(fd, "%d\n", t->msize);
-	KeySpace* ptr=t->ks;
-	while(ptr-t->ks<t->csize)
-	{
-		fprintf(fd, "%d ", ptr->key);
-		Node* gr=ptr->node;
-		while(gr)
-		{
-			fprintf(fd, "%s ", gr->item->data);
-			gr=gr->next;
-		}
-		fprintf(fd, "\n");
-		++ptr;
-	}
-	fclose(fd);
-	return ERR_OK;
-}*/
-
-//MVC paradigm
-//------------------------
-//Main Controller function
 int console(int p, Table* t)
-{	
-	int (*view[])(Table*)={Newv, Outv, Searchkv, Searchvv, Addv, Delkv, Delvv, KeyTr};
-	return view[p](t);	
+{
+	int (*view[])(Table*)={Newv, Inputv, Outv, Searchkv, Searchvv, Addv, Delkv, Delvv, KeyTr, Savev};
+	view[p](t);
 }
-
-//options
-//0 - create table from console
-//1 - output
-//2 - search by key
-//3 - search by version
-//4 - add
-//5 - del by key
-//6 - del by version
-//7 - key hash trajectory
-
-//View functions 
 
 int KeyTr(Table* t)
 {
@@ -187,11 +146,18 @@ int KeyTr(Table* t)
 
 int Newv(Table* t)
 {
+	Savev(t);
+	if(t->fd) fclose(t->fd);
+	if(t->msize!=0 || t->fd) erased(t);
 	printf("Enter msize of your table: ");
 	int msize=0;
-	int in=getInt(&msize);
+	int in=0;
+	do
+	{
+		in=getInt(&msize);
+		if(msize<=0) printf("Error. Size of table must be positive. Try again.\n");
+	}while(msize<=0);
 	if(in) return CERR_EOF;
-
 	if(!isPrime(msize))
 	{
 		printf("Warning. Not a prime msize was entered.\nBut the hash function is working only with prime msizes.\n");
@@ -201,10 +167,112 @@ int Newv(Table* t)
 		}
 		printf("Your table was reinitialized with closest prime msize to that you have entered. New msize=%d\n", msize);
 	}
-	New(msize, t);
-	printf("Table was succesfully initialized with msize=%d\n", msize);
 
+	printf("Now enter a filename of creating file: ");
+	char* fd=enter();
+	if(fcheck(fd)==CERR_EOF) 
+	{
+		free(fd);
+		fd=NULL;
+		return CERR_EOF;
+	}	
+	t->fd=fopen(fd, "w+b");	
+	int re=New(msize, t);
+	if(re!=ERR_OK) printf("Error. Wrong filename or wrong data in file.\n");
+	printf("Table was succesfully initialized with msize=%d in file %s\n", msize, fd);
+	
+	free(fd);
 	return EndView();
+}
+
+int fcheck(char* fnd)
+{
+	if(!fnd) 
+	{
+		free(fnd);
+		fnd=NULL;
+		return CERR_EOF;
+	}
+	if(*fnd==0) 
+	{
+		free(fnd);
+		fnd=NULL;
+		fnd=enter();
+	}
+	return CERR_OK;
+}
+
+int Inputv(Table* t)
+{
+	Savev(t);
+	do
+	{	
+		printf("Enter FileName: ");
+		char* fnd=enter();
+		if(fcheck(fnd)==CERR_EOF) return CERR_EOF;		
+		FILE* check=fopen(fnd, "rb");
+		if(check) fclose(check);
+		else 
+		{	
+			printf("Warning. File did not exist. But it can be created for new table.\n");
+			printf("Input \"yes\" if you want to create a new table in file that have been entered or any other value to return to menue: ");
+			char* choice=enter();
+			if(!strcmp(choice, "yes")) goto creating;
+			else 
+			{
+				free(choice);
+				free(fnd);
+				fnd=NULL;
+				choice=NULL;
+				return CERR_OK;
+			}
+			creating:
+			if(t->fd) fclose(t->fd);
+			if(t->msize!=0 || t->fd) erased(t);
+			printf("Enter msize of your table: ");
+			int msize=0;
+			int in=0;
+			do
+			{
+				in=getInt(&msize);
+				if(msize<=0) printf("Error. Size of table must be positive. Try again.\n");
+			}while(msize<=0);
+			if(in) return CERR_EOF;
+			if(!isPrime(msize))
+			{
+				printf("Warning. Not a prime msize was entered.\nBut the hash function is working only with prime msizes.\n");
+				while(!isPrime(msize))
+				{
+					msize++;
+				}
+				printf("Your table was reinitialized with closest prime msize to that you have entered. New msize=%d\n", msize);
+			}
+			t->fd=fopen(fnd, "w+b");	
+			int re=New(msize, t);
+			if(re!=ERR_OK) printf("Error. Wrong filename or wrong data in file.\n");
+			printf("Table was succesfully initialized with msize=%d in file %s\n", msize, fnd);
+			
+			free(fnd);
+			free(choice);
+			return EndView();	
+		}
+		if(t->msize!=0) erased(t);
+		if(t->fd) fclose(t->fd);
+		t->fd=fopen(fnd, "r+b");
+		fseek(t->fd, 0, SEEK_SET);
+
+		int res=input("\0", t);
+		if(res!=ERR_OK)
+		{
+			printf("Error. Got wrong data while parsing. Try again.\n");
+			free(fnd);
+			fnd=NULL;
+			continue;
+		}	
+		free(fnd);
+		fnd=NULL;
+		return EndView();
+	}while(1);
 }
 
 int Outv(Table* t)
@@ -226,7 +294,6 @@ int Searchkv(Table* t)
 		output(result);	
 		erased(result);	
 		free(result);
-		//proper freeing
 	}
 	else printf("No KeySpace was found.\n");	
 			
@@ -250,7 +317,6 @@ int Searchvv(Table* t)
 		output(res);	
 		erased(res);
 		free(res);
-		//proper freeing
 	}
 	else printf("No element found after this key and rel.\n");
 	
@@ -272,12 +338,10 @@ int Addv(Table* t)
 	in=add(t, key, data);
 	if(in==ERR_FULL) 
 	{
-		free(data);
 		printf("Error. Table is full.\n");
 	}
 	output(t);
 	free(data);
-	//proper freeing
 	return EndView();
 }
 
@@ -313,7 +377,32 @@ int Delvv(Table* t)
 	return EndView();
 }
 
-
+int Savev(Table* t)
+{
+	if(!t->fd) return CERR_EOF;	
+	int p=TableWrite(t);
+	if(p!=ERR_OK) printf("Error with fwrite or there is no such file.\n\n");
+	else printf("Modified table data was successfully saved\n\n");
+	//free(fnd);
+	
+	/*
+	printf("Enter a filename where table will be saved: ");
+	char* fn=enter();
+	if(!fn) return CERR_EOF;
+	if(*fn==0)
+	{
+		free(fn);
+		fn=NULL;
+		fn=enter();
+	}
+			
+	int p=TableWrite(t, fn);
+	if(p==ERR_FIL) printf("Error. Wrong filename.\n");
+	else printf("Modified table was saved at %s\n", fn);
+	free(fn);*/
+	//return EndView();
+	return CERR_EOF;
+}
 
 //Function that ends a view function
 int EndView()
