@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "HashLib/HashTable.h"
+#include "TableLib/Table.h"
 #include "funcs.h"
-#include "menue.h"
+#include "MenueLib/menue.h"
 
 int main()
 {
@@ -13,12 +13,15 @@ int main()
 	//options for menue
 	const char* options[]={
 		"create table from console.\n",
+		"import table from file.\n",
 		"output table.\n",
 		"search by key.\n",
 		"search by version\n",
 		"add\n",
 		"delete by key\n",
 		"delete by version\n",
+		"save changes\n",
+		"show raw data and info from files\n",
 	};
 	
 	system("clear");
@@ -26,13 +29,13 @@ int main()
 	do
 	{
 		//system("ls");
-		int p=menue(options, 7);
-		if(p==8) break;
+		int p=menue(options, 8);
+		if(p==9) break;
 		int res=console(p, t);
 		if(res==CERR_EOF) break;
 		system("clear");
 	}while(1);
-	//console(8, t);
+	console(8, t);
 	//To be done later
 	erased(t);
 	//free(t->fi);

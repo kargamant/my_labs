@@ -28,11 +28,16 @@ typedef enum STATES
 }STATES;
 
 //methods
+Table* create();
+int New(int msize, Table* ht);
 Table* SearchByVersion(Table* t, int key, int rel);
 Table* SearchByKey(Table* t, int key);
-int Add(Table* t, int key, char* data);
+int add(Table* t, int key, char* data);
 int DelByKey(Table* t, int key);
 int DelByVersion(Table* t, int key, int rel);
+void output(Table* t);
+void outputks(KeySpace* ptr);
+void erased(Table* t);
 
 typedef enum ERR
 {

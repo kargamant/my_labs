@@ -43,6 +43,16 @@ bin-arrow:
 	mv funcsf.o binaries
 	mv main.o binaries
 	mv arrow_menue.o binaries
-
+hash:
+	gcc -c TableLib/HashTable.c funcs_hash.c TableLib/Hash.c -fpic
+	gcc .o HashTable.o funcs_hash.o Hash.o  -shared -o libtable.so
+	gcc -c MenueLib/menue.c -fpic
+	gcc menue.o -shared -o libmenue.so
+	gcc -c main.c funcs_hash.c TableLib/HashTable.c TableLib/Hash.c MenueLib/menue.c
+	gcc -o main main.o -L. -ltable -lmenue
+	mv HashTable.o binaries
+	mv funcs_hash.o binaries
+	mv main.o binaries
+	mv menue.o binaries
 test:
 	gcc -o main main.c funcs.c TableLib/Table.c -lncurses
