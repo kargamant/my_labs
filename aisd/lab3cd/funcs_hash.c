@@ -143,7 +143,7 @@ int TableWrite(Table* t, char* fn)
 //Main Controller function
 int console(int p, Table* t)
 {	
-	int (*view[])(Table*)={Newv, Outv, Searchkv, Searchvv, Addv, Delkv, Delvv};
+	int (*view[])(Table*)={Newv, Outv, Searchkv, Searchvv, Addv, Delkv, Delvv, KeyTr};
 	return view[p](t);	
 }
 
@@ -155,8 +155,35 @@ int console(int p, Table* t)
 //4 - add
 //5 - del by key
 //6 - del by version
+//7 - key hash trajectory
 
 //View functions 
+
+int KeyTr(Table* t)
+{
+	printf("Enter a key: ");
+	int key=0;
+	int in=getInt(&key);
+	if(in) return CERR_EOF;
+	
+	if(t->msize==0) 
+	{
+		printf("Error. Table was not initialized.\n");
+		return EndView();
+	}
+	printf("\nKey hash info based on current table:\n");
+	printf("h1: %d | h2: %d\n", h1(key, t->msize), h2(key, t->msize));
+	printf("\nKey trajectory:\n");
+	printf("research number: ");
+	for(int i=0; i<t->msize; i++) printf("%d ", i);
+	printf("\nvalue of hash:   ");
+	for(int i=0; i<t->msize; i++)
+	{
+		printf("%d ", h(key, i, t->msize));
+	}
+	printf("\n");
+	return EndView();
+}
 
 int Newv(Table* t)
 {

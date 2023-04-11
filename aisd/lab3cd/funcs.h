@@ -17,6 +17,7 @@ int console(int p, Table* t);
 //Node* versionsearch(Table* t);
 
 //view functions
+int KeyTr(Table* t);
 int Newv(Table* t);
 //int Inputv(Table* t);
 int Outv(Table* t);

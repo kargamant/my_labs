@@ -19,6 +19,7 @@ int main()
 		"add\n",
 		"delete by key\n",
 		"delete by version\n",
+		"show key trajectory\n"
 	};
 	
 	system("clear");
@@ -26,8 +27,8 @@ int main()
 	do
 	{
 		//system("ls");
-		int p=menue(options, 7);
-		if(p==8) break;
+		int p=menue(options, 8);
+		if(p==9) break;
 		int res=console(p, t);
 		if(res==CERR_EOF) break;
 		system("clear");
