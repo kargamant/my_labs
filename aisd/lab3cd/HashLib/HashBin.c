@@ -4,18 +4,67 @@
 #include "HashBin.h"
 #include "Hash.h"
 
-//test comment
+
 KeySpace* get_rel(Table* t, int key)
 {
-	int j=h(key, t->i, t->msize);
-	if(t->ks[j].key==key)
+	static int r=0, n=0, cycle=0;
+	int j=h(key, r, t->msize);
+	cycle++;
+	if(cycle>t->msize+1) 
 	{
-		for(int i=t->i+1; i<t->msize; i++)
+		n=0;
+		cycle=0;
+		r=0;
+		return NULL;
+	}
+	if(t->ks[j].busy==FREE) 
+	{
+		n=0;
+		return NULL;
+	}
+	else if(t->ks[j].busy==DELETED || (t->ks[j].busy==BUSY && t->ks[j].key!=key && n!=0))
+	{
+		r++;
+		n++;
+		return get_rel(t, key);
+	}
+	else if(t->ks[j].key==key && n==0)
+	{
+		r++;
+		n++;
+		KeySpace* result=get_rel(t, key);
+		if(result) 
 		{
-			j=h(key, i, t->msize);
-			if(t->ks[j].busy==FREE) return NULL;
-			if(t->ks[j].busy==BUSY && t->ks[j].key==key) return t->ks+j;
+			n=0;
+			return result;
 		}
+		else 
+		{
+			n=0;
+			return NULL;
+		}
+	}
+	else if(t->ks[j].key==key && n!=0)
+	{
+		n=0;
+		printf("index: %d |", j);
+		cycle=0;
+		return t->ks+j;
+	}
+	else if(r!=0)
+	{
+		r=0;
+		cycle=0;
+		j=h(key, r, t->msize);
+		if(t->ks[j].key!=key) return get_rel(t, key);
+		printf("index: %d |", j);
+		return t->ks+j;
+	}
+	else
+	{
+		r++;
+		n++;
+		return get_rel(t, key);
 	}
 }
 
@@ -221,16 +270,20 @@ int DelByVersion(Table* t, int key, int rel)
 
 void output(Table* t)
 {
-	printf("msize: %d\n", t->msize);
 	KeySpace* ptr=t->ks;
+	if(t->msize!=1) printf("msize: %d\n", t->msize);
 	while(ptr-t->ks<t->msize)
 	{
 		if(ptr->busy==BUSY) 
 		{
-			int h1d=h1(ptr->key, t->msize);
-			int h2d=h2(ptr->key, t->msize);
-			printf("h1: %d | h2: %d | ", h1d, h2d);
-			printf("index: %d |", ptr-t->ks);
+			if(t->msize!=1)
+			{
+
+				int h1d=h1(ptr->key, t->msize);
+				int h2d=h2(ptr->key, t->msize);
+				printf("h1: %d | h2: %d | ", h1d, h2d);
+				printf("index: %d |", ptr-t->ks);
+			}
 			char* data=(char*)malloc(ptr->len*sizeof(char));
 			fseek(t->fd, ptr->offset, SEEK_SET);
 			fread(data, sizeof(char), ptr->len, t->fd);

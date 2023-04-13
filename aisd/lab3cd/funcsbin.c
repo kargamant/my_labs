@@ -114,7 +114,7 @@ int getInt(int* n)
 
 int console(int p, Table* t)
 {
-	int (*view[])(Table*)={Newv, Inputv, Outv, Searchkv, Searchvv, Addv, Delkv, Delvv, KeyTr, Savev};
+	int (*view[])(Table*)={Newv, Inputv, Outv, Searchkv, Searchvv, Addv, Delkv, Delvv, KeyTr, Savev, Iteratekv};
 	view[p](t);
 }
 
@@ -402,6 +402,29 @@ int Savev(Table* t)
 	free(fn);*/
 	//return EndView();
 	return CERR_EOF;
+}
+
+int Iteratekv(Table* t)
+{
+	int key=0;
+	printf("Enter a key: ");
+	int in=getInt(&key);
+	if(in) return CERR_EOF;
+
+	KeySpace* res=get_rel(t, key);
+	if(res)
+	{
+		Table* rt=create();
+		rt->fd=t->fd;
+		rt->msize=1;
+		rt->ks=res;
+		output(rt);
+		//erased(rt);
+		free(rt);
+	}
+	else printf("Error. Iteration was unsuccsessful.\n");
+
+	return EndView();
 }
 
 //Function that ends a view function

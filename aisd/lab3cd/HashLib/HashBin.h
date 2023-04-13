@@ -15,12 +15,12 @@ typedef struct Table
 {
 	int msize;
 	FILE* fd;
-	int i; //last research number
 	KeySpace* ks;
 }Table;
 
 //methods
 Table* create();
+KeySpace* get_rel(Table* t, int key);
 int New(int msize, Table* ht);
 int input(char* fn, Table* t);
 int TableWrite(Table* t);
