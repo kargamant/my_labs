@@ -5,11 +5,12 @@
 #include "Hash.h"
 
 
-KeySpace* get_rel(Table* t, int key)
+int get_rel(Table* t, int key)
 {
-	static int r=0, cycle=0, cur_key=0;
+	static int r=0, cycle=0, cur_key=0, prev_key=0;
 	if(cur_key!=key)
 	{
+		prev_key=cur_key;
 		cur_key=key;
 		r=0;
 		cycle=0;
@@ -19,17 +20,19 @@ KeySpace* get_rel(Table* t, int key)
 	cycle++;
 	if(cycle>t->msize+1)
 	{
+		prev_key=0;
 		cur_key=0;
 		cycle=0;
 		r=0;
-		return NULL;
+		return -1;
 	}
 	if(t->ks[j].busy==FREE)
 	{
 		r=0;
+		prev_key=0;
 		cur_key=0;
 		cycle=0;
-		return NULL;
+		return -1;
 	}
 	else if(t->ks[j].busy==DELETED)
 	{
@@ -40,11 +43,21 @@ KeySpace* get_rel(Table* t, int key)
 	{
 		if(t->ks[j].key==key)
 		{
-			printf("index %d | ", j);
+			//if(key!=prev_key)
+			//{
+				/*printf("h1: %d | h2: %d | ", h1(key, t->msize), h2(key, t->msize));
+				printf("index %d | ", j);
+				char* data=(char*)malloc(t->ks[j].len*sizeof(char));
+				fseek(t->fd, t->ks[j].offset, SEEK_SET);
+				fread(data, sizeof(char), t->ks[j].len, t->fd);
+				printf("%d | %d | %s\n", t->ks[j].key, t->ks[j].rel, data);
+				free(data);*/
 			r++;
 			cycle=0;
-			//cur_key=0;
-			return t->ks+j;	
+			prev_key=key;
+			//}
+			//returning:
+			return j;	
 		}
 		else
 		{
@@ -110,7 +123,7 @@ Table* SearchByVersion(Table* t, int key, int rel)
 	Table* rt=create();
 	rt->fd=t->fd;
 	rt->msize=t->msize;
-	rt->ks=(KeySpace*)malloc(t->msize*sizeof(KeySpace));
+	rt->ks=(KeySpace*)malloc(rt->msize*sizeof(KeySpace));	
 	for(KeySpace* ptr=rt->ks; ptr-rt->ks<rt->msize; ++ptr)
 	{
 		ptr->busy=FREE;
@@ -119,9 +132,61 @@ Table* SearchByVersion(Table* t, int key, int rel)
 		ptr->offset=0;
 		ptr->len=0;
 	}
-
 	//iterating
-	for(int i=0; i<t->msize; i++)
+	//get_rel(t, 0);
+	int res=get_rel(t, key);
+	int check=get_rel(t, key);
+	if(res==-1 && check==-1)
+	{
+		erased(rt);
+		free(rt);
+		return NULL;
+	}
+	else if(res==-1) res=check;
+	else res=get_rel(t, key);
+	if(t->ks[res].rel==rel) 
+	{
+		rt->ks[res].busy=BUSY;
+		rt->ks[res].key=t->ks[res].key;
+		rt->ks[res].rel=t->ks[res].rel;
+		rt->ks[res].offset=t->ks[res].offset;
+		rt->ks[res].len=t->ks[res].len;
+		return rt;
+	}
+	else
+	{
+		int first=res;
+		//res=get_rel(t, key);
+		/*if(res==-1) 
+		{
+			erased(rt);
+			free(rt);
+			return NULL;
+		}*/
+		while(t->ks[res].rel!=rel) 
+		{
+			res=get_rel(t, key);
+			if(res==first) break;
+			if(res==-1) res=get_rel(t, key);
+		}
+		if(res==first)
+		{
+			erased(rt);
+			free(rt);
+			return NULL;
+		}
+		else
+		{
+			rt->ks[res].busy=BUSY;
+			rt->ks[res].key=t->ks[res].key;
+			rt->ks[res].rel=t->ks[res].rel;
+			rt->ks[res].offset=t->ks[res].offset;
+			rt->ks[res].len=t->ks[res].len;
+			return rt;		
+		}
+
+	}
+	/*for(int i=0; i<t->msize; i++)
 	{
 		int j=h(key, i, t->msize);
 
@@ -142,7 +207,7 @@ Table* SearchByVersion(Table* t, int key, int rel)
 			rt->ks[j].len=t->ks[j].len;
 			return rt;
 		}
-	}
+	}*/
 	erased(rt);
 	free(rt);
 	return NULL;
@@ -164,6 +229,42 @@ Table* SearchByKey(Table* t, int key)
 		ptr->offset=0;
 		ptr->len=0;
 	}
+	//iterating
+	//get_rel(t, 0);
+	int res=get_rel(t, key);
+	int check=get_rel(t, key);
+	if(res==-1 && check==-1)
+	{
+		erased(rt);
+		free(rt);
+		return NULL;
+	}
+	else if(res==-1) res=check;
+	else res=get_rel(t, key);
+	
+	
+		rt->ks[res].busy=BUSY;
+		rt->ks[res].key=t->ks[res].key;
+		rt->ks[res].rel=t->ks[res].rel;
+		rt->ks[res].offset=t->ks[res].offset;
+		rt->ks[res].len=t->ks[res].len;
+		int first=res;	
+		//KeySpace* second=get_rel(t, key);
+		//res=get_rel(t, key);
+		while(1)
+		{
+			res=get_rel(t, key);
+			if(res==first) break;
+			if(res==-1) continue;
+			rt->ks[res].busy=BUSY;
+			rt->ks[res].key=t->ks[res].key;
+			rt->ks[res].rel=t->ks[res].rel;
+			rt->ks[res].offset=t->ks[res].offset;
+			rt->ks[res].len=t->ks[res].len;	
+		}
+		return rt;
+	
+	/*
 	int n=0;
 	for(int i=0; i<t->msize; i++)
 	{
@@ -188,7 +289,7 @@ Table* SearchByKey(Table* t, int key)
 		free(rt);
 		return NULL;
 	}
-	return rt;
+	return rt;*/
 }
 
 //Adding to table
@@ -282,3 +383,21 @@ void output(Table* t)
 	printf("\n");
 }
 
+void outputit(Table* t)
+{
+	KeySpace* ptr=t->ks;
+	while(ptr-t->ks<t->msize)
+	{
+		if(ptr->busy==BUSY) 
+		{	
+			char* data=(char*)malloc(ptr->len*sizeof(char));
+			fseek(t->fd, ptr->offset, SEEK_SET);
+			fread(data, sizeof(char), ptr->len, t->fd);
+			printf("%d | %d | %s\n", ptr->key, ptr->rel, data);
+			free(data);
+		}
+		++ptr;
+		//printf("db1\n");
+	}
+	printf("\n");
+}

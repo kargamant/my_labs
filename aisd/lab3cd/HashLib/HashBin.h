@@ -20,7 +20,7 @@ typedef struct Table
 
 //methods
 Table* create();
-KeySpace* get_rel(Table* t, int key);
+int get_rel(Table* t, int key);
 int New(int msize, Table* ht);
 int input(char* fn, Table* t);
 int TableWrite(Table* t);
@@ -30,6 +30,7 @@ int add(Table* t, int key, char* data);
 int DelByKey(Table* t, int key);
 int DelByVersion(Table* t, int key, int rel);
 void output(Table* t);
+void outputit(Table* t);
 void outputks(KeySpace* ptr);
 void erased(Table* t);
 

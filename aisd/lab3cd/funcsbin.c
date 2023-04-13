@@ -411,13 +411,22 @@ int Iteratekv(Table* t)
 	int in=getInt(&key);
 	if(in) return CERR_EOF;
 
-	KeySpace* res=get_rel(t, key);
-	if(res)
+	int res=get_rel(t, key);
+	if(res!=-1)
 	{
 		Table* rt=create();
 		rt->fd=t->fd;
-		rt->msize=1;
-		rt->ks=res;
+		rt->msize=t->msize;
+		rt->ks=(KeySpace*)malloc(t->msize*sizeof(KeySpace));
+		for(KeySpace* ptr=rt->ks; ptr-rt->ks<rt->msize; ++ptr)
+		{
+			ptr->busy=FREE;
+			ptr->key=0;
+			ptr->rel=0;
+			ptr->offset=0;
+			ptr->len=0;
+		}
+		rt->ks[res]=t->ks[res];
 		output(rt);
 		//erased(rt);
 		free(rt);
