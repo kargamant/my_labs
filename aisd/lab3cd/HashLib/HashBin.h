@@ -15,6 +15,7 @@ typedef struct Table
 {
 	int msize;
 	FILE* fd;
+	int i; //last research number
 	KeySpace* ks;
 }Table;
 

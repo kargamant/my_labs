@@ -4,6 +4,20 @@
 #include "HashBin.h"
 #include "Hash.h"
 
+KeySpace* get_rel(Table* t, int key)
+{
+	int j=h(key, t->i, t->msize);
+	if(t->ks[j].key==key)
+	{
+		for(int i=t->i+1; i<t->msize; i++)
+		{
+			j=h(key, i, t->msize);
+			if(t->ks[j].busy==FREE) return NULL;
+			if(t->ks[j].busy==BUSY && t->ks[j].key==key) return t->ks+j;
+		}
+	}
+}
+
 //import from file
 int input(char* fn, Table* t)
 {
