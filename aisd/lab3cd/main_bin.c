@@ -34,7 +34,7 @@ int main()
 		system("clear");
 	}while(1);
 	console(9, t);
-	fclose(t->fd);
+	if(t->fd) fclose(t->fd);
 	erased(t);
 	free(t);
 	t=NULL;

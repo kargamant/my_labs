@@ -4,17 +4,17 @@
 #include "HashBin.h"
 #include "Hash.h"
 
+//import from file
 int input(char* fn, Table* t)
 {
 	fseek(t->fd, 0, SEEK_SET);
 	if(!fread(&t->msize, sizeof(int), 1, t->fd)) return ERR_FREAD;
 	t->ks=(KeySpace*)malloc(t->msize*sizeof(KeySpace));
-	//if(!t->ks) New(t->msize, t);
-	//for(KeySpace* ptr=t->ks; ptr-t->ks<t->msize; ++ptr) if(!fread(ptr, sizeof(KeySpace), 1, t->fd)) return ERR_FREAD;
 	if(!fread(t->ks, sizeof(KeySpace), t->msize, t->fd)) return ERR_FREAD;
 	return ERR_OK;
 }
 
+//Saving to file
 int TableWrite(Table* t)
 {
 	fseek(t->fd, sizeof(int), SEEK_SET);
@@ -22,6 +22,7 @@ int TableWrite(Table* t)
 	return ERR_OK;
 }
 
+//Initializing table with 0's
 int New(int msize, Table* ht)
 {
 	ht->msize=msize;
@@ -44,20 +45,20 @@ Table* create()
 	return (Table*)calloc(3, sizeof(Table));
 }
 
+//erasing
 void erased(Table* t)
 {
 	if(t->ks)
 	{
 		free(t->ks);
 	}
-	//free(t);
 }
 
 Table* SearchByVersion(Table* t, int key, int rel)
 {
+	//creating new table that'll be returned at the end
 	Table* rt=create();
 	rt->fd=t->fd;
-	
 	rt->msize=t->msize;
 	rt->ks=(KeySpace*)malloc(t->msize*sizeof(KeySpace));
 	for(KeySpace* ptr=rt->ks; ptr-rt->ks<rt->msize; ++ptr)
@@ -68,15 +69,20 @@ Table* SearchByVersion(Table* t, int key, int rel)
 		ptr->offset=0;
 		ptr->len=0;
 	}
+
+	//iterating
 	for(int i=0; i<t->msize; i++)
 	{
 		int j=h(key, i, t->msize);
+
+		//if we face free position than there will be no positions with that key further
 		if(t->ks[j].busy==FREE) 
 		{
 			erased(rt);
 			free(rt);
 			return NULL;
 		}
+		//Successfully found
 		if(t->ks[j].busy==BUSY && t->ks[j].key==key && t->ks[j].rel==rel) 
 		{ 
 			rt->ks[j].busy=BUSY;
@@ -92,6 +98,7 @@ Table* SearchByVersion(Table* t, int key, int rel)
 	return NULL;
 }
 
+//Similar to SearchByVersion, but it finds all releases of a key
 Table* SearchByKey(Table* t, int key)
 {
 	Table* rt=create();
@@ -134,6 +141,7 @@ Table* SearchByKey(Table* t, int key)
 	return rt;
 }
 
+//Adding to table
 int add(Table* t, int key, char* data)
 {	
 	int mrel=0;
@@ -146,12 +154,15 @@ int add(Table* t, int key, char* data)
 			ind=i;
 			fpos=j;
 		}
+		if(t->ks[j].busy==FREE) break;
 		if(t->ks[j].busy==BUSY && t->ks[j].key==key && t->ks[j].rel>mrel) mrel=t->ks[j].rel; 
 	}
 	if(fpos==-1) return ERR_FULL;
 	t->ks[fpos].busy=BUSY;
 	t->ks[fpos].key=key;
 	t->ks[fpos].rel=mrel+1;
+
+	//Writing in the end of file
 	fseek(t->fd, 0, SEEK_END);
 	t->ks[fpos].offset=ftell(t->fd);
 	t->ks[fpos].len=strlen(data)+1;
@@ -216,10 +227,4 @@ void output(Table* t)
 	}
 	printf("\n");
 }
-
-/*
-void outputks(KeySpace* ptr)
-{
-	printf("%d | %d | %s\n", ptr->key, ptr->rel, ptr->info->data);
-}*/
 

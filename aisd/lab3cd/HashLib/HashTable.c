@@ -141,6 +141,7 @@ int add(Table* t, int key, char* data)
 			ind=i;
 			fpos=j;
 		}
+		if(t->ks[j].busy==FREE) break;
 		if(t->ks[j].busy==BUSY && t->ks[j].key==key && t->ks[j].rel>mrel) mrel=t->ks[j].rel; 
 	}
 	if(fpos==-1) return ERR_FULL;
