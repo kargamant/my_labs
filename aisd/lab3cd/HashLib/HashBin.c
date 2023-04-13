@@ -7,65 +7,51 @@
 
 KeySpace* get_rel(Table* t, int key)
 {
-	static int r=0, n=0, cycle=0;
+	static int r=0, cycle=0, cur_key=0;
+	if(cur_key!=key)
+	{
+		cur_key=key;
+		r=0;
+		cycle=0;
+	}
 	int j=h(key, r, t->msize);
+
 	cycle++;
-	if(cycle>t->msize+1) 
+	if(cycle>t->msize+1)
 	{
-		n=0;
+		cur_key=0;
 		cycle=0;
 		r=0;
 		return NULL;
 	}
-	if(t->ks[j].busy==FREE) 
+	if(t->ks[j].busy==FREE)
 	{
-		n=0;
+		r=0;
+		cur_key=0;
+		cycle=0;
 		return NULL;
 	}
-	else if(t->ks[j].busy==DELETED || (t->ks[j].busy==BUSY && t->ks[j].key!=key && n!=0))
+	else if(t->ks[j].busy==DELETED)
 	{
 		r++;
-		n++;
 		return get_rel(t, key);
-	}
-	else if(t->ks[j].key==key && n==0)
-	{
-		r++;
-		n++;
-		KeySpace* result=get_rel(t, key);
-		if(result) 
-		{
-			n=0;
-			return result;
-		}
-		else 
-		{
-			n=0;
-			return NULL;
-		}
-	}
-	else if(t->ks[j].key==key && n!=0)
-	{
-		n=0;
-		printf("index: %d |", j);
-		cycle=0;
-		return t->ks+j;
-	}
-	else if(r!=0)
-	{
-		r=0;
-		cycle=0;
-		j=h(key, r, t->msize);
-		if(t->ks[j].key!=key) return get_rel(t, key);
-		printf("index: %d |", j);
-		return t->ks+j;
 	}
 	else
 	{
-		r++;
-		n++;
-		return get_rel(t, key);
-	}
+		if(t->ks[j].key==key)
+		{
+			printf("index %d | ", j);
+			r++;
+			cycle=0;
+			//cur_key=0;
+			return t->ks+j;	
+		}
+		else
+		{
+			r++;
+			return get_rel(t, key);
+		}
+	}	
 }
 
 //import from file
