@@ -4,6 +4,7 @@
 #include "HashBin.h"
 #include "Hash.h"
 
+//test comment
 KeySpace* get_rel(Table* t, int key)
 {
 	int j=h(key, t->i, t->msize);
