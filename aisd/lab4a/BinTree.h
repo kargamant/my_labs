@@ -20,6 +20,8 @@ int AddNode(Node* root, int key, char* info);
 int DelNode(Node* root, int key);
 void erased(Node* root);
 int fimport(Node* root, char* fn);
+int show(Node* root);
+void out_node(Node* x, int spaces);
 
 //error codes
 typedef enum ERR

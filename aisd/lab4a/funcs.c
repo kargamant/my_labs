@@ -134,7 +134,7 @@ int fcheck(char* fnd)
 //Main Controller function
 int console(int p, Node* root)
 {	
-	int (*view[])(Node*)={Importv, Traverv, Addv, Delv, Searchv, Maxv, Minv};
+	int (*view[])(Node*)={Importv, Traverv, Addv, Delv, Searchv, Maxv, Minv, Showv};
 	return view[p](root);	
 }
 
@@ -146,6 +146,7 @@ int console(int p, Node* root)
 //4 - Search node by key
 //5 - Find Maximum
 //6 - Find Minimum
+//7 - Show Tree as a tree
 
 //View functions 
 
@@ -212,7 +213,7 @@ int Delv(Node* root)
 	int result=DelNode(root, key);
 	if(result==ERR_NF) printf("Error. No node with this key in tree.\n");
 	else if(result==ERR_EMPTY) printf("Error. Tree is empty.\n");
-	else printf("Node with key %d was successfully deleted.", key);
+	else printf("Node with key %d was successfully deleted.\n", key);
 
 	return EndView();
 }
@@ -255,6 +256,13 @@ int Minv(Node* root)
 		printf("key: %d | info: %s\n", result->key, result->info);
 	}
 
+	return EndView();
+}
+
+int Showv(Node* root)
+{
+	int result=show(root);
+	if(result==ERR_EMPTY) printf("Error. Tree is empty.\n");
 	return EndView();
 }
 

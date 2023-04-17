@@ -212,3 +212,84 @@ int fimport(Node* root, char* fn)
 	fclose(fd);
 	return ERR_OK;
 }
+
+int show(Node* root)
+{
+	if(root->info==NULL) return ERR_EMPTY;
+	Node* ptr=Max(root);
+	int n=0;
+	while(ptr!=NULL) 
+	{
+		++n;
+		ptr=ptr->prev;
+	}
+	int power=2;
+	while(power<n)
+	{
+		power=power*2;
+	}
+	power--;
+	
+	//output array
+	//Mayde i'll remake it with size h - height of tree
+	Node** nodes=(Node**)malloc(power*sizeof(Node*));
+	*nodes=root;
+	nodes[1]=root->left;
+	nodes[2]=root->right;
+
+	//amount of spaces for every layer
+	int spaces=n;
+	
+	//how many nodes on a certain layer
+	int p=2;
+	
+	//last node that was shown
+	int last_ind=0;
+
+	//base iteration
+	out_node(root, spaces);
+	printf("\n");
+	spaces=spaces/2;
+
+	//main cycle
+	int k=power-1;
+	while(k>0)
+	{
+
+		for(int i=last_ind+1; i<last_ind+1+p; i++) 
+		{
+			//if(nodes[i]) printf("%d\n", nodes[i]->key);
+			//else printf("null\n");
+			out_node(nodes[i], spaces);
+			if(nodes[i]) k--;
+		}
+		printf("\n");
+		p=p*2;
+		if((p+p/2)>power) break;
+		last_ind=last_ind+p/2;
+		int g=0;
+		for(int j=1+p/2; j<p+p/2; j+=2) 
+		{
+			if(nodes[j-p/2-g]) nodes[j]=nodes[j-p/2-g]->left;
+			else nodes[j]=NULL;
+			if(nodes[j-p/2-g]) nodes[j+1]=nodes[j-p/2-g]->right;
+			else nodes[j+1]=NULL;
+			g++;
+		}
+		spaces=spaces/2;
+	}
+	free(nodes);
+	return ERR_OK;
+}
+
+void out_node(Node* x, int spaces)
+{
+	
+	for(int i=0; i<spaces; i++) printf(" ");
+	if(x) printf("%d", x->key);
+	else 
+	{
+		for(int i=0; i<spaces+1; i++) printf(" ");
+		//printf("db1\n");
+	}
+}
