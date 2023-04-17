@@ -6,7 +6,7 @@
 
 int main()
 {
-	Node* root=(Node*)malloc(sizeof(Node));	
+	Node* root=(Node*)calloc(1, sizeof(Node));	
 	//options for menue
 	const char* options[]={
 		"Import tree from text file\n",

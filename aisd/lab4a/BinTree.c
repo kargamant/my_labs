@@ -98,6 +98,7 @@ int AddNode(Node* root, int key, char* info)
 int DelNode(Node* root, int key)
 {
 	Node* ptr=root;
+	if(ptr->info==NULL) return ERR_EMPTY;
 	Node* par=NULL;
 	Node* prev=NULL;
 	Node* next=NULL;
@@ -116,88 +117,62 @@ int DelNode(Node* root, int key)
 		}
 		if(ptr==NULL) return ERR_NF;
 	}
-	if(ptr->right==NULL && ptr->left==NULL)
+	if(ptr->right==NULL || ptr->left==NULL)
 	{
-		if(par->right==ptr) par->right=NULL;
-		else par->left=NULL;
-		erased(ptr);
-		if(next) next->prev=prev;
-		else root->prev=prev;
-		return ERR_OK;
-	}
-	else if(ptr->right!=NULL && ptr->left==NULL)
-	{
-		if(par->right==ptr)
+		if(ptr->right==NULL)
 		{
-			par->right=ptr->right;
+			if(par->right==ptr) par->right=ptr->left;
+			else par->left=ptr->left;
+			if(ptr->left!=NULL)
+			{
+				prev=Max(ptr->left);
+			}
+			next->prev=prev;
+			ptr->right=NULL;
+			ptr->left=NULL;
+			ptr->prev=NULL;
+			free(ptr->info);
+			free(ptr);
 		}
-		else par->left=ptr->right;
-		erased(ptr);
-		next=Min(ptr->right);
-		next->prev=prev;
-		return ERR_OK;
-	}
-	else if(ptr->left!=NULL && ptr->right==NULL)
-	{
-		if(par->right==ptr)
+		else
 		{
-			par->right=ptr->left;
+			if(par->right==ptr) par->right=ptr->right;
+			else par->left=ptr->right;
+			next=Min(ptr->right);	
+			next->prev=prev;
+			ptr->right=NULL;
+			ptr->left=NULL;
+			ptr->prev=NULL;
+			free(ptr->info);
+			free(ptr);
 		}
-		else par->left=ptr->left;
-		erased(ptr);
-		prev=Max(ptr->left);
-		next->prev=prev;
-		return ERR_OK;
 	}
 	else
 	{
-		Node* cur_par=par;
-		Node* cur=ptr;
-		Node* right=cur->right;
-		par=ptr;
+		prev=Max(ptr->left);
 
-		//finding next node
-		while(right->left!=NULL)
+		Node* next_par=ptr;
+		Node* rp=ptr->right;
+		while(rp->left!=NULL)
 		{
-			par=right;
-			right=right->left;
+			next_par=rp;
+			rp=rp->left;
 		}
-		Node* next_par=par;
+		//next=rp;
+		if(next_par==ptr) next_par->right=NULL;
+		else next_par->left=NULL;
 
-		//finding previous node
-		Node* left=cur->left;
-		while(left->right!=NULL)
-		{
-			left=left->right;
-		}	
-		if(next_par!=cur) next_par->left=right->right;
-		else next_par->right=right->right;
-		Node* repl=right;
-		repl->prev=left;
-		left=cur->left;
-		right=cur->right;
-		if(cur==cur_par->right)
-		{
-			cur_par->right=repl;
-		}
-		else cur_par->left=right;
-		repl->right=right;
-		repl->left=left;
-		free(cur);
-		
-		//printf("db1\n");
-		/*cur->key=right->key;
-		cur->info=right->info;
-		cur->prev=left;
-		if(next) next->prev=cur;
-		else
-		{
-			next=right;
-		}
-		printf("db2\n");
-		free(right);*/
-		return ERR_OK;
+		Node* left=ptr->left;
+		Node* right=ptr->right;
+		rp->right=right;
+		rp->left=left;
+		if(par->right==ptr) par->right=rp;
+		else par->left=rp;
+		rp->prev=prev;
+		free(ptr->info);
+		free(ptr);
 	}
+	return ERR_OK;
 }
 
 void erased(Node* root)
@@ -214,8 +189,11 @@ void erased(Node* root)
 
 int fimport(Node* root, char* fn)
 {
-	FILE* fd=fopen(fn, "r+");
-	while(!feof(fd))
+	FILE* fd=fopen(fn, "r");
+	fseek(fd, 0, SEEK_END);
+	int end_of_fd=ftell(fd);
+	fseek(fd, 0, SEEK_SET);
+	while(ftell(fd)!=end_of_fd)
 	{
 		int key=GetIntf(fd);
 		if(key==-1) 

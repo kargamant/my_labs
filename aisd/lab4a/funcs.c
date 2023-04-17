@@ -67,7 +67,7 @@ char* enterf(FILE* fd)
 int GetIntf(FILE* fd)
 {
 	int in=0, data;
-	in=fscanf(fd, "%d", &data);
+	in=fscanf(fd, "%d\n", &data);
 	if(in==EOF) 
 	{
 		return -1;
@@ -112,6 +112,23 @@ int getInt(int* n)
 	}while(input==0 || *n<0);
 }
 
+int fcheck(char* fnd)
+{
+	if(!fnd) 
+	{
+		free(fnd);
+		fnd=NULL;
+		return CERR_EOF;
+	}
+	if(*fnd==0) 
+	{
+		free(fnd);
+		fnd=NULL;
+		fnd=enter();
+	}
+	return CERR_OK;
+}
+
 //MVC paradigm
 //------------------------
 //Main Controller function
@@ -136,8 +153,8 @@ int Importv(Node* root)
 {
 	printf("Enter filename: ");
 	char* fn=enter();
-	if(!fn) return CERR_EOF;
-	
+	if(fcheck(fn)==CERR_EOF) return CERR_EOF;
+
 	int result=fimport(root, fn);
 	if(result==ERR_EOF) 
 	{
@@ -194,6 +211,7 @@ int Delv(Node* root)
 	
 	int result=DelNode(root, key);
 	if(result==ERR_NF) printf("Error. No node with this key in tree.\n");
+	else if(result==ERR_EMPTY) printf("Error. Tree is empty.\n");
 	else printf("Node with key %d was successfully deleted.", key);
 
 	return EndView();
