@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "funcs.h"
+#include "BinTree.h"
 
 //string parsing from lab2
 char* enter()
@@ -116,7 +117,7 @@ int getInt(int* n)
 //Main Controller function
 int console(int p, Table* t)
 {	
-	int (*view[])(Table*)={Newv, Outv, Searchkv, Searchvv, Addv, Delkv, Delvv, KeyTr};
+	int (*view[])(Node*)={Importv, Traverv, Addv, Delv, Searchv, Maxv, Minv};
 	return view[p](t);	
 }
 
@@ -131,9 +132,112 @@ int console(int p, Table* t)
 
 //View functions 
 
+int Importv(Node* root)
+{
+	printf("Enter filename: ");
+	char* fn=enter();
+	if(!fn) return CERR_EOF;
+	
+	int result=fimport(root, fn);
+	if(result==ERR_EOF) 
+	{
+		free(fn);
+		return CERR_EOF;
+	}
+	printf("Tree was successfully imported from %s\n", fn);
+	free(fn);
+	return EndView();
+}
 
+int Traverv(Node* root)
+{
+	printf("Enter a key where traversing starts or enter -1 to traverse all nodes: ");
+	int key=0;
+	int input=getInt(&key);
+	if(input) return CERR_EOF;
+	
+	int result=Traversing(root, key);
+	if(result==ERR_NF) printf("Error. No match with start key in tree.\n");
+	else if(result==ERR_EMPTY) printf("Error. Tree is empty.\n");
+	return EndView();
+}
 
+int Addv(Node* root)
+{
+	printf("Enter key: ");
+	int key=0;
+	int input=getInt(&key);
+	if(input) return CERR_EOF;
+	printf("Enter data: ");
+	char* data=enter();
+	if(!data) return CERR_EOF;
 
+	int result=AddNode(root, key, data);
+	if(result==ERR_DUPL)
+	{
+		printf("Error. Node with this key has already been added to tree.\n");
+	}
+	else printf("Node with key %d was successfully added to tree.\n", key);
+	
+	printf("Tree:\n");
+	Traversing(root, FULL_TREE);
+	return EndView();
+}
+
+int Delv(Node* root)
+{
+	printf("Enter key: ");
+	int key=0;
+	int input=getInt(&key);
+	if(input) return CERR_EOF;
+	
+	int result=DelNode(root, key);
+	if(result==ERR_NF) printf("Error. No node with this key in tree.\n");
+	else printf("Node with key %d was successfully deleted.", key);
+
+	return EndView();
+}
+
+int Searchv(Node* root)
+{
+	printf("Enter key: ");
+	int key=0;
+	int input=getInt(&key);
+	if(input) return CERR_EOF;
+	
+	Node* result=Search(root, key);
+	if(!result) printf("Error. No node with such key in tree.\n");
+	else
+	{
+		printf("key: %d | info: %s\n", result->key, result->info);
+	}
+
+	return EndView();
+}
+
+int Maxv(Node* root)
+{
+	Node* result=Max(root);
+	if(!result) printf("Error. Tree is empty.\n");
+	else
+	{
+		printf("key: %d | info: %s\n", result->key, result->info);
+	}
+
+	return EndView();
+}
+
+int Minv(Node* root)
+{
+	Node* result=Min(root);
+	if(!result) printf("Error. Tree is empty.\n");
+	else
+	{
+		printf("key: %d | info: %s\n", result->key, result->info);
+	}
+
+	return EndView();
+}
 
 //Function that ends a view function
 int EndView()

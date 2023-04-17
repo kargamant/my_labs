@@ -2,16 +2,19 @@
 #include <stdlib.h>
 #include "funcs.h"
 
-void Traversing(Node* root, int key)
+int Traversing(Node* root, int key)
 {
 	Node* ptr=NULL;
+	if(!root) return ERR_EMPTY;
 	if(key==FULL_TREE) ptr=Max(root);
 	else ptr=Search(root, key);
+	if(ptr==NULL) return ERR_NF;
 	while(ptr!=NULL)
 	{
 		printf("key: %d | info: %s\n", ptr->key, ptr->info);
 		ptr=ptr->prev;
 	}
+	return ERR_OK;
 }
 
 Node* Max(Node* root)
@@ -74,6 +77,7 @@ int AddNode(Node* root, int key, char* info)
 		}
 		else
 		{
+			erased(x);
 			free(x);
 			return ERR_DUPL;
 		}
@@ -111,7 +115,6 @@ int DelNode(Node* root, int key)
 		if(par->right==ptr) par->right=NULL;
 		else par->left=NULL;
 		erased(ptr);
-		free(ptr);
 		next->prev=prev;
 		return ERR_OK;
 	}
@@ -123,7 +126,6 @@ int DelNode(Node* root, int key)
 		}
 		else par->left=ptr->right;
 		erased(ptr);
-		free(ptr);
 		next=Min(ptr->right);
 		next->prev=prev;
 		return ERR_OK;
@@ -136,7 +138,6 @@ int DelNode(Node* root, int key)
 		}
 		else par->left=ptr->left;
 		erased(ptr);
-		free(ptr);
 		prev=Max(ptr->left);
 		next->prev=prev;
 		return ERR_OK;
@@ -184,9 +185,23 @@ int fimport(Node* root, char* fn)
 	while(!feof(fd))
 	{
 		Node* x=(Node*)malloc(sizeof(Node));
-		fscanf(fd, "%d", &(x->key));
+		x->key=GetIntf(fd);
+		if(x->key==-1) 
+		{
+			erased(root);
+			free(x);
+			return ERR_EOF
+		}
+		//fscanf(fd, "%d", &(x->key));
 		x->info=enterf(fd);
+		if(!x->info) 
+		{
+			erased(root);
+			free(x);
+			return ERR_EOF;
+		}
 		AddNode(root, x);
 	}
 	fclose(fd);
+	return ERR_OK;
 }

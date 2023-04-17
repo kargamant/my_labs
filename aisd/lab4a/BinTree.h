@@ -20,5 +20,19 @@ int AddNode(Node* root, int key, char* info);
 int DelNode(Node* root, int key);
 void erased(Node* root);
 int fimport(Node* root, char* fn);
+
 //error codes
+typedef enum ERR
+{
+	ERR_OK,
+	ERR_DUPL,
+	ERR_NF,
+	ERR_EOF,
+	ERR_EMPTY,
+}ERR;
+
+typedef enum states
+{
+	FULL_TREE=-1,
+}states;
 #endif
