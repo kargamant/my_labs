@@ -6,17 +6,16 @@
 
 int main()
 {
-	Node* root=(Node*)malloc(sizeof(Node));
-	
+	Node* root=(Node*)malloc(sizeof(Node));	
 	//options for menue
 	const char* options[]={
 		"Import tree from text file\n",
-		"Traversing of tree\n"
-		"Add node to tree\n"
-		"Delete node from tree\n"
-		"Search node by key\n"
-		"Find Maximum\n"
-		"Find Minimum\n"
+		"Traversing of tree\n",
+		"Add node to tree\n",
+		"Delete node from tree\n",
+		"Search node by key\n",
+		"Find Maximum\n",
+		"Find Minimum\n",
 	};
 	
 	system("clear");
@@ -25,7 +24,7 @@ int main()
 	{
 		int p=menue(options, 7);
 		if(p==8) break;
-		int res=console(p, t);
+		int res=console(p, root);
 		if(res==CERR_EOF) break;
 		system("clear");
 	}while(1);

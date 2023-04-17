@@ -12,7 +12,7 @@ typedef struct Node
 }Node;
 
 //methods
-void Traversing(Node* tr, int key);
+int Traversing(Node* root, int key);
 Node* Max(Node* root);
 Node* Min(Node* root);
 Node* Search(Node* root, int key);

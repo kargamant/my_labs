@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include "HashLib/HashTable.h"
 #include "funcs.h"
 //interactive menue
 int menue(const char* options[], int n)

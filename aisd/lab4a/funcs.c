@@ -99,11 +99,11 @@ int getInt(int* n)
 			scanf("%*[^\n]"); 
 			continue;
 		}
-		else if(*n<0)
+		/*else if(*n<0)
 		{
 			printf("Error. Value must be positive. Try again.\n");
 			continue;
-		}
+		}*/
 		else
 		{
 			scanf("%*c");
@@ -115,10 +115,10 @@ int getInt(int* n)
 //MVC paradigm
 //------------------------
 //Main Controller function
-int console(int p, Table* t)
+int console(int p, Node* root)
 {	
 	int (*view[])(Node*)={Importv, Traverv, Addv, Delv, Searchv, Maxv, Minv};
-	return view[p](t);	
+	return view[p](root);	
 }
 
 //options
@@ -151,11 +151,12 @@ int Importv(Node* root)
 
 int Traverv(Node* root)
 {
-	printf("Enter a key where traversing starts or enter -1 to traverse all nodes: ");
+	printf("Enter a key where traversing starts or enter any negative value to traverse all nodes: ");
 	int key=0;
 	int input=getInt(&key);
 	if(input) return CERR_EOF;
-	
+	if(key<0) key=FULL_TREE;
+
 	int result=Traversing(root, key);
 	if(result==ERR_NF) printf("Error. No match with start key in tree.\n");
 	else if(result==ERR_EMPTY) printf("Error. Tree is empty.\n");

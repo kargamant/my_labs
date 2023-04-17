@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "funcs.h"
+#include <string.h>
 
 int Traversing(Node* root, int key)
 {
 	Node* ptr=NULL;
-	if(!root) return ERR_EMPTY;
+	if(root->info==NULL) return ERR_EMPTY;
 	if(key==FULL_TREE) ptr=Max(root);
 	else ptr=Search(root, key);
 	if(ptr==NULL) return ERR_NF;
@@ -52,10 +53,16 @@ int AddNode(Node* root, int key, char* info)
 	x->info=info;
 	x->right=NULL;
 	x->left=NULL;
-	if(root==NULL) 
+	x->prev=NULL;
+	if(root->info==NULL) 
 	{
-		root=x;
+		root->key=x->key;
+		root->info=x->info;
+		root->left=NULL;
+		root->right=NULL;
 		root->prev=root->left;
+		free(x);
+		x=NULL;
 		return ERR_OK;
 	}
 	Node* ptr=root;
@@ -78,7 +85,6 @@ int AddNode(Node* root, int key, char* info)
 		else
 		{
 			erased(x);
-			free(x);
 			return ERR_DUPL;
 		}
 	}
@@ -115,7 +121,8 @@ int DelNode(Node* root, int key)
 		if(par->right==ptr) par->right=NULL;
 		else par->left=NULL;
 		erased(ptr);
-		next->prev=prev;
+		if(next) next->prev=prev;
+		else root->prev=prev;
 		return ERR_OK;
 	}
 	else if(ptr->right!=NULL && ptr->left==NULL)
@@ -144,25 +151,51 @@ int DelNode(Node* root, int key)
 	}
 	else
 	{
-		Node* y=ptr;
-		Node* right=ptr->right;
-		while(right->left!=NULL) 
+		Node* cur_par=par;
+		Node* cur=ptr;
+		Node* right=cur->right;
+		par=ptr;
+
+		//finding next node
+		while(right->left!=NULL)
 		{
 			par=right;
-			right=right->left;		
+			right=right->left;
 		}
 		Node* next_par=par;
-		Node* left=ptr->left;
+
+		//finding previous node
+		Node* left=cur->left;
 		while(left->right!=NULL)
 		{
-			par=left;
 			left=left->right;
+		}	
+		if(next_par!=cur) next_par->left=right->right;
+		else next_par->right=right->right;
+		Node* repl=right;
+		repl->prev=left;
+		left=cur->left;
+		right=cur->right;
+		if(cur==cur_par->right)
+		{
+			cur_par->right=repl;
 		}
-		Node* prev_par=par;
-		next_par->left=NULL;
-		y->key=right->key;
-		y->info=right->info;
-		y->prev=left;
+		else cur_par->left=right;
+		repl->right=right;
+		repl->left=left;
+		free(cur);
+		
+		//printf("db1\n");
+		/*cur->key=right->key;
+		cur->info=right->info;
+		cur->prev=left;
+		if(next) next->prev=cur;
+		else
+		{
+			next=right;
+		}
+		printf("db2\n");
+		free(right);*/
 		return ERR_OK;
 	}
 }
@@ -184,23 +217,19 @@ int fimport(Node* root, char* fn)
 	FILE* fd=fopen(fn, "r+");
 	while(!feof(fd))
 	{
-		Node* x=(Node*)malloc(sizeof(Node));
-		x->key=GetIntf(fd);
-		if(x->key==-1) 
+		int key=GetIntf(fd);
+		if(key==-1) 
 		{
 			erased(root);
-			free(x);
-			return ERR_EOF
-		}
-		//fscanf(fd, "%d", &(x->key));
-		x->info=enterf(fd);
-		if(!x->info) 
-		{
-			erased(root);
-			free(x);
 			return ERR_EOF;
 		}
-		AddNode(root, x);
+		char* info=enterf(fd);
+		if(!info) 
+		{
+			erased(root);
+			return ERR_EOF;
+		}
+		AddNode(root, key, info);
 	}
 	fclose(fd);
 	return ERR_OK;

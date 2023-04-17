@@ -7,7 +7,7 @@ char* enter();
 char* enterf(FILE* fd);
 int GetIntf(FILE* fd);
 int getInt(int* n);
-int console(int p, Table* t);
+int console(int p, Node* root);
 
 //view functions
 int Importv(Node* root);
