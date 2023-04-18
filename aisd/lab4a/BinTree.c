@@ -215,28 +215,85 @@ int fimport(Node* root, char* fn)
 
 int show(Node* root)
 {
-	if(root->info==NULL) return ERR_EMPTY;
-	Node* ptr=Max(root);
-	int n=0;
-	while(ptr!=NULL) 
-	{
-		++n;
-		ptr=ptr->prev;
-	}
-	int power=2;
-	while(power<n)
-	{
-		power=power*2;
-	}
-	power--;
+	if(root->info==NULL) return ERR_EMPTY;	
 	
-	//output array
-	//Mayde i'll remake it with size h - height of tree
-	Node** nodes=(Node**)malloc(power*sizeof(Node*));
+	//Generating tree layout
+	Node** nodes=(Node**)malloc(sizeof(Node*));
 	*nodes=root;
-	nodes[1]=root->left;
-	nodes[2]=root->right;
-
+	int p=1;
+	int k=0;
+	int n=1;
+	while(p!=k)
+	{
+		p*=2;
+		k=0;
+		nodes=(Node**)realloc(nodes, (n+p)*sizeof(Node*));
+		int jsum=0;
+		for(int j=n; j<n+p; j+=2)
+		{
+			if(nodes[j-p/2-jsum]) nodes[j]=nodes[j-p/2-jsum]->left;
+			else nodes[j]=NULL;
+			if(nodes[j-p/2-jsum]) nodes[j+1]=nodes[j-p/2-jsum]->right;
+			else nodes[j+1]=NULL;
+			if(!nodes[j]) k++;
+			if(!nodes[j+1]) k++;
+			jsum++;
+		}
+		n+=p;
+		if(k==p) 
+		{
+			n-=p;
+			break;
+		}
+	}
+	int spaces=n;
+	int branches=(n+1)/2;
+	int sum_indent=0;
+	while(branches!=0)
+	{
+		sum_indent+=branches;
+		branches/=2;
+	}
+	branches=(n+1)/2;
+	p=1;
+	for(int i=0; i<n; i+=p/2)
+	{
+		//for(int j=0; j<sum_indent-branches; j++) printf(" ");
+		//for(int j=0; j<branches; j++) printf("-");
+		for(int j=i; j<i+p; j++) 
+		{
+			if(j==i) for(int j=0; j<sum_indent-branches; j++) printf(" ");
+			//printf("/");
+			for(int j=0; j<branches; j++) printf("-");
+			if(nodes[j]) printf("%d", nodes[j]->key);
+			else printf(" ");
+			for(int j=0; j<branches; j++) printf("-");
+			//printf("\\");
+			for(int j=0; j<(n+1)/p -1; j++) printf(" ");
+			//out_node(nodes[j], spaces);
+		}
+		printf("\n");
+		//To be remade soon minding that length of every node is different
+	//	for(int j=0; j<sum_indent-branches; j++) printf(" ");
+	//	printf("|");
+	//	for(int y=0; y<2*p-1; y++)
+	//	{
+	//		for(int j=0; j<2*branches-1; j++) printf(" ");
+	//		printf("|");
+	//	}
+	//	printf("\n");
+		spaces=spaces/2;
+		sum_indent-=branches;
+		branches/=2;
+		p*=2;
+	}
+	/*
+	for(int i=0; i<n; i++)
+	{
+		if(nodes[i]) printf("%d\n", nodes[i]->key);
+		else printf("null\n");
+	}*/
+	/*
 	//amount of spaces for every layer
 	int spaces=n;
 	
@@ -277,7 +334,7 @@ int show(Node* root)
 			g++;
 		}
 		spaces=spaces/2;
-	}
+	}*/
 	free(nodes);
 	return ERR_OK;
 }
