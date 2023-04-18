@@ -84,7 +84,8 @@ int AddNode(Node* root, int key, char* info)
 		}
 		else
 		{
-			erased(x);
+			//erased(x);
+			free(x);
 			return ERR_DUPL;
 		}
 	}
@@ -223,6 +224,7 @@ int show(Node* root)
 	int p=1;
 	int k=0;
 	int n=1;
+	int h=0;
 	while(p!=k)
 	{
 		p*=2;
@@ -240,12 +242,15 @@ int show(Node* root)
 			jsum++;
 		}
 		n+=p;
+		h++;
 		if(k==p) 
 		{
 			n-=p;
+			h--;
 			break;
 		}
 	}
+	
 	int spaces=n;
 	int branches=(n+1)/2;
 	int sum_indent=0;
@@ -277,6 +282,26 @@ int show(Node* root)
 	free(nodes);
 	return ERR_OK;
 }
+/*
+void assymetric_trave(Node* root, int* h)
+{
+	static int hc=0;
+	if(!root) 
+	{
+		printf("\n");
+		//return NULL;
+		*h=*h-1;
+	}
+	else
+	{
+		hc=*h;
+		assymetric_trave(root->right, h);
+		for(int i=0; i<*h; i++) printf("    ");
+		printf("----%d\n", root->key);
+		*h=hc;
+		assymetric_trave(root->left, h);
+	}
+}*/
 
 void out_node(Node* x, int spaces)
 {

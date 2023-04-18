@@ -4,6 +4,7 @@
 #include "funcs.h"
 #include "BinTree.h"
 #include "time.h"
+#include "timer.h"
 
 //string parsing from lab2
 char* enter()
@@ -135,7 +136,7 @@ int fcheck(char* fnd)
 //Main Controller function
 int console(int p, Node* root)
 {	
-	int (*view[])(Node*)={Importv, Traverv, Addv, Delv, Searchv, Maxv, Minv, Showv};
+	int (*view[])(Node*)={Importv, Traverv, Addv, Delv, Searchv, Maxv, Minv, Showv, Generv};
 	return view[p](root);	
 }
 
@@ -202,6 +203,7 @@ int Addv(Node* root)
 	t2=clock();
 	if(result==ERR_DUPL)
 	{
+		free(data);
 		printf("Error. Node with this key has already been added to tree.\n");
 	}
 	else printf("Node with key %d was successfully added to tree.\n", key);
@@ -292,6 +294,41 @@ int Showv(Node* root)
 	t2=clock();
 	if(result==ERR_EMPTY) printf("Error. Tree is empty.\n");
 	printf("Excecution time %lf seconds.\n", (t2-t1)/CLOCKS_PER_SEC);
+
+	return EndView();
+}
+
+int Generv(Node* root)
+{
+	printf("Enter amount of nodes in tree: ");
+	int n=0;
+	int input=getInt(&n);
+	if(input) return CERR_EOF;
+	printf("Now enter key generation limit: ");
+	int limit=0;
+	input=getInt(&limit);
+	if(input) return CERR_EOF;
+	printf("Lastly enter info size limit: ");
+	int str_limit=0;
+	input=getInt(&str_limit);
+	if(input) return CERR_EOF;
+
+
+	Node* start=Max(root);
+	while(start!=NULL)
+	{
+		free(start->info);
+		start->info=NULL;
+		Node* prev=start->prev;
+		if(start!=root) free(start);
+		start=prev;
+	}
+	generate(root, n, limit, str_limit);
+	/*root->key=g->key;
+	root->info=g->info;
+	root->right=g->right;
+	root->left=g->left;
+	root->prev=g->prev;*/
 
 	return EndView();
 }
