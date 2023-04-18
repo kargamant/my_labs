@@ -127,7 +127,7 @@ int DelNode(Node* root, int key)
 			{
 				prev=Max(ptr->left);
 			}
-			next->prev=prev;
+			if(next) next->prev=prev;
 			ptr->right=NULL;
 			ptr->left=NULL;
 			ptr->prev=NULL;
@@ -159,7 +159,7 @@ int DelNode(Node* root, int key)
 			rp=rp->left;
 		}
 		//next=rp;
-		if(next_par==ptr) next_par->right=NULL;
+		if(next_par==ptr) next_par->right=rp->right;
 		else next_par->left=NULL;
 
 		Node* left=ptr->left;
@@ -256,85 +256,24 @@ int show(Node* root)
 	}
 	branches=(n+1)/2;
 	p=1;
+
 	for(int i=0; i<n; i+=p/2)
-	{
-		//for(int j=0; j<sum_indent-branches; j++) printf(" ");
-		//for(int j=0; j<branches; j++) printf("-");
+	{	
 		for(int j=i; j<i+p; j++) 
 		{
 			if(j==i) for(int j=0; j<sum_indent-branches; j++) printf(" ");
-			//printf("/");
 			for(int j=0; j<branches; j++) printf("-");
 			if(nodes[j]) printf("%d", nodes[j]->key);
-			else printf(" ");
 			for(int j=0; j<branches; j++) printf("-");
-			//printf("\\");
-			for(int j=0; j<(n+1)/p -1; j++) printf(" ");
-			//out_node(nodes[j], spaces);
+			for(int j=0; j<spaces; j++) printf(" ");
+
 		}
 		printf("\n");
-		//To be remade soon minding that length of every node is different
-	//	for(int j=0; j<sum_indent-branches; j++) printf(" ");
-	//	printf("|");
-	//	for(int y=0; y<2*p-1; y++)
-	//	{
-	//		for(int j=0; j<2*branches-1; j++) printf(" ");
-	//		printf("|");
-	//	}
-	//	printf("\n");
 		spaces=spaces/2;
 		sum_indent-=branches;
 		branches/=2;
 		p*=2;
 	}
-	/*
-	for(int i=0; i<n; i++)
-	{
-		if(nodes[i]) printf("%d\n", nodes[i]->key);
-		else printf("null\n");
-	}*/
-	/*
-	//amount of spaces for every layer
-	int spaces=n;
-	
-	//how many nodes on a certain layer
-	int p=2;
-	
-	//last node that was shown
-	int last_ind=0;
-
-	//base iteration
-	out_node(root, spaces);
-	printf("\n");
-	spaces=spaces/2;
-
-	//main cycle
-	int k=power-1;
-	while(k>0)
-	{
-
-		for(int i=last_ind+1; i<last_ind+1+p; i++) 
-		{
-			//if(nodes[i]) printf("%d\n", nodes[i]->key);
-			//else printf("null\n");
-			out_node(nodes[i], spaces);
-			if(nodes[i]) k--;
-		}
-		printf("\n");
-		p=p*2;
-		if((p+p/2)>power) break;
-		last_ind=last_ind+p/2;
-		int g=0;
-		for(int j=1+p/2; j<p+p/2; j+=2) 
-		{
-			if(nodes[j-p/2-g]) nodes[j]=nodes[j-p/2-g]->left;
-			else nodes[j]=NULL;
-			if(nodes[j-p/2-g]) nodes[j+1]=nodes[j-p/2-g]->right;
-			else nodes[j+1]=NULL;
-			g++;
-		}
-		spaces=spaces/2;
-	}*/
 	free(nodes);
 	return ERR_OK;
 }

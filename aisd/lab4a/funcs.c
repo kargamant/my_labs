@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "funcs.h"
 #include "BinTree.h"
+#include "time.h"
 
 //string parsing from lab2
 char* enter()
@@ -174,10 +175,14 @@ int Traverv(Node* root)
 	int input=getInt(&key);
 	if(input) return CERR_EOF;
 	if(key<0) key=FULL_TREE;
-
+	
+	double t1, t2;
+	t1=clock();
 	int result=Traversing(root, key);
+	t2=clock();
 	if(result==ERR_NF) printf("Error. No match with start key in tree.\n");
 	else if(result==ERR_EMPTY) printf("Error. Tree is empty.\n");
+	printf("Excecution time %lf seconds.\n", (t2-t1)/CLOCKS_PER_SEC);
 	return EndView();
 }
 
@@ -191,7 +196,10 @@ int Addv(Node* root)
 	char* data=enter();
 	if(!data) return CERR_EOF;
 
+	double t1, t2;
+	t1=clock();
 	int result=AddNode(root, key, data);
+	t2=clock();
 	if(result==ERR_DUPL)
 	{
 		printf("Error. Node with this key has already been added to tree.\n");
@@ -200,6 +208,7 @@ int Addv(Node* root)
 	
 	printf("Tree:\n");
 	Traversing(root, FULL_TREE);
+	printf("Excecution time %lf seconds.\n", (t2-t1)/CLOCKS_PER_SEC);
 	return EndView();
 }
 
@@ -210,11 +219,15 @@ int Delv(Node* root)
 	int input=getInt(&key);
 	if(input) return CERR_EOF;
 	
+	double t1, t2;
+	t1=clock();
 	int result=DelNode(root, key);
+	t2=clock();
 	if(result==ERR_NF) printf("Error. No node with this key in tree.\n");
 	else if(result==ERR_EMPTY) printf("Error. Tree is empty.\n");
 	else printf("Node with key %d was successfully deleted.\n", key);
 
+	printf("Excecution time %lf seconds.\n", (t2-t1)/CLOCKS_PER_SEC);
 	return EndView();
 }
 
@@ -225,44 +238,61 @@ int Searchv(Node* root)
 	int input=getInt(&key);
 	if(input) return CERR_EOF;
 	
+	double t1, t2;
+	t1=clock();
 	Node* result=Search(root, key);
+	t2=clock();
 	if(!result) printf("Error. No node with such key in tree.\n");
 	else
 	{
 		printf("key: %d | info: %s\n", result->key, result->info);
 	}
+	printf("Excecution time %lf seconds.\n", (t2-t1)/CLOCKS_PER_SEC);
 
 	return EndView();
 }
 
 int Maxv(Node* root)
 {
+	double t1, t2;
+	t1=clock();
 	Node* result=Max(root);
+	t2=clock();
 	if(!result) printf("Error. Tree is empty.\n");
 	else
 	{
 		printf("key: %d | info: %s\n", result->key, result->info);
 	}
+	printf("Excecution time %lf seconds.\n", (t2-t1)/CLOCKS_PER_SEC);
 
 	return EndView();
 }
 
 int Minv(Node* root)
 {
+	double t1, t2;
+	t1=clock();
 	Node* result=Min(root);
+	t2=clock();
 	if(!result) printf("Error. Tree is empty.\n");
 	else
 	{
 		printf("key: %d | info: %s\n", result->key, result->info);
 	}
+	printf("Excecution time %lf seconds.\n", (t2-t1)/CLOCKS_PER_SEC);
 
 	return EndView();
 }
 
 int Showv(Node* root)
 {
+	double t1, t2;
+	t1=clock();
 	int result=show(root);
+	t2=clock();
 	if(result==ERR_EMPTY) printf("Error. Tree is empty.\n");
+	printf("Excecution time %lf seconds.\n", (t2-t1)/CLOCKS_PER_SEC);
+
 	return EndView();
 }
 
