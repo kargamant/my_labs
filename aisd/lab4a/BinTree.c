@@ -270,7 +270,8 @@ int fimport(Node* root, char* fn)
 			erased(root);
 			return ERR_EOF;
 		}
-		AddNode(root, key, info);
+		int result=AddNode(root, key, info);
+		if(result!=ERR_OK) free(info);
 	}
 	fclose(fd);
 	return ERR_OK;

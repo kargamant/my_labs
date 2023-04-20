@@ -154,6 +154,7 @@ int console(int p, Node* root)
 
 int Importv(Node* root)
 {
+	if(root->info) printf("Warning. if your tree is not empty then this function will nest new tree into current tree.\n");
 	printf("Enter filename: ");
 	char* fn=enter();
 	if(fcheck(fn)==CERR_EOF) return CERR_EOF;
