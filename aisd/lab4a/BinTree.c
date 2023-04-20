@@ -118,7 +118,70 @@ int DelNode(Node* root, int key)
 		}
 		if(ptr==NULL) return ERR_NF;
 	}
-	if(ptr->right==NULL || ptr->left==NULL)
+	/*
+		100
+	    50	      120
+		   110   140
+	 */
+	if(ptr==root)
+	{
+		Node* next_par=ptr;
+		Node* rp=ptr->right;
+		if(rp) 
+		{	while(rp->left!=NULL)
+			{
+				next_par=rp; //120
+				rp=rp->left; //110
+			}
+
+			if(next_par==ptr) next_par->right=rp->right;
+			else next_par->left=rp->right;
+
+			ptr->key=rp->key;
+			free(ptr->info);
+			ptr->info=rp->info;
+			if(rp->right==NULL) next_par->prev=ptr;
+			else Min(rp->right)->prev=ptr;
+			free(rp);
+		}	
+		else
+		{
+			if(!ptr->left)
+			{
+				free(ptr->info);
+				ptr->info=NULL;
+				return ERR_OK;
+			}
+			free(ptr->info);
+			Node* new_root=ptr->left;
+			if(!new_root->right) 
+			{
+				ptr->left=new_root->left;
+				ptr->right=NULL;
+				ptr->key=new_root->key;
+				ptr->info=new_root->info;
+				ptr->prev=new_root->prev;
+				free(new_root);
+			}
+			else
+			{
+				next=new_root->right;
+				next_par=new_root;
+				while(next->right!=NULL)
+				{
+					next_par=next;
+					next=next->right;
+				}
+				next_par->right=next->left;
+				ptr->key=next->key;
+				ptr->info=next->info;
+				ptr->prev=next->prev;
+				free(next);
+			}
+		}
+				
+	}
+	else if(ptr->right==NULL || ptr->left==NULL)
 	{
 		if(ptr->right==NULL)
 		{
@@ -151,7 +214,6 @@ int DelNode(Node* root, int key)
 	else
 	{
 		prev=Max(ptr->left);
-
 		Node* next_par=ptr;
 		Node* rp=ptr->right;
 		while(rp->left!=NULL)
@@ -161,7 +223,7 @@ int DelNode(Node* root, int key)
 		}
 		//next=rp;
 		if(next_par==ptr) next_par->right=rp->right;
-		else next_par->left=NULL;
+		else next_par->left=rp->right;
 
 		Node* left=ptr->left;
 		Node* right=ptr->right;
@@ -216,101 +278,21 @@ int fimport(Node* root, char* fn)
 
 int show(Node* root)
 {
-	if(root->info==NULL) return ERR_EMPTY;	
-	
-	//Generating tree layout
-	Node** nodes=(Node**)malloc(sizeof(Node*));
-	*nodes=root;
-	int p=1;
-	int k=0;
-	int n=1;
-	int h=0;
-	while(p!=k)
-	{
-		p*=2;
-		k=0;
-		nodes=(Node**)realloc(nodes, (n+p)*sizeof(Node*));
-		int jsum=0;
-		for(int j=n; j<n+p; j+=2)
-		{
-			if(nodes[j-p/2-jsum]) nodes[j]=nodes[j-p/2-jsum]->left;
-			else nodes[j]=NULL;
-			if(nodes[j-p/2-jsum]) nodes[j+1]=nodes[j-p/2-jsum]->right;
-			else nodes[j+1]=NULL;
-			if(!nodes[j]) k++;
-			if(!nodes[j+1]) k++;
-			jsum++;
-		}
-		n+=p;
-		h++;
-		if(k==p) 
-		{
-			n-=p;
-			h--;
-			break;
-		}
-	}
-	
-	int spaces=n;
-	int branches=(n+1)/2;
-	int sum_indent=0;
-	while(branches!=0)
-	{
-		sum_indent+=branches;
-		branches/=2;
-	}
-	branches=(n+1)/2;
-	p=1;
-
-	for(int i=0; i<n; i+=p/2)
-	{	
-		for(int j=i; j<i+p; j++) 
-		{
-			if(j==i) for(int j=0; j<sum_indent-branches; j++) printf(" ");
-			for(int j=0; j<branches; j++) printf("-");
-			if(nodes[j]) printf("%d", nodes[j]->key);
-			for(int j=0; j<branches; j++) printf("-");
-			for(int j=0; j<spaces; j++) printf(" ");
-
-		}
-		printf("\n");
-		spaces=spaces/2;
-		sum_indent-=branches;
-		branches/=2;
-		p*=2;
-	}
-	free(nodes);
+	if(!root) return ERR_EMPTY;
+	if(root->info==NULL) return ERR_EMPTY;
+	assymetric_trave(root, 0);
 	return ERR_OK;
 }
-/*
-void assymetric_trave(Node* root, int* h)
+
+void assymetric_trave(Node* root, int h)
 {
-	static int hc=0;
-	if(!root) 
-	{
-		printf("\n");
-		//return NULL;
-		*h=*h-1;
-	}
+	int hc=h;
+	if(!root) printf("\n");
 	else
 	{
-		hc=*h;
-		assymetric_trave(root->right, h);
-		for(int i=0; i<*h; i++) printf("    ");
-		printf("----%d\n", root->key);
-		*h=hc;
-		assymetric_trave(root->left, h);
-	}
-}*/
-
-void out_node(Node* x, int spaces)
-{
-	
-	for(int i=0; i<spaces; i++) printf(" ");
-	if(x) printf("%d", x->key);
-	else 
-	{
-		for(int i=0; i<spaces+1; i++) printf(" ");
-		//printf("db1\n");
+		assymetric_trave(root->right, h+1);
+		for(int i=0; i<hc; i++) printf("    ");
+		printf("%d\n", root->key);
+		assymetric_trave(root->left, h+1);
 	}
 }
