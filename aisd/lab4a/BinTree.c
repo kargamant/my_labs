@@ -7,9 +7,11 @@ int Traversing(Node* root, int key)
 {
 	Node* ptr=NULL;
 	if(root->info==NULL) return ERR_EMPTY;
-	if(key==FULL_TREE) ptr=Max(root);
+	Node* mr=Max(root);
+	if(key==FULL_TREE || key>mr->key) ptr=mr;
 	else ptr=Search(root, key);
-	if(ptr==NULL) return ERR_NF;
+	if(!ptr) return ERR_NF;
+
 	while(ptr!=NULL)
 	{
 		printf("key: %d | info: %s\n", ptr->key, ptr->info);
