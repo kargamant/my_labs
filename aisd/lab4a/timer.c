@@ -126,7 +126,7 @@ void timing(long long nodes, long long limit, long long str_limit, int itr)
 				fclose(fd);
 				fd=fopen(ptr->fn, "w+");
 			}
-			fprintf(fd, "%lld %Lf\n", ptr->nodes, ptr->timing);
+			fprintf(fd, "%lld %.20Lf\n", ptr->nodes, ptr->timing);
 			fclose(fd);
 		}
 		nodes/=2;
