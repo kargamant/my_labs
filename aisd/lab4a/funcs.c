@@ -371,12 +371,16 @@ int Timingv(Node* root)
 	long long limit=0;
 	input=getLL(&limit);
 	if(input) return CERR_EOF;
-	printf("Lastly enter info size limit: ");
+	printf("enter info size limit: ");
 	long long str_limit=0;
 	input=getLL(&str_limit);
 	if(input) return CERR_EOF;
+	printf("Lastly enter amount of iterations for every operation: ");
+	int itr=0;
+	input=getInt(&itr);
+	if(input) return CERR_EOF;
 	
-	timing(n, limit, str_limit, "\0");
+	timing(n, limit, str_limit, "\0", itr);
 	printf("Timing results were written in directory that was passed to a function.\n");
 	return EndView();
 }
