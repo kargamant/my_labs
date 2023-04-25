@@ -114,6 +114,33 @@ int getInt(int* n)
 	}while(input==0 || *n<0);
 }
 
+
+int getLL(long long int* n)
+{
+	int input;
+	do
+	{
+		input=scanf("%lld", n);
+		if(input==EOF) return 1;
+		else if(input==0)
+		{
+			printf("Error, wrong data. Try again\n");
+			scanf("%*[^\n]"); 
+			continue;
+		}
+		/*else if(*n<0)
+		{
+			printf("Error. Value must be positive. Try again.\n");
+			continue;
+		}*/
+		else
+		{
+			scanf("%*c");
+			return 0;
+		}
+	}while(input==0 || *n<0);
+}
+
 int fcheck(char* fnd)
 {
 	if(!fnd) 
@@ -136,7 +163,7 @@ int fcheck(char* fnd)
 //Main Controller function
 int console(int p, Node* root)
 {	
-	int (*view[])(Node*)={Importv, Traverv, Addv, Delv, Searchv, Maxv, Minv, Showv, Generv};
+	int (*view[])(Node*)={Importv, Traverv, Addv, Delv, Searchv, Maxv, Minv, Showv, Generv, Timingv};
 	return view[p](root);	
 }
 
@@ -331,6 +358,26 @@ int Generv(Node* root)
 	root->left=g->left;
 	root->prev=g->prev;*/
 
+	return EndView();
+}
+
+int Timingv(Node* root)
+{
+	printf("Enter maximum amount of nodes in tree: ");
+	long long n=0;
+	int input=getLL(&n);
+	if(input) return CERR_EOF;
+	printf("Now enter key generation limit: ");
+	long long limit=0;
+	input=getLL(&limit);
+	if(input) return CERR_EOF;
+	printf("Lastly enter info size limit: ");
+	long long str_limit=0;
+	input=getLL(&str_limit);
+	if(input) return CERR_EOF;
+	
+	timing(n, limit, str_limit, "\0");
+	printf("Timing results were written in directory that was passed to a function.\n");
 	return EndView();
 }
 

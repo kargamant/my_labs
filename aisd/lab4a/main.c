@@ -18,14 +18,15 @@ int main()
 		"Find Minimum\n",
 		"Show Tree as a tree\n",
 		"Generate random tree\n",
+		"Full timing of the tree\n",
 	};
 	
 	system("clear");
 	//main cycle
 	do
 	{
-		int p=menue(options, 9);
-		if(p==10) break;
+		int p=menue(options, 10);
+		if(p==11) break;
 		int res=console(p, root);
 		if(res==CERR_EOF) break;
 		system("clear");

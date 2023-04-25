@@ -19,6 +19,7 @@ int Maxv(Node* root);
 int Minv(Node* root);
 int Showv(Node* root);
 int Generv(Node* root);
+int Timingv(Node* root);
 int EndView();
 typedef enum CERR
 {
