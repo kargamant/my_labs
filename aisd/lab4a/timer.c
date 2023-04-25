@@ -27,16 +27,19 @@ void generate(Node* root, int n, long long limit, long long str_limit)
 	}
 }
 
-void timing(long long nodes, long long limit, long long str_limit, const char* res_dir, int itr)
+void timing(long long nodes, long long limit, long long str_limit, int itr)
 {
+	system("mkdir timing");
+	printf("\n");
 	const char* result_files[]=
 	{
-		"AddNode.txt",
-		"Traversing.txt",
-		"DelNode.txt",
-		"Search.txt",
-		"Max.txt",
+		"timing/AddNode.txt",
+		"timing/Traversing.txt",
+		"timing/DelNode.txt",
+		"timing/Search.txt",
+		"timing/Max.txt",
 	};
+	
 	
 	TimingTable* tt=(TimingTable*)malloc(sizeof(TimingTable));
 	tt->msize=5;
@@ -46,20 +49,23 @@ void timing(long long nodes, long long limit, long long str_limit, const char* r
 	
 	for(Item* ptr=tt->info; ptr-tt->info<tt->msize; ++ptr) 
 	{
-		//printf("db1\n");
 		ptr->fn=result_files[ptr-tt->info];
-		//printf("db2\n");
 	}
-
+	
+	if(nodes>limit)
+	{
+		printf("Warning. Key limit is less than amount of nodes. That means that it isn't possible to generate such tree.\n");
+		printf("Key limit was increased to value=nodes*2\n");
+		limit=nodes*2;
+	}
 	long long fnodes=nodes;
-	double trave_t=0, max_t=0, search_t=0, add_t=0, del_t=0; 
+	long double trave_t=0, max_t=0, search_t=0, add_t=0, del_t=0; 
 	srand(time(NULL));
-	int curf=0;
 	Node* root=(Node*)calloc(1, sizeof(Node));
 	while(nodes!=0)
 	{
 		generate(root, nodes, limit, str_limit);
-		double t1=0, t2=0;
+		long double t1=0, t2=0;
 
 
 		for(int i=0; i<itr; i++)
@@ -68,76 +74,38 @@ void timing(long long nodes, long long limit, long long str_limit, const char* r
 			int key=rand()%limit;
 			int size=rand()%str_limit;
 			char* info=(char*)calloc(size, size*sizeof(char));
-			//info[size-1]=0;
 			for(char* ptr=info; ptr-info<size-1; ++ptr) *ptr=65+32*(rand()%2)+rand()%27;
-
 			t1=clock();
 			int result=AddNode(root, key, info);
 			t2=clock();
 			if(result!=ERR_OK) free(info);
-			/*while(result!=ERR_OK)
-			{
-				//printf("db34\n");
-				key=rand()%limit;
-				t1=clock();
-				result=AddNode(root, key, info);
-				t2=clock();
-			}*/
-			add_t+=(double)((t2-t1)/CLOCKS_PER_SEC);
-			//WriteTiming(tt, curf, result_files[curf], nodes, (t2-t1)/CLOCKS_PER_SEC);	
-			//curf++;
+			add_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
 
 			//Testing of Traversing
-			
 			t1=clock();
 			result=Traversing_no_print(root, -1);
 			t2=clock();
-			/*if(result==ERR_EMPTY) 
-			{
-				curf=0;
-				continue;
-			}*/
-			trave_t+=(double)((t2-t1)/CLOCKS_PER_SEC);
+			trave_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
 
-			//Testing of Delition
-			
+			//Testing of Delition	
 			key=rand()%limit;
 			t1=clock();
 			result=DelNode(root, key);
 			t2=clock();
-			/*if(result==ERR_EMPTY) 
-			{
-				curf=0;
-				continue;
-			}*/
-			//printf("db1\n");
-			/*if(result==ERR_NF)
-			{
-				while(result!=ERR_OK)
-				{
-					//printf("db3\n");
-					key=rand()%limit;
-					t1=clock();
-					result=DelNode(root, key);
-					t2=clock();
-				}
-			}*/
-			del_t+=(double)((t2-t1)/CLOCKS_PER_SEC);
+			del_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
 
 			//Testing of search
-
 			key=rand()%limit;
 			t1=clock();
 			Node* node=Search(root, key);
 			t2=clock();
-			search_t+=(double)((t2-t1)/CLOCKS_PER_SEC);
+			search_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
 
-			//Testing max 
-			
+			//Testing max
 			t1=clock();
 			Max(root);
 			t2=clock();
-			max_t+=(double)((t2-t1)/CLOCKS_PER_SEC);
+			max_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
 		}
 		add_t/=itr;
 		trave_t/=itr;
@@ -158,13 +126,10 @@ void timing(long long nodes, long long limit, long long str_limit, const char* r
 				fclose(fd);
 				fd=fopen(ptr->fn, "w+");
 			}
-			//printf("%lld\n", ptr->nodes);
-			fprintf(fd, "%lld %lf", ptr->nodes, ptr->timing);
-			fprintf(fd, "\n");
+			fprintf(fd, "%lld %Lf\n", ptr->nodes, ptr->timing);
 			fclose(fd);
 		}
 		nodes/=2;
-		curf=0;
 		Node* start=Max(root);
 		while(start!=NULL)
 		{
@@ -193,7 +158,7 @@ Item* Searchtt(TimingTable* vector, int ms, char* fn)
 	return NULL;
 }
 
-void WriteTiming(TimingTable* tt, int curf, const char* fn, int nodes, double timing)
+void WriteTiming(TimingTable* tt, int curf, const char* fn, int nodes, long double timing)
 {
 	tt->info[curf].fn=fn;
 	tt->info[curf].nodes=nodes;

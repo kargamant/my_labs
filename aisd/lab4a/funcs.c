@@ -380,7 +380,7 @@ int Timingv(Node* root)
 	input=getInt(&itr);
 	if(input) return CERR_EOF;
 	
-	timing(n, limit, str_limit, "\0", itr);
+	timing(n, limit, str_limit, itr);
 	printf("Timing results were written in directory that was passed to a function.\n");
 	return EndView();
 }
