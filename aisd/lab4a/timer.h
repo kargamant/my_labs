@@ -16,7 +16,7 @@ typedef struct TimingTable
 }TimingTable;
 
 void generate(Node* root, int n, long long int limit, long long int str_limit);
-void timing(long long nodes, long long limit, long long str_limit, int itr);
+void timing(long long nodes, long long limit, long long str_limit, int itr, double step);
 Item* Searchtt(TimingTable* vector, int ms, char* fn);
 void WriteTiming(TimingTable* tt, int curf, const char* fn, int nodes, long double timing);
 int Traversing_no_print(Node* root, int key);

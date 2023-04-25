@@ -141,6 +141,32 @@ int getLL(long long int* n)
 	}while(input==0 || *n<0);
 }
 
+int getDb(double* n)
+{
+	int input;
+	do
+	{
+		input=scanf("%lf", n);
+		if(input==EOF) return 1;
+		else if(input==0)
+		{
+			printf("Error, wrong data. Try again\n");
+			scanf("%*[^\n]"); 
+			continue;
+		}
+		/*else if(*n<0)
+		{
+			printf("Error. Value must be positive. Try again.\n");
+			continue;
+		}*/
+		else
+		{
+			scanf("%*c");
+			return 0;
+		}
+	}while(input==0 || *n<0);
+}
+
 int fcheck(char* fnd)
 {
 	if(!fnd) 
@@ -375,12 +401,16 @@ int Timingv(Node* root)
 	long long str_limit=0;
 	input=getLL(&str_limit);
 	if(input) return CERR_EOF;
-	printf("Lastly enter amount of iterations for every operation: ");
+	printf("enter amount of iterations for every operation: ");
 	int itr=0;
 	input=getInt(&itr);
 	if(input) return CERR_EOF;
+	printf("Lastly, enter step of testing: ");
+	double step=0;
+	input=getDb(&step);
+	if(input) return CERR_EOF;
 	
-	timing(n, limit, str_limit, itr);
+	timing(n, limit, str_limit, itr, step);
 	printf("Timing results were written in directory that was passed to a function.\n");
 	return EndView();
 }

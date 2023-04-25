@@ -27,7 +27,7 @@ void generate(Node* root, int n, long long limit, long long str_limit)
 	}
 }
 
-void timing(long long nodes, long long limit, long long str_limit, int itr)
+void timing(long long nodes, long long limit, long long str_limit, int itr, double step)
 {
 	system("mkdir timing");
 	printf("\n");
@@ -129,7 +129,7 @@ void timing(long long nodes, long long limit, long long str_limit, int itr)
 			fprintf(fd, "%lld %.20Lf\n", ptr->nodes, ptr->timing);
 			fclose(fd);
 		}
-		nodes/=2;
+		nodes/=step;
 		Node* start=Max(root);
 		while(start!=NULL)
 		{
