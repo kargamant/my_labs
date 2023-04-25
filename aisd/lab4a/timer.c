@@ -41,23 +41,25 @@ void timing(long long nodes, long long limit, long long str_limit, const char* r
 	TimingTable* tt=(TimingTable*)malloc(sizeof(TimingTable));
 	tt->msize=5;
 	tt->csize=0;
-	tt->info=(Item*)malloc(tt->msize*sizeof(Item));
+	tt->info=(Item*)calloc(tt->msize, tt->msize*sizeof(Item));
+
 	
 	for(Item* ptr=tt->info; ptr-tt->info<tt->msize; ++ptr) 
 	{
+		//printf("db1\n");
 		ptr->fn=result_files[ptr-tt->info];
+		//printf("db2\n");
 	}
 
-	//for(int i=0; i<5; i++) printf("%s\n", tt->info[i]);
 	long long fnodes=nodes;
-	double trave_t, max_t, search_t, add_t, del_t; 
+	double trave_t=0, max_t=0, search_t=0, add_t=0, del_t=0; 
 	srand(time(NULL));
 	int curf=0;
-	Node* root=(Node*)malloc(sizeof(Node));
+	Node* root=(Node*)calloc(1, sizeof(Node));
 	while(nodes!=0)
 	{
 		generate(root, nodes, limit, str_limit);
-		double t1, t2;
+		double t1=0, t2=0;
 
 
 		for(int i=0; i<itr; i++)
@@ -65,14 +67,14 @@ void timing(long long nodes, long long limit, long long str_limit, const char* r
 			//Testing of AddNode
 			int key=rand()%limit;
 			int size=rand()%str_limit;
-			char* info=malloc(size*sizeof(char));
-			info[size-1]=0;
+			char* info=(char*)calloc(size, size*sizeof(char));
+			//info[size-1]=0;
 			for(char* ptr=info; ptr-info<size-1; ++ptr) *ptr=65+32*(rand()%2)+rand()%27;
 
 			t1=clock();
 			int result=AddNode(root, key, info);
 			t2=clock();
-
+			if(result!=ERR_OK) free(info);
 			/*while(result!=ERR_OK)
 			{
 				//printf("db34\n");
@@ -81,7 +83,7 @@ void timing(long long nodes, long long limit, long long str_limit, const char* r
 				result=AddNode(root, key, info);
 				t2=clock();
 			}*/
-			add_t+=(t2-t1)/CLOCKS_PER_SEC;
+			add_t+=(double)((t2-t1)/CLOCKS_PER_SEC);
 			//WriteTiming(tt, curf, result_files[curf], nodes, (t2-t1)/CLOCKS_PER_SEC);	
 			//curf++;
 
@@ -95,7 +97,7 @@ void timing(long long nodes, long long limit, long long str_limit, const char* r
 				curf=0;
 				continue;
 			}*/
-			trave_t+=(t2-t1)/CLOCKS_PER_SEC;
+			trave_t+=(double)((t2-t1)/CLOCKS_PER_SEC);
 
 			//Testing of Delition
 			
@@ -120,7 +122,7 @@ void timing(long long nodes, long long limit, long long str_limit, const char* r
 					t2=clock();
 				}
 			}*/
-			del_t+=(t2-t1)/CLOCKS_PER_SEC;
+			del_t+=(double)((t2-t1)/CLOCKS_PER_SEC);
 
 			//Testing of search
 
@@ -128,14 +130,14 @@ void timing(long long nodes, long long limit, long long str_limit, const char* r
 			t1=clock();
 			Node* node=Search(root, key);
 			t2=clock();
-			search_t+=(t2-t1)/CLOCKS_PER_SEC;
+			search_t+=(double)((t2-t1)/CLOCKS_PER_SEC);
 
 			//Testing max 
 			
 			t1=clock();
 			Max(root);
 			t2=clock();
-			max_t+=(t2-t1)/CLOCKS_PER_SEC;
+			max_t+=(double)((t2-t1)/CLOCKS_PER_SEC);
 		}
 		add_t/=itr;
 		trave_t/=itr;
@@ -150,15 +152,15 @@ void timing(long long nodes, long long limit, long long str_limit, const char* r
 
 		for(Item* ptr=tt->info; ptr-tt->info<tt->msize; ++ptr) 
 		{
-			FILE* fd=NULL;
+			FILE* fd=fopen(ptr->fn, "a");
 			if(nodes==fnodes)
 			{
-				fd=fopen(ptr->fn, "w+");
 				fclose(fd);
+				fd=fopen(ptr->fn, "w+");
 			}
-			fd=fopen(ptr->fn, "a");
-			printf("%d, %lf\n", ptr->nodes, ptr->timing);
-			fprintf(fd, "%lld %lf\n", ptr->nodes, ptr->timing);
+			//printf("%lld\n", ptr->nodes);
+			fprintf(fd, "%lld %lf", ptr->nodes, ptr->timing);
+			fprintf(fd, "\n");
 			fclose(fd);
 		}
 		nodes/=2;
