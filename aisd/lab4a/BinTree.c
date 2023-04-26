@@ -5,16 +5,15 @@
 
 int Traversing(Node* root, int key)
 {
-	Node* ptr=NULL;
+	Node* ptr=Max(root);
 	if(root->info==NULL) return ERR_EMPTY;
-	Node* mr=Max(root);
-	if(key==FULL_TREE || key>mr->key) ptr=mr;
-	else ptr=Search(root, key);
-	if(!ptr) return ERR_NF;
 
+	if(key==FULL_TREE || key>ptr->key) key=ptr->key;
+	int f=0;
 	while(ptr!=NULL)
 	{
-		printf("key: %d | info: %s\n", ptr->key, ptr->info);
+		if(ptr->key<=key) f=1;
+		if(f) printf("key: %d | info: %s\n", ptr->key, ptr->info);
 		ptr=ptr->prev;
 	}
 	return ERR_OK;
