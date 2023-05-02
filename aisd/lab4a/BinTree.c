@@ -55,6 +55,8 @@ int AddNode(Node* root, int key, char* info)
 	x->right=NULL;
 	x->left=NULL;
 	x->prev=NULL;
+
+	//adding to empty tree
 	if(root->info==NULL) 
 	{
 		root->key=x->key;
@@ -66,6 +68,9 @@ int AddNode(Node* root, int key, char* info)
 		x=NULL;
 		return ERR_OK;
 	}
+
+	//going through the tree to find insertion node
+	//Also remember next and previous nodes
 	Node* ptr=root;
 	Node* par=NULL;
 	Node* prev=NULL;
@@ -85,7 +90,6 @@ int AddNode(Node* root, int key, char* info)
 		}
 		else
 		{
-			//erased(x);
 			free(x);
 			return ERR_DUPL;
 		}
@@ -101,6 +105,8 @@ int DelNode(Node* root, int key)
 {
 	Node* ptr=root;
 	if(ptr->info==NULL) return ERR_EMPTY;
+
+	//searching deleting node
 	Node* par=NULL;
 	Node* prev=NULL;
 	Node* next=NULL;
@@ -119,20 +125,17 @@ int DelNode(Node* root, int key)
 		}
 		if(ptr==NULL) return ERR_NF;
 	}
-	/*
-		100
-	    50	      120
-		   110   140
-	 */
 	if(ptr==root)
 	{
 		Node* next_par=ptr;
 		Node* rp=ptr->right;
 		if(rp) 
-		{	while(rp->left!=NULL)
+		{	
+			//finding next node after root
+			while(rp->left!=NULL)
 			{
-				next_par=rp; //120
-				rp=rp->left; //110
+				next_par=rp; 
+				rp=rp->left;
 			}
 
 			if(next_par==ptr) next_par->right=rp->right;
@@ -147,6 +150,7 @@ int DelNode(Node* root, int key)
 		}	
 		else
 		{
+			//finding previous node of root
 			if(!ptr->left)
 			{
 				free(ptr->info);
@@ -222,7 +226,6 @@ int DelNode(Node* root, int key)
 			next_par=rp;
 			rp=rp->left;
 		}
-		//next=rp;
 		if(next_par==ptr) next_par->right=rp->right;
 		else next_par->left=rp->right;
 

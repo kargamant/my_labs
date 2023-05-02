@@ -5,7 +5,6 @@
 #include <time.h>
 #include "timer.h" 
 #include <string.h>
-#include <stdarg.h>
 
 void generate(Node* root, int n, long long limit, long long str_limit)
 {
@@ -177,7 +176,6 @@ int Traversing_no_print(Node* root, int key)
 
 	while(ptr!=NULL)
 	{
-		//printf("key: %d | info: %s\n", ptr->key, ptr->info);
 		ptr=ptr->prev;
 	}
 	return ERR_OK;

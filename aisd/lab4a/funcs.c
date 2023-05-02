@@ -101,11 +101,6 @@ int getInt(int* n)
 			scanf("%*[^\n]"); 
 			continue;
 		}
-		/*else if(*n<0)
-		{
-			printf("Error. Value must be positive. Try again.\n");
-			continue;
-		}*/
 		else
 		{
 			scanf("%*c");
@@ -128,11 +123,6 @@ int getLL(long long int* n)
 			scanf("%*[^\n]"); 
 			continue;
 		}
-		/*else if(*n<0)
-		{
-			printf("Error. Value must be positive. Try again.\n");
-			continue;
-		}*/
 		else
 		{
 			scanf("%*c");
@@ -154,11 +144,6 @@ int getDb(double* n)
 			scanf("%*[^\n]"); 
 			continue;
 		}
-		/*else if(*n<0)
-		{
-			printf("Error. Value must be positive. Try again.\n");
-			continue;
-		}*/
 		else
 		{
 			scanf("%*c");
@@ -378,11 +363,6 @@ int Generv(Node* root)
 		start=prev;
 	}
 	generate(root, n, limit, str_limit);
-	/*root->key=g->key;
-	root->info=g->info;
-	root->right=g->right;
-	root->left=g->left;
-	root->prev=g->prev;*/
 
 	return EndView();
 }
