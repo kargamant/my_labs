@@ -126,20 +126,31 @@ int AddNode(Btree* tr, int key, char* info)
 }
 
 void Split(Btree* tr, Node* x, int i)
-{
-	for(int j=x->n; j>i; j--)
-	{
-		x->keys[j]=x->keys[j-1];
-		x->child[j+1]=x->child[j];
-	}
+{	
+	Node* ptr=x->child[i];
 	Node* z=(Node*)malloc(sizeof(Node));
 	z->n=0;
-	z->keys=(int*)malloc((2*tr->t -1)*sizeof(int));
-	z->info=(char*)malloc((2*tr->t-1)*sizeof(char));
+	z->keys=(int*)malloc((2*tr->t -1)sizeof(int));
+	z->info=(char**)malloc((2*tr->t -1)sizeof(char*));
 	z->child=(Node**)malloc(2*tr->t*sizeof(Node*));
+	z->par=x;
 
-	
-
+	//will be remade with pointer iteration
+	for(int j=x->n+1; j>i+1; j--)
+	{
+		x->child[j]=x->child[j-1];
+	}
+	x->child[i+1]=z;
+	for(int j=1+(2*tr->t -1)/2; j<ptr->n; j++)
+	{
+		z->keys[j-(1+(2*tr->t -1)/2)]=ptr->keys[1+(2*tr->t -1)/2];
+		z->info[j-(1+(2*tr->t -1)/2)]=ptr->info[1+(2*tr->t -1)/2];
+		z->n=z->n+1;
+	}
+	for(int j=ptr->n-1; j>i; j--)
+	{
+		
+	}
 }
 
 
