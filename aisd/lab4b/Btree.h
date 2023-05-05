@@ -1,12 +1,18 @@
 #ifndef BTREE_H
 #define BTREE_H
 
+typedef struct Item
+{
+	char* data;
+	struct Item* next;
+}Item;
+
 typedef struct Node
 {
 	int n; //amount of keys in array
 	int* keys; //key array
 	struct Node** child; //children array
-	char** info; //information array
+	Item* info; //information array
 	struct Node* par; //parent pointer
 }Node;
 
@@ -16,11 +22,15 @@ typedef struct Btree
 	Node* root;
 }Btree;
 
-typedef struct Item
-{
-	Node* node;
-	struct Item* next;
-}Item;
+
+Node* Min(Btree* tr);
+int Traversing(Btree* tr, int key);
+Btree* InitBtree(int t);
+Item* Search(Btree* tr, int key);
+int AddNode(Btree* tr, int key, char* info);
+void Split(Btree* tr, Node* x, int i);
+int show(Btree* tr);
+
 
 typedef enum ERR
 {
