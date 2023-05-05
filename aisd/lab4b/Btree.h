@@ -29,7 +29,7 @@ Btree* InitBtree(int t);
 Item* Search(Btree* tr, int key);
 int AddNode(Btree* tr, int key, char* info);
 void Split(Btree* tr, Node* x, int i);
-int show(Btree* tr);
+int show(Btree* tr, int level);
 
 
 typedef enum ERR

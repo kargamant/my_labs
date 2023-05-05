@@ -347,23 +347,23 @@ int Showv(Btree* tr)
 	double t1, t2;
 	t1=clock();
 	Node* ptr=tr->root;
-	if(ptr)
-	{
-		printf("[ ");
-		for(int j=0; j<ptr->n; j++)
-		{
-			printf("%d ", ptr->keys[j]);
-		}
-		printf("] ");
-	}
-	else
-	{
-		printf("[ ");
-		for(int j=0; j<2*tr->t -1; j++) printf(" ");
-		printf("] ");
-	}
-	printf("\n");
-	int result=show(tr);
+//	if(ptr)
+//	{
+//		printf("[ ");
+//		for(int j=0; j<ptr->n; j++)
+//		{
+//			printf("%d ", ptr->keys[j]);
+//		}
+//		printf("] ");
+//	}
+//	else
+//	{
+//		printf("[ ");
+//		for(int j=0; j<2*tr->t -1; j++) printf(" ");
+//		printf("] ");
+//	}
+//	printf("\n");
+	int result=show(tr, 0);
 	t2=clock();
 	//if(result==ERR_EMPTY) printf("Error. Tree is empty.\n");
 	printf("Excecution time %lf seconds.\n", (t2-t1)/CLOCKS_PER_SEC);
