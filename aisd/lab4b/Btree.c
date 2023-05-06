@@ -180,9 +180,30 @@ int AddNode(Btree* tr, int key, char* info)
 	{
 		int m=(2*tr->t -1)/2;
 		int ind=0;
-		Node* parent=ptr->par;
-		if(parent)
+		
+		/*printf("Insertion node children before split:\n");
+		for(int j=0; j<2*tr->t; j++)
 		{
+			Node* ch=ptr->child[j];
+			printf("ch%d: ", j);
+			if(!ch)
+			{
+				printf("NULL\n");
+				continue;
+			}
+			else
+			{
+				for(int u=0; u<ch->n; u++)
+				{
+					printf("%d ", ch->keys[u]);
+				}
+				printf("\n");
+			}
+		}*/
+		Node* parent=NULL;
+		if(ptr->par)
+		{
+			parent=ptr->par;
 			for(int j=0; j<2*tr->t; j++)
 			{
 				if(parent->child[j]==ptr)
@@ -203,6 +224,7 @@ int AddNode(Btree* tr, int key, char* info)
 			parent->child[0]=ptr;
 			parent->par=NULL;
 			tr->root=parent;
+			ptr->par=parent;
 		}
 		Split(tr, parent, ind);
 		ptr=parent;
@@ -237,9 +259,9 @@ int AddNode(Btree* tr, int key, char* info)
 			if(!f) ptr=ptr->child[ptr->n];
 		}
 		ptr=par;
-		printf("the key: %d\n", ptr->keys[0]);
+		//printf("the key: %d\n", ptr->keys[0]);
 	}
-
+	printf("ptr->n: %d\n", ptr->n);
 	int k=0;
 	for(int i=ptr->n-1; i>=0; i--)
 	{
@@ -266,7 +288,7 @@ int AddNode(Btree* tr, int key, char* info)
 	}
 	
 	//debug printfs
-	Node* root=tr->root;
+	/*Node* root=tr->root;
 	printf("root: ");
 	for(int i=0; i<root->n; i++)
 	{
@@ -276,14 +298,18 @@ int AddNode(Btree* tr, int key, char* info)
 	for(int i=0; i<2*tr->t; i++)
 	{
 		Node* ch=root->child[i];
-		if(!ch) continue;
 		printf("ch%d: ", i);
+		if(!ch) 
+		{
+			printf("NULL\n");
+			continue;
+		}
 		for(int j=0; j<ch->n; j++)
 		{
 			printf("%d ", ch->keys[j]);
 		}
 		printf("\n");
-	}
+	}*/
 	return ERR_OK;
 }
 
@@ -294,10 +320,30 @@ void Split(Btree* tr, Node* x, int i)
 	z->n=0;
 	z->keys=(int*)malloc((2*tr->t -1)*sizeof(int));
 	z->info=(Item*)malloc((2*tr->t -1)*sizeof(Item));
-	z->child=(Node**)calloc(2*tr->t, 2*tr->t*sizeof(Node*));
+	z->child=(Node**)malloc(2*tr->t*sizeof(Node*));
 	for(Node** gr=z->child; gr-z->child<2*tr->t; ++gr) *gr=NULL;
 	z->par=x;
 	
+	/*printf("Children before split:\n");
+	for(int j=0; j<2*tr->t; j++)
+	{
+		Node* ch=x->child[j];
+		printf("ch%d: ", j);
+		if(!ch)
+		{
+			printf("NULL\n");
+			continue;
+		}
+		else
+		{
+			for(int u=0; u<ch->n; u++)
+			{
+				printf("%d ", ch->keys[u]);
+			}
+			printf("\n");
+		}
+	}*/
+
 	//will be remade with pointer iteration
 	for(int j=2*tr->t-1; j>i+1; j--)
 	{
@@ -308,10 +354,11 @@ void Split(Btree* tr, Node* x, int i)
 	{
 		z->keys[j-(1+(2*tr->t -1)/2)]=ptr->keys[j];
 		z->info[j-(1+(2*tr->t -1)/2)]=ptr->info[j];
+		z->child[j-(1+(2*tr->t -1)/2)]=ptr->child[j];
 		z->n=z->n+1;
-		ptr->n=ptr->n-1;
 	}
-	
+	z->child[ptr->n-(1+(2*tr->t -1)/2)]=ptr->child[ptr->n];
+	ptr->n=ptr->n-z->n;
 	if(x->n!=0)
 	{
 		for(int j=2*tr->t - 2; j>i; j--)
@@ -321,27 +368,32 @@ void Split(Btree* tr, Node* x, int i)
 		}
 	}
 	x->keys[i] = ptr->keys[(2*tr->t -1)/2];
-	printf("xkey: %d\n", x->keys[i]);
+	//printf("xkey: %d\n", x->keys[i]);
+	//printf("x->n: %d\n", x->n);
 	x->info[i] = ptr->info[(2*tr->t -1)/2];
 	x->n=x->n+1;
 	ptr->n=ptr->n-1;
 }
 
-int show(Btree* tr, int level)
+void show(Btree* tr, int level)
 {
 	Node* ptr=tr->root;
-	if(!ptr) return 0;
-	for(int i=2*tr->t-1; i>0; i--)
+	if(ptr)
 	{
-		Btree* ntr=(Btree*)malloc(sizeof(Btree));
-		ntr->t=tr->t;
-		ntr->root=ptr->child[i];
-		show(ntr, level+1);
-		free(ntr);
-		for(int j=0; j<level; j++) printf("    ");
-		if((ptr->n - (2*tr->t - i)) >=0)printf("%d\n", ptr->keys[ptr->n - (2*tr->t - i)]);
+		for(int i=ptr->n; i>=0; i--)
+		{
+			Btree* ntr=(Btree*)malloc(sizeof(Btree));
+			ntr->t=tr->t;
+			ntr->root=ptr->child[i];
+			show(ntr, level+1);
+			free(ntr);
+			//printf("level: %d\n", level);
+			for(int j=0; j<level; j++) printf("    ");
+			if((ptr->n - (ptr->n - i+1)) >=0) printf("%d\n", ptr->keys[ptr->n - (ptr->n - i+1)]);
+			printf("\n");
+		}
 	}
-	return 0;
+	
 	/*if(!tr->root) return 0;
 	for(int i=0; i<2*tr->t; i++)
 	{

@@ -362,8 +362,8 @@ int Showv(Btree* tr)
 //		for(int j=0; j<2*tr->t -1; j++) printf(" ");
 //		printf("] ");
 //	}
-//	printf("\n");
-	int result=show(tr, 0);
+	printf("\n");
+	show(tr, 0);
 	t2=clock();
 	//if(result==ERR_EMPTY) printf("Error. Tree is empty.\n");
 	printf("Excecution time %lf seconds.\n", (t2-t1)/CLOCKS_PER_SEC);
