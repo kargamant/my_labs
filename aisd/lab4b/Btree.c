@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Btree.h"
+#include "funcs.h"
 
 Btree* InitBtree(int t)
 {
@@ -181,7 +182,7 @@ int AddNode(Btree* tr, int key, char* info)
 		int m=(2*tr->t -1)/2;
 		int ind=0;
 		
-		/*printf("Insertion node children before split:\n");
+		printf("Insertion node children before split:\n");
 		for(int j=0; j<2*tr->t; j++)
 		{
 			Node* ch=ptr->child[j];
@@ -199,7 +200,7 @@ int AddNode(Btree* tr, int key, char* info)
 				}
 				printf("\n");
 			}
-		}*/
+		}
 		Node* parent=NULL;
 		if(ptr->par)
 		{
@@ -324,7 +325,13 @@ void Split(Btree* tr, Node* x, int i)
 	for(Node** gr=z->child; gr-z->child<2*tr->t; ++gr) *gr=NULL;
 	z->par=x;
 	
-	/*printf("Children before split:\n");
+	printf("x keys: ");
+	for(int j=0; j<x->n; j++)
+	{
+		printf("%d ", x->keys[j]);
+	}
+	printf("\n");
+	printf("Children before split:\n");
 	for(int j=0; j<2*tr->t; j++)
 	{
 		Node* ch=x->child[j];
@@ -342,7 +349,7 @@ void Split(Btree* tr, Node* x, int i)
 			}
 			printf("\n");
 		}
-	}*/
+	}
 
 	//will be remade with pointer iteration
 	for(int j=2*tr->t-1; j>i+1; j--)
@@ -355,16 +362,19 @@ void Split(Btree* tr, Node* x, int i)
 		z->keys[j-(1+(2*tr->t -1)/2)]=ptr->keys[j];
 		z->info[j-(1+(2*tr->t -1)/2)]=ptr->info[j];
 		z->child[j-(1+(2*tr->t -1)/2)]=ptr->child[j];
+		if(ptr->child[j]) ptr->child[j]->par=z;
+		ptr->child[j]=NULL;
 		z->n=z->n+1;
 	}
 	z->child[ptr->n-(1+(2*tr->t -1)/2)]=ptr->child[ptr->n];
+	if(ptr->child[ptr->n]) ptr->child[ptr->n]->par=z;
 	ptr->n=ptr->n-z->n;
 	if(x->n!=0)
 	{
-		for(int j=2*tr->t - 2; j>i; j--)
+		for(int j=x->n; j>i; j--) //2*tr->t - 2
 		{
-			x->keys[j]=x->keys[x->n -(2*tr->t -2 -j+1)];
-			x->info[j]=x->info[x->n -(2*tr->t -2 -j+1)];
+			x->keys[j]=x->keys[x->n -(x->n -j+1)];
+			x->info[j]=x->info[x->n -(x->n -j+1)];
 		}
 	}
 	x->keys[i] = ptr->keys[(2*tr->t -1)/2];
@@ -447,23 +457,16 @@ void show(Btree* tr, int level)
 	}*/
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void fimport(Btree* tr, char* fn)
+{
+	FILE* fd=fopen(fn, "r");
+	while(!feof(fd))
+	{
+		int key=-1;
+		fscanf(fd, "%d\n", &key);
+		if(key==-1) break;
+		char* info=enterf(fd);
+		AddNode(tr, key, info);
+	}
+	fclose(fd);
+}

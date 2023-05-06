@@ -197,6 +197,7 @@ int Importv(Btree* tr)
 	char* fn=enter();
 	if(fcheck(fn)==CERR_EOF) return CERR_EOF;
 
+	fimport(tr, fn);
 	//int result=fimport(root, fn);
 //	if(result==ERR_EOF) 
 //	{
