@@ -31,11 +31,14 @@ int AddNode(Btree* tr, int key, char* info);
 void Split(Btree* tr, Node* x, int i);
 void show(Btree* tr, int level);
 void fimport(Btree* tr, char* fn);
+int DelNode(Btree* tr, int key, int rel);
 
 
 typedef enum ERR
 {
-	ERR_OK,
+	ERR_OK, 
+	ERR_NF, //If we haven't found element of this number in key while deleting
+	ERR_IR, //If there is only one element of this key, but incorrect release number entered
 }ERR;
 
 #endif

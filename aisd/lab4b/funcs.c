@@ -259,14 +259,18 @@ int Delv(Btree* tr)
 	int key=0;
 	int input=getInt(&key);
 	if(input) return CERR_EOF;
-	
+	printf("Enter a number of element: ");
+	int rel=0;
+	input=getInt(&rel);
+	if(input) return CERR_EOF;
+
 	double t1, t2;
 	t1=clock();
-	//int result=DelNode(root, key);
+	int result=DelNode(tr, key, rel);
 	t2=clock();
-//	if(result==ERR_NF) printf("Error. No node with this key in tree.\n");
-//	else if(result==ERR_EMPTY) printf("Error. Tree is empty.\n");
-//	else printf("Node with key %d was successfully deleted.\n", key);
+	if(result==ERR_NF) printf("Error. No such key in tree.\n");
+	else if(result==ERR_IR) printf("Error. Incorrect number of element was entered.\n");
+	else printf("Key %d after number %d was successfully deleted from tree.\n", key, rel);
 
 	printf("Excecution time %lf seconds.\n", (t2-t1)/CLOCKS_PER_SEC);
 	return EndView();

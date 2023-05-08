@@ -1,0 +1,12 @@
+100
+abc
+50
+bcd
+20
+cde
+70
+yui
+70
+opg
+80
+klm
