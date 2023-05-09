@@ -28,10 +28,11 @@ int Traversing(Btree* tr, int key);
 Btree* InitBtree(int t);
 Item* Search(Btree* tr, int key);
 int AddNode(Btree* tr, int key, char* info);
-void Split(Btree* tr, Node* x, int i);
+Node* Split(Btree* tr, Node* x, int i);
 void show(Btree* tr, int level);
 void fimport(Btree* tr, char* fn);
 int DelNode(Btree* tr, int key, int rel);
+void MergeNode(Node* y, Node* z);
 
 
 typedef enum ERR

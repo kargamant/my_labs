@@ -10,3 +10,9 @@ yui
 opg
 80
 klm
+90
+kkk
+120
+ooo
+150
+ttt
