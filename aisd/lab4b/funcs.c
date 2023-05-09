@@ -321,21 +321,48 @@ int Maxv(Btree* tr)
 
 int Minv(Btree* tr)
 {
+	printf("Enter key: ");
+	int key=0;
+	int input=getInt(&key);
+	if(input) return CERR_EOF;
 	double t1, t2;
 	t1=clock();
-	Node* result=Min(tr);
+	Node* result=Min(tr, key);
 	t2=clock();
+	int ind=0, f=0;
 	for(int i=0; i<result->n; i++)
 	{
-		printf("key: %d | info: ", result->keys[i]);
-		Item* rp=result->info+i;
-		while(rp)
+		if(result->keys[i]>key) 
 		{
-			printf("\"%s\", ", rp->data);
-			rp=rp->next;
+			f=1;
+			ind=i;
+			break;
 		}
-		printf("\n");
 	}
+	if(!f)
+	{
+		printf("Error. Entered key is bigger than any key in tree.\n");
+		return EndView();
+	}
+	printf("key: %d | info: ", result->keys[ind]);
+	Item* gr=result->info+ind;
+	while(gr)
+	{
+		printf("\"%s\", ", gr->data);
+		gr=gr->next;
+	}
+	printf("\n");
+//	for(int i=0; i<result->n; i++)
+//	{
+//		printf("key: %d | info: ", result->keys[i]);
+//		Item* rp=result->info+i;
+//		while(rp)
+//		{
+//			printf("\"%s\", ", rp->data);
+//			rp=rp->next;
+//		}
+//		printf("\n");
+//	}
 //	if(!result) printf("Error. Tree is empty.\n");
 //	else
 //	{

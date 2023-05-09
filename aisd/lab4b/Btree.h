@@ -9,6 +9,7 @@ typedef struct Item
 
 typedef struct Node
 {
+	int mark; //if a node was allocated in split operation than it will be marked to be freed saperately
 	int n; //amount of keys in array
 	int* keys; //key array
 	struct Node** child; //children array
@@ -23,7 +24,8 @@ typedef struct Btree
 }Btree;
 
 
-Node* Min(Btree* tr);
+Node* Min(Btree* tr, int key);
+void erase(Btree* tr);
 int Traversing(Btree* tr, int key);
 Btree* InitBtree(int t);
 Item* Search(Btree* tr, int key);

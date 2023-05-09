@@ -22,18 +22,6 @@ int main()
 		//"Full timing of the tree\n",
 	};
 	
-//	tr->root->keys[0]=1;
-//	tr->root->keys[1]=5;
-//	tr->root->keys[2]=10;
-//	tr->root->n+=3;
-//	tr->root->child[1]->n+=2;
-//	tr->root->child[2]->n=1;
-//	tr->root->child[1]->keys[0]=3;
-//	tr->root->child[1]->keys[1]=4;
-//	tr->root->child[2]->keys[0]=7;
-//	show(tr, 0);
-//	return 0;
-
 	system("clear");
 	//main cycle
 	do
@@ -47,5 +35,8 @@ int main()
 		system("clear");
 	}while(1);
 	printf("Program stopped.\n");
+	erase(tr);
+	//free(tr->root);
+	free(tr);
 	return 0;
 }
