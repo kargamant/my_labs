@@ -28,8 +28,8 @@ int main()
 		//printf("%s\n", options[9]);
 		printf("root: \n");
 		printf("n: %d\n", tr->root->n);
-		int p=menue(options, 10);
-		if(p==11) break;
+		int p=menue(options, 9);
+		if(p==10) break;
 		int res=console(p, tr);
 		if(res==CERR_EOF) break;
 		system("clear");

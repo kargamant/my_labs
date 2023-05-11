@@ -61,11 +61,24 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 	long double trave_t=0, max_t=0, search_t=0, add_t=0, del_t=0; 
 	srand(time(NULL));
 	Btree* tr=NULL;
+	tr=InitBtree(2);
+	int cur=100000;
+	generate(tr, cur, limit, str_limit);
 	//Node* root=(Node*)calloc(1, sizeof(Node));
-	while(nodes!=0)
+	while(cur<=nodes)
 	{
-		tr=InitBtree(2);
-		generate(tr, nodes, limit, str_limit);
+		if(cur!=100000)
+		{
+			for(int j=0; j<100000; j++)
+			{
+				int key=rand()%limit;
+				int size=rand()%str_limit;
+				char* info=(char*)calloc(size, size*sizeof(char));
+				for(char* ptr=info; ptr-info<size-1; ++ptr) *ptr=65+32*(rand()%2)+rand()%27;
+				AddNode(tr, key, info);
+			}
+		}
+		//generate(tr, nodes, limit, str_limit);
 		long double t1=0, t2=0;
 
 
@@ -89,11 +102,11 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 			
 
 			//Testing of Delition
-			key=rand()%limit;
-			t1=clock();
-			DelNode(tr, key, 1);
-			t2=clock();
-			del_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
+		//	key=rand()%limit;
+		//	t1=clock();
+		//	DelNode(tr, key, 1);
+		//	t2=clock();
+		//	del_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
 
 			//Testing of search
 			//key=rand()%limit;
@@ -121,16 +134,16 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 		del_t/=itr;
 		search_t/=itr;
 		//max_t/=itr;
-		WriteTiming(tt, 0, result_files[0], nodes, add_t);	
-		WriteTiming(tt, 1, result_files[1], nodes, trave_t);	
-		WriteTiming(tt, 2, result_files[2], nodes, del_t);	
-		WriteTiming(tt, 3, result_files[3], nodes, search_t);	
+		WriteTiming(tt, 0, result_files[0], cur, add_t);	
+		WriteTiming(tt, 1, result_files[1], cur, trave_t);	
+		WriteTiming(tt, 2, result_files[2], cur, del_t);	
+		WriteTiming(tt, 3, result_files[3], cur, search_t);	
 		//WriteTiming(tt, 4, result_files[4], nodes, max_t);	
 
 		for(Row* ptr=tt->info; ptr-tt->info<tt->msize; ++ptr) 
 		{
 			FILE* fd=fopen(ptr->fn, "a");
-			if(nodes==fnodes)
+			if(cur==100000)
 			{
 				fclose(fd);
 				fd=fopen(ptr->fn, "w+");
@@ -138,7 +151,8 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 			fprintf(fd, "%lld %.20Lf\n", ptr->nodes, ptr->timing);
 			fclose(fd);
 		}
-		nodes/=step;
+		cur+=100000;
+		//nodes/=step;
 		//erase(tr);
 		//free(tr);
 		/*Node* start=Max(root);

@@ -344,7 +344,7 @@ int AddNode(Btree* tr, int key, char* info)
 	//		ggr=ggpr;
 	//	}
 		zi=Split(tr, parent, ind);
-		printf("tr->root value: %d\n", *tr->root->keys);
+		//printf("tr->root value: %d\n", *tr->root->keys);
 		ptr=parent;
 	}
 	
@@ -630,10 +630,10 @@ int DelNode(Btree* tr, int key, int rel)
 			}
 			else if(rel==1)
 			{
-				for(int i=0; i<ptr->n; i++) printf("%d ", ptr->keys[i]);
-				printf("\n");
-				for(int i=0; i<ptr->n; i++) printf("\"%s\" ", ptr->info[i].data);
-				printf("\n");
+			//	for(int i=0; i<ptr->n; i++) printf("%d ", ptr->keys[i]);
+			//	printf("\n");
+			//	for(int i=0; i<ptr->n; i++) printf("\"%s\" ", ptr->info[i].data);
+			//	printf("\n");
 				int u=pos;
 				//printf("condition: %d\n", *(ptr->child)==NULL);
 				if(*ptr->child==NULL && *(ptr->child+1)==NULL)
@@ -864,7 +864,7 @@ int DelNode(Btree* tr, int key, int rel)
 					Btree* ntr=(Btree*)malloc(sizeof(Btree));
 					ntr->t=tr->t;
 					ntr->root=y;
-					printf("ptr value: %d\n", *ptr->keys);
+					//printf("ptr value: %d\n", *ptr->keys);
 					if(ptr==tr->root && !ptr->n) 
 					{
 						free(ptr->keys);
@@ -878,7 +878,7 @@ int DelNode(Btree* tr, int key, int rel)
 						}
 						y->par=NULL;
 					}
-					printf("tr->root value: %d\n", *tr->root->keys);
+					//printf("tr->root value: %d\n", *tr->root->keys);
 					int res=DelNode(ntr, key, rel);
 					free(ntr);
 					return res;
@@ -914,7 +914,7 @@ int DelNode(Btree* tr, int key, int rel)
 					Btree* ntr=(Btree*)malloc(sizeof(Btree));
 					ntr->t=tr->t;
 					ntr->root=y;
-					printf("ptr value: %d\n", *ptr->keys);
+					//printf("ptr value: %d\n", *ptr->keys);
 					if(ptr==tr->root && !ptr->n)
 					{
 						free(ptr->keys);
@@ -928,7 +928,7 @@ int DelNode(Btree* tr, int key, int rel)
 						}
 						y->par=NULL;
 					}
-					printf("tr->root value: %d\n", *tr->root->keys);
+					//printf("tr->root value: %d\n", *tr->root->keys);
 					int res=DelNode(ntr, key, rel);
 					free(ntr);
 					return res;	
