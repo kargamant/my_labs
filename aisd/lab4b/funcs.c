@@ -4,7 +4,7 @@
 #include "funcs.h"
 #include "Btree.h"
 #include "time.h"
-//#include "timer.h"
+#include "timer.h"
 
 //string parsing from lab2
 char* enter()
@@ -174,7 +174,7 @@ int fcheck(char* fnd)
 //Main Controller function
 int console(int p, Btree* tr)
 {	
-	int (*view[])(Btree*)={Importv, Traverv, Addv, Delv, Searchv, Maxv, Minv, Showv}; //, Showv, Generv, Timingv
+	int (*view[])(Btree*)={Importv, Traverv, Addv, Delv, Searchv, Maxv, Minv, Showv, Timingv}; //, Showv, Generv, Timingv
 	return view[p](tr);	
 }
 
@@ -431,9 +431,9 @@ int Generv(Node* root)
 	generate(root, n, limit, str_limit);
 
 	return EndView();
-}
+}*/
 
-int Timingv(Node* root)
+int Timingv(Btree* tr)
 {
 	printf("Enter maximum amount of nodes in tree: ");
 	long long n=0;
@@ -459,7 +459,7 @@ int Timingv(Node* root)
 	timing(n, limit, str_limit, itr, step);
 	printf("Timing results were written in directory that was passed to a function.\n");
 	return EndView();
-}*/
+}
 
 //Function that ends a view function
 int EndView()

@@ -5,6 +5,7 @@ int menue(const char* options[], int n)
 {	
 	for(int i=0; i<15; i++) printf("-");
 	printf("\n");
+	printf("n of menue: %d\n", n);
 	for(int i=0; i<n; i++)
 	{
 		printf("%d. %s", i, options[i]);
