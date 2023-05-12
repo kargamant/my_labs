@@ -808,7 +808,7 @@ int DelNode(Btree* tr, int key, int rel)
 
 						y->keys[y->n]=ptr->keys[ci];
 						y->info[y->n]=ptr->info[ci];
-						y->child[y->n+1]=*z->child;
+						y->child[y->n]=*z->child;
 						y->n=y->n+1;
 
 						ptr->keys[ci]=*z->keys;
@@ -840,6 +840,7 @@ int DelNode(Btree* tr, int key, int rel)
 
 					y->keys[y->n]=ptr->keys[ci-1];
 					y->info[y->n]=ptr->info[ci-1];
+					y->child[y->n+1]=z->child[0];
 					y->n=y->n+1;
 
 					/*for(int j=0; j<z->n; j++)
@@ -851,7 +852,11 @@ int DelNode(Btree* tr, int key, int rel)
 					}
 					y->child[y->n]=z->child[z->n];
 					z->n=0;*/
-					MergeNode(y, z, tr);
+					Btree* nntr=(Btree*)malloc(sizeof(Btree));
+					nntr->t=tr->t;
+					nntr->root=z;
+					MergeNode(y, z, nntr);
+					free(nntr);
 
 					for(int j=ci-1; j<ptr->n-1; j++)
 					{
@@ -890,6 +895,7 @@ int DelNode(Btree* tr, int key, int rel)
 
 					y->keys[y->n]=ptr->keys[ci];
 					y->info[y->n]=ptr->info[ci];
+					y->child[y->n+1]=z->child[0];
 					y->n=y->n+1;
 
 					/*for(int j=0; j<z->n; j++)
@@ -901,8 +907,11 @@ int DelNode(Btree* tr, int key, int rel)
 					}
 					y->child[y->n]=z->child[z->n];
 					z->n=0;*/
-					MergeNode(y, z, tr);
-
+					Btree* nntr=(Btree*)malloc(sizeof(Btree));
+					nntr->t=tr->t;
+					nntr->root=z;
+					MergeNode(y, z, nntr);
+					free(nntr);
 					for(int j=ci; j<ptr->n-1; j++)
 					{
 						ptr->keys[j]=ptr->keys[j+1];
@@ -941,7 +950,7 @@ int DelNode(Btree* tr, int key, int rel)
 
 void MergeNode(Node* y, Node* z, Btree* tr)
 {
-	int f=0;
+	/*int f=0;
 	int p=0;
 	if(y->n==2*tr->t-1)
 	{
@@ -1060,7 +1069,7 @@ void MergeNode(Node* y, Node* z, Btree* tr)
 			}
 			y=Split(tr, ggpr, indg);
 		}
-	}
+	}*/
 
 	//moving all keys and children from z node to y node
 	for(int j=0; j<z->n; j++)
@@ -1070,30 +1079,35 @@ void MergeNode(Node* y, Node* z, Btree* tr)
 		y->n=y->n+1;
 		if(y->child[y->n-1])
 		{
-			MergeNode(y->child[y->n-1], z->child[j], tr);
+			if(y->child[y->n-1]!=z->child[j]) MergeNode(y->child[y->n-1], z->child[j], tr);
 		}
 		else y->child[y->n-1]=z->child[j];
 	}
 	y->child[y->n]=z->child[z->n];
 	z->n=0;
+	//if(z!=tr->root)
+	//{
+		Node* zpar=z->par;
+		free(z->keys);
+		free(z->info);
+		free(z->child);
+		free(z);
+		
+		for(int i=0; i<zpar->n; i++)
+		{
+			if(zpar->child[i]==z)
+			{
+				zpar->child[i]=NULL;
+			}
+		}
+	//}
 	//removing z
-	free(z->keys);
 	/*for(int i=0; i<2*tr->t-1; i++)
 	{
 		Item* gr=z->info+i;
 		free(gr->data);
 		gr->data=NULL;
 	}*/
-	free(z->info);
-	free(z->child);
-	for(int i=0; i<z->par->n; i++)
-	{
-		if(z->par->child[i]==z)
-		{
-			z->par->child[i]=NULL;
-		}
-	}
-	free(z);
 }
 
 void show(Btree* tr, int level)
