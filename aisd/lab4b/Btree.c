@@ -771,16 +771,41 @@ int DelNode(Btree* tr, int key, int rel)
 						Node* y=ptr->child[ci-1];
 						Node* z=ptr->child[ci];
 
-						for(int j=z->n; j>0; j--)
+						Btree* ntr=(Btree*)malloc(sizeof(Btree));
+						ntr->t=tr->t;
+						ntr->root=ptr->child[ci];
+						AddNode(ntr, ptr->keys[ci-1], ptr->info[ci-1].data);
+						
+						Node* pk=y;
+						while(pk->child[pk->n])
+						{
+							pk=pk->child[pk->n];
+						}
+						y=pk;
+						ptr->keys[ci-1]=y->keys[y->n-1];
+						ptr->info[ci-1].data=strdup(y->info[y->n-1].data);
+						if(!y->info[y->n-1].next) ptr->info[ci-1].next=y->info[y->n-1].next;
+						else ptr->info[ci-1].next=NULL;
+						
+						ntr->root=ptr->child[ci-1];
+						DelNode(ntr, y->keys[y->n-1], 1);
+						ntr->root=ptr->child[ci];
+						int res=DelNode(ntr, key, rel);
+						free(ntr);
+						return res;
+						/*for(int j=z->n; j>0; j--)
 						{
 							z->keys[j]=z->keys[j-1];
 							z->info[j]=z->info[j-1];
 							z->child[j+1]=z->child[j];
 						}
 						z->child[z->n]=z->child[z->n-1];
-						*z->child=NULL;
+						*z->child=y->child[y->n];
+						y->child[y->n]=NULL;
 						*z->keys=ptr->keys[ci-1];
-						*z->info=ptr->info[ci-1];
+						z->info[0].data=strdup(ptr->info[ci-1].data);
+						z->info[0].next=ptr->info[ci-1].next;
+						free(ptr->info[ci-1].data);
 						z->n=z->n+1;
 						ptr->keys[ci-1]=y->keys[y->n-1];
 						ptr->info[ci-1].data=strdup(y->info[y->n-1].data);
@@ -796,7 +821,7 @@ int DelNode(Btree* tr, int key, int rel)
 						ntr->root=z;
 						int res=DelNode(ntr, key, rel);
 						free(ntr);
-						return res;
+						return res;*/
 					}
 				}
 				if(ci+1<=ptr->n)
@@ -806,9 +831,32 @@ int DelNode(Btree* tr, int key, int rel)
 						Node* y=ptr->child[ci];
 						Node* z=ptr->child[ci+1];
 
-						y->keys[y->n]=ptr->keys[ci];
-						y->info[y->n]=ptr->info[ci];
-						y->child[y->n]=*z->child;
+						Btree* ntr=(Btree*)malloc(sizeof(Btree));
+						ntr->t=tr->t;
+						ntr->root=y;
+						AddNode(ntr, ptr->keys[ci], ptr->info[ci].data);
+
+						Node* pk=z;
+						while(pk->child[0])
+						{
+							pk=pk->child[0];
+						}
+						z=pk;
+						ptr->keys[ci]=z->keys[0];
+						ptr->info[ci].data=strdup(z->info[0].data);
+						ptr->info[ci].next=z->info[0].next;
+						
+						ntr->root=ptr->child[ci+1];
+						DelNode(ntr, z->keys[0], 1);
+						ntr->root=y;
+						int res=DelNode(ntr, key, rel);
+						free(ntr);
+						return res;
+					/*	y->keys[y->n]=ptr->keys[ci];
+						y->info[y->n].data=strdup(ptr->info[ci].data);
+						y->info[y->n].next=ptr->info[ci].next;
+						free(ptr->info[ci].data);
+						y->child[y->n+1]=*z->child;
 						y->n=y->n+1;
 
 						ptr->keys[ci]=*z->keys;
@@ -829,7 +877,7 @@ int DelNode(Btree* tr, int key, int rel)
 						ntr->t=tr->t;
 						ntr->root=y;
 						int res=DelNode(ntr, key, rel);
-						free(ntr);
+						free(ntr);*/
 						return res;
 					}
 				}
@@ -950,7 +998,7 @@ int DelNode(Btree* tr, int key, int rel)
 
 void MergeNode(Node* y, Node* z, Btree* tr)
 {
-	/*int f=0;
+	int f=0;
 	int p=0;
 	if(y->n==2*tr->t-1)
 	{
@@ -1069,7 +1117,7 @@ void MergeNode(Node* y, Node* z, Btree* tr)
 			}
 			y=Split(tr, ggpr, indg);
 		}
-	}*/
+	}
 
 	//moving all keys and children from z node to y node
 	for(int j=0; j<z->n; j++)
