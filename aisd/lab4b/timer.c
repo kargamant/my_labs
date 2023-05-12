@@ -13,7 +13,7 @@ void generate(Btree* tr, int n, long long limit, long long str_limit)
 	{
 		int key=rand()%limit;
 		int size=rand()%str_limit;
-		while(size==0) size=rand()%str_limit;
+		while(size==0) size=3+rand()%str_limit;
 		char* info=malloc(size*sizeof(char));
 		info[size-1]=0;
 		for(char* ptr=info; ptr-info<size-1; ++ptr) *ptr=65+32*(rand()%2)+rand()%27;
@@ -73,7 +73,7 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 		{
 			//Testing of AddNode
 			int key=rand()%limit;
-			int size=rand()%str_limit;
+			int size=3+rand()%str_limit;
 			char* info=(char*)calloc(size, size*sizeof(char));
 			for(char* ptr=info; ptr-info<size-1; ++ptr) *ptr=65+32*(rand()%2)+rand()%27;
 			t1=clock();
