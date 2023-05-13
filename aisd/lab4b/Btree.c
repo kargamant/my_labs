@@ -448,10 +448,10 @@ Node* Split(Btree* tr, Node* x, int i)
 	//for(Node** gr=z->child; gr-z->child<2*tr->t; ++gr) *gr=NULL;
 	z->par=x;
 	Node* nx=x;
+	int indg=0;
 	if(x->n==2*tr->t-1)
 	{
 		Node* ggpr=NULL;
-		int indg=0;
 		if(x->par)
 		{
 			ggpr=x->par;
@@ -479,28 +479,28 @@ Node* Split(Btree* tr, Node* x, int i)
 		}
 		nx=Split(tr, ggpr, indg);
 	}
-	Node* ptr=nx->child[i];
+	Node* ptr=NULL;
 	//printf("z->keys child 0: %d\n", *nx->child[0]->keys);
 	if(nx!=x) 
 	{
-		//if(nx->child[0])
-		//{
-			if(nx->child[0]->n==2*tr->t-1)
-			{
-				ptr=nx->child[0];
-				i=0;
-			}
-		//}
-		//else if(nx->child[1])
-		//{
-			else
-			{
-				ptr=nx->child[1];
-				i=1;
-			}
-		//}
-		//else return NULL;
+		if(nx->child[0] && i==2)
+		{
+			//if(nx->child[0]->n==2*tr->t-1)
+			ptr=nx->child[0];
+			i=0;
+		}
+		if(nx->child[1] && i==3)
+		{
+			ptr=nx->child[1];
+			i=1;
+		}
+		else
+		{
+			ptr=nx->par->child[indg]->child[i];
+			nx=nx->par->child[indg];
+		}
 	}
+	else ptr=nx->child[i];
 	z->par=nx;
 	//printf("ptr->key: %d\n", *ptr->keys);
 	/*printf("x keys: ");
