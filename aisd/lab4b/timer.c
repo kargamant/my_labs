@@ -62,13 +62,13 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 	srand(time(NULL));
 	Btree* tr=NULL;
 	//Node* root=(Node*)calloc(1, sizeof(Node));
-	while(nodes!=0)
+	while(nodes>10)
 	{
 		tr=InitBtree(2);
 		generate(tr, nodes, limit, str_limit);
 		long double t1=0, t2=0;
 
-
+		printf("nodes: %lld\n", nodes);
 		for(int i=0; i<itr; i++)
 		{
 			//Testing of AddNode
@@ -89,7 +89,7 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 			
 
 			//Testing of Delition
-			key=rand()%limit;
+			//key=rand()%limit;
 			t1=clock();
 			DelNode(tr, key, 1);
 			t2=clock();
