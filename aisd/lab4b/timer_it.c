@@ -6,14 +6,16 @@
 #include "timer.h" 
 #include <string.h>
 
-void generate(Btree* tr, int n, long long limit, long long str_limit)
+Btree* generate(int n, long long limit, long long str_limit)
 {
+	Btree* tr=InitBtree(2);
 	srand(time(NULL));
 	for(int i=0; i<n; i++)
 	{
 		int key=rand()%limit;
-		int size=rand()%str_limit;
-		while(size==0) size=rand()%str_limit;
+		int size=str_limit;
+	//	int size=rand()%str_limit;
+	//	if(size==0) size=3;
 		char* info=malloc(size*sizeof(char));
 		info[size-1]=0;
 		for(char* ptr=info; ptr-info<size-1; ++ptr) *ptr=65+32*(rand()%2)+rand()%27;
@@ -24,6 +26,7 @@ void generate(Btree* tr, int n, long long limit, long long str_limit)
 			result=AddNode(root, key, info);
 		}*/
 	}
+	return tr;
 }
 
 void timing(long long nodes, long long limit, long long str_limit, int itr, double step)
@@ -60,24 +63,21 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 	long long fnodes=nodes;
 	long double trave_t=0, max_t=0, search_t=0, add_t=0, del_t=0; 
 	srand(time(NULL));
-	Btree* tr=NULL;
-	tr=InitBtree(2);
-	int cur=nodes/10;
-	generate(tr, cur, limit, str_limit);
+	Btree* tr=InitBtree(2);
+	int cur=0;
+	int st=nodes/10;
 	//Node* root=(Node*)calloc(1, sizeof(Node));
 	while(cur<=nodes)
 	{
-		if(cur!=nodes/10)
+		for(int j=0; j<st; j++)
 		{
-			for(int j=0; j<nodes/10; j++)
-			{
-				int key=rand()%limit;
-				int size=str_limit;
-				char* info=(char*)calloc(size, size*sizeof(char));
-				for(char* ptr=info; ptr-info<size-1; ++ptr) *ptr=65+32*(rand()%2)+rand()%27;
-				AddNode(tr, key, info);
-			}
+			int key=rand()%limit;
+			int size=str_limit;
+			char* info=(char*)calloc(size, size*sizeof(char));
+			for(char* ptr=info; ptr-info<size-1; ++ptr) *ptr=65+32*(rand()%2)+rand()%27;
+			AddNode(tr, key, info);
 		}
+		cur+=st;
 		//generate(tr, nodes, limit, str_limit);
 		long double t1=0, t2=0;
 
@@ -143,7 +143,7 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 		for(Row* ptr=tt->info; ptr-tt->info<tt->msize; ++ptr) 
 		{
 			FILE* fd=fopen(ptr->fn, "a");
-			if(cur==nodes/10)
+			if(cur==st)
 			{
 				fclose(fd);
 				fd=fopen(ptr->fn, "w+");
@@ -151,7 +151,6 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 			fprintf(fd, "%lld %.20Lf\n", ptr->nodes, ptr->timing);
 			fclose(fd);
 		}
-		cur+=nodes/10;
 		//nodes/=step;
 		//erase(tr);
 		//free(tr);
