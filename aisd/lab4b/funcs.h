@@ -18,7 +18,7 @@ int Searchv(Btree* tr);
 int Maxv(Btree* tr);
 int Minv(Btree* tr);
 int Showv(Btree* tr);
-//int Generv(Node* root);
+int Generv(Btree* tr);
 int Timingv(Btree* tr);
 int EndView();
 typedef enum CERR

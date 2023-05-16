@@ -12,8 +12,9 @@ void generate(Btree* tr, int n, long long limit, long long str_limit)
 	for(int i=0; i<n; i++)
 	{
 		int key=rand()%limit;
-		int size=rand()%str_limit;
-		while(size==0) size=3+rand()%str_limit;
+		int size=str_limit;
+	//	int size=rand()%str_limit;
+	//	if(size==0) size=3;
 		char* info=malloc(size*sizeof(char));
 		info[size-1]=0;
 		for(char* ptr=info; ptr-info<size-1; ++ptr) *ptr=65+32*(rand()%2)+rand()%27;
@@ -62,7 +63,7 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 	srand(time(NULL));
 	Btree* tr=NULL;
 	//Node* root=(Node*)calloc(1, sizeof(Node));
-	while(nodes>10)
+	while(nodes!=0)
 	{
 		tr=InitBtree(2);
 		generate(tr, nodes, limit, str_limit);
@@ -73,7 +74,7 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 		{
 			//Testing of AddNode
 			int key=rand()%limit;
-			int size=3+rand()%str_limit;
+			int size=str_limit;
 			char* info=(char*)calloc(size, size*sizeof(char));
 			for(char* ptr=info; ptr-info<size-1; ++ptr) *ptr=65+32*(rand()%2)+rand()%27;
 			t1=clock();
@@ -89,7 +90,7 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 			
 
 			//Testing of Delition
-			key=rand()%limit;
+			//key=rand()%limit;
 			t1=clock();
 			DelNode(tr, key, 1);
 			t2=clock();
@@ -102,6 +103,8 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 			t2=clock();
 			search_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
 
+		//	printf("itr: %d\n", i);
+		//	show(tr, 0);
 			/*//Testing max
 			t1=clock();
 			Max(root);
@@ -139,6 +142,7 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 			fclose(fd);
 		}
 		nodes/=step;
+		tr=NULL;
 		//erase(tr);
 		//free(tr);
 		/*Node* start=Max(root);
@@ -185,25 +189,30 @@ int Traversing_no_print(Btree* tr, int key)
 		//if(!ptr->info) continue;
 		Btree* ntr=(Btree*)malloc(sizeof(Btree));
 		ntr->t=tr->t;
-		ntr->root=ptr->child[i];
+		if(ptr->child) ntr->root=ptr->child[i];
+		else ntr->root=NULL;
 		Traversing_no_print(ntr, key);
 		free(ntr);
-		if(ptr->keys[i]<=key)
+		if(ptr->keys)
 		{
-			//printf("key: %d | info: ", ptr->keys[i]);
-			Item* gr=ptr->info + i;
-			while(gr)
+			if(ptr->keys[i]<=key)
 			{
-				//printf("\"%s\", ", gr->data);
-				gr=gr->next;
+				//printf("key: %d | info: ", ptr->keys[i]);
+				Item* gr=ptr->info + i;
+				while(gr)
+				{
+					//printf("\"%s\", ", gr->data);
+					gr=gr->next;
+				}
+				//printf("\n");
+				//printf("info: %s\n", ptr->info[i]);
 			}
-			//printf("\n");
-			//printf("info: %s\n", ptr->info[i]);
 		}
 	}
 	Btree* ntr=(Btree*)malloc(sizeof(Btree));
 	ntr->t=tr->t;
-	ntr->root=ptr->child[ptr->n];
+	if(ptr->child) ntr->root=ptr->child[ptr->n];
+	else ntr->root=NULL;
 	Traversing_no_print(ntr, key);
 	free(ntr);
 	return 0;

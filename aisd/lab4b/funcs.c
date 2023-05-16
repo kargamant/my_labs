@@ -174,7 +174,7 @@ int fcheck(char* fnd)
 //Main Controller function
 int console(int p, Btree* tr)
 {	
-	int (*view[])(Btree*)={Importv, Traverv, Addv, Delv, Searchv, Maxv, Minv, Showv, Timingv}; //, Showv, Generv, Timingv
+	int (*view[])(Btree*)={Importv, Traverv, Addv, Delv, Searchv, Maxv, Minv, Showv, Timingv, Generv}; //, Showv, Generv, Timingv
 	return view[p](tr);	
 }
 
@@ -402,8 +402,8 @@ int Showv(Btree* tr)
 
 	return EndView();
 }
-/*
-int Generv(Node* root)
+
+int Generv(Btree* tr)
 {
 	printf("Enter amount of nodes in tree: ");
 	int n=0;
@@ -419,19 +419,10 @@ int Generv(Node* root)
 	if(input) return CERR_EOF;
 
 
-	Node* start=Max(root);
-	while(start!=NULL)
-	{
-		free(start->info);
-		start->info=NULL;
-		Node* prev=start->prev;
-		if(start!=root) free(start);
-		start=prev;
-	}
-	generate(root, n, limit, str_limit);
+	generate(tr, n, limit, str_limit);
 
 	return EndView();
-}*/
+}
 
 int Timingv(Btree* tr)
 {
