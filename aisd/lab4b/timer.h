@@ -15,7 +15,7 @@ typedef struct TimingTable
 	Row* info;
 }TimingTable;
 
-void generate(Btree* tr, int n, long long int limit, long long int str_limit);
+Btree* generate(int n, long long int limit, long long int str_limit);
 void timing(long long nodes, long long limit, long long str_limit, int itr, double step);
 Row* Searchtt(TimingTable* vector, int ms, char* fn);
 void WriteTiming(TimingTable* tt, int curf, const char* fn, int nodes, long double timing);

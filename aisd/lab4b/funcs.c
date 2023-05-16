@@ -419,7 +419,7 @@ int Generv(Btree* tr)
 	if(input) return CERR_EOF;
 
 
-	generate(tr, n, limit, str_limit);
+	tr->root=generate(n, limit, str_limit)->root;
 
 	return EndView();
 }

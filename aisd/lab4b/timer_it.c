@@ -62,17 +62,17 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 	srand(time(NULL));
 	Btree* tr=NULL;
 	tr=InitBtree(2);
-	int cur=100000;
+	int cur=nodes/10;
 	generate(tr, cur, limit, str_limit);
 	//Node* root=(Node*)calloc(1, sizeof(Node));
 	while(cur<=nodes)
 	{
-		if(cur!=100000)
+		if(cur!=nodes/10)
 		{
-			for(int j=0; j<100000; j++)
+			for(int j=0; j<nodes/10; j++)
 			{
 				int key=rand()%limit;
-				int size=rand()%str_limit;
+				int size=str_limit;
 				char* info=(char*)calloc(size, size*sizeof(char));
 				for(char* ptr=info; ptr-info<size-1; ++ptr) *ptr=65+32*(rand()%2)+rand()%27;
 				AddNode(tr, key, info);
@@ -86,7 +86,7 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 		{
 			//Testing of AddNode
 			int key=rand()%limit;
-			int size=rand()%str_limit;
+			int size=str_limit;
 			char* info=(char*)calloc(size, size*sizeof(char));
 			for(char* ptr=info; ptr-info<size-1; ++ptr) *ptr=65+32*(rand()%2)+rand()%27;
 			t1=clock();
@@ -103,10 +103,10 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 
 			//Testing of Delition
 		//	key=rand()%limit;
-		//	t1=clock();
-		//	DelNode(tr, key, 1);
-		//	t2=clock();
-		//	del_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
+			t1=clock();
+			DelNode(tr, key, 1);
+			t2=clock();
+			del_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
 
 			//Testing of search
 			//key=rand()%limit;
@@ -143,7 +143,7 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 		for(Row* ptr=tt->info; ptr-tt->info<tt->msize; ++ptr) 
 		{
 			FILE* fd=fopen(ptr->fn, "a");
-			if(cur==100000)
+			if(cur==nodes/10)
 			{
 				fclose(fd);
 				fd=fopen(ptr->fn, "w+");
@@ -151,7 +151,7 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 			fprintf(fd, "%lld %.20Lf\n", ptr->nodes, ptr->timing);
 			fclose(fd);
 		}
-		cur+=100000;
+		cur+=nodes/10;
 		//nodes/=step;
 		//erase(tr);
 		//free(tr);

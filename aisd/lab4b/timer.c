@@ -6,8 +6,9 @@
 #include "timer.h" 
 #include <string.h>
 
-void generate(Btree* tr, int n, long long limit, long long str_limit)
+Btree* generate(int n, long long limit, long long str_limit)
 {
+	Btree* tr=InitBtree(2);
 	srand(time(NULL));
 	for(int i=0; i<n; i++)
 	{
@@ -25,6 +26,7 @@ void generate(Btree* tr, int n, long long limit, long long str_limit)
 			result=AddNode(root, key, info);
 		}*/
 	}
+	return tr;
 }
 
 void timing(long long nodes, long long limit, long long str_limit, int itr, double step)
@@ -60,20 +62,25 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 //	}
 	long long fnodes=nodes;
 	long double trave_t=0, max_t=0, search_t=0, add_t=0, del_t=0; 
-	srand(time(NULL));
-	Btree* tr=NULL;
+	Btree* tr=(Btree*)malloc(sizeof(Btree));
+	tr->t=2;
+	tr->root=NULL;
 	//Node* root=(Node*)calloc(1, sizeof(Node));
 	while(nodes!=0)
 	{
-		tr=InitBtree(2);
-		generate(tr, nodes, limit, str_limit);
+		srand(time(NULL));
+		//tr=InitBtree(2);
+		tr->root=generate(nodes, limit, str_limit)->root;
 		long double t1=0, t2=0;
 
-		printf("nodes: %lld\n", nodes);
+		//printf("nodes: %lld\n", nodes);
 		for(int i=0; i<itr; i++)
 		{
+			printf("tree nodes, itr: %lld, %d\n", nodes, i);
+			show(tr, 0);
 			//Testing of AddNode
 			int key=rand()%limit;
+			printf("inserting key: %d\n", key);
 			int size=str_limit;
 			char* info=(char*)calloc(size, size*sizeof(char));
 			for(char* ptr=info; ptr-info<size-1; ++ptr) *ptr=65+32*(rand()%2)+rand()%27;
@@ -81,6 +88,8 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 			AddNode(tr, key, info);
 			t2=clock();
 			add_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
+			printf("tree after inserting:\n");
+			show(tr, 0);
 
 			//Testing of Traversing
 			t1=clock();
@@ -95,6 +104,8 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 			DelNode(tr, key, 1);
 			t2=clock();
 			del_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
+			printf("tree after deleting:\n");
+			show(tr, 0);
 
 			//Testing of search
 			//key=rand()%limit;
@@ -142,9 +153,11 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 			fclose(fd);
 		}
 		nodes/=step;
-		tr=NULL;
-		//erase(tr);
 		//free(tr);
+		//tr=NULL;
+		erase(tr);
+		free(tr);
+		tr=NULL;
 		/*Node* start=Max(root);
 		while(start!=NULL)
 		{

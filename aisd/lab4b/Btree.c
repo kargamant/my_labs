@@ -65,6 +65,9 @@ void erase(Btree* tr)
 		//for(int i=0; i<2*tr->t; i++) ptr->child[i]=NULL;
 		//printf("db1\n");
 		free(ptr->child);
+		ptr->keys=NULL;
+		ptr->info=NULL;
+		ptr->child=NULL;
 		//printf("db2\n");
 		free(ptr);
 		ptr=NULL;
@@ -558,7 +561,7 @@ Node* Split(Btree* tr, Node* x, int i)
 		z->info[j-(1+(2*tr->t -1)/2)].next=ptr->info[j].next;
 		z->child[j-(1+(2*tr->t -1)/2)]=ptr->child[j];
 		if(ptr->child[j]) ptr->child[j]->par=z;
-		ptr->child[j]=NULL;
+		else ptr->child[j]=NULL;
 		z->n=z->n+1;
 	}
 	//printf("z->key: %d\n", *z->keys);
@@ -1414,14 +1417,14 @@ int DelNode(Btree* tr, int key, int rel)
 					y->n=y->n+1;
 
 					y->child[y->n]=z->child[0];
-					if(z->child[0]) z->child[0]->par=y;
+					if(y->child[y->n]) y->child[y->n]->par=y;
 					y->keys[y->n]=z->keys[0];
 					y->info[y->n].data=strdup(z->info[0].data);
 					y->info[y->n].next=z->info[0].next;
 					y->n=y->n+1;
 
 					y->child[y->n]=z->child[1];
-					if(z->child[1]) z->child[1]->par=y;
+					if(y->child[y->n]) y->child[y->n]->par=y;
 					
 					free(ptr->info[pos].data);
 					free(z->info[0].data);
@@ -1451,21 +1454,33 @@ int DelNode(Btree* tr, int key, int rel)
 					if(ptr->n==0)
 					{
 						Node* parent=ptr->par;
+						if(ptr==tr->root)
+						{
+							tr->root=y;
+							y->par=NULL;
+						}
+						else 
+						{
+							y->par=parent;
+							for(int j=0; j<=parent->n; j++)
+							{
+								if(parent->child[j]==ptr)
+								{
+									parent->child[j]=y;
+									break;
+								}
+							}
+						}
 						free(ptr->keys);
 						free(ptr->info);
 						free(ptr->child);
 						ptr->keys=NULL;
 						ptr->info=NULL;
 						ptr->child=NULL;
-						if(ptr==tr->root)
-						{
-							tr->root=y;
-							y->par=NULL;
-						}
-						else y->par=parent;
 						free(ptr);
 						ptr=NULL;
 					}
+					for(int i=0; i<=y->n; i++) if(y->child[i]) y->child[i]->par=y;
 					Btree* ntr=(Btree*)malloc(sizeof(Btree));
 					ntr->t=tr->t;
 					ntr->root=y;
@@ -1590,14 +1605,16 @@ int DelNode(Btree* tr, int key, int rel)
 					
 					if(y && z)
 					{
-						printf("y==NULL: %d\n", y==NULL);
-						printf("ptr==NULL: %d\n", ptr==NULL);
+					//	printf("y==NULL: %d\n", y==NULL);
+					//	printf("ptr==NULL: %d\n", ptr==NULL);
 						y->keys[1]=ptr->keys[ci-1];
 						y->info[1]=ptr->info[ci-1];
 						y->child[2]=z->child[0];
+						if(y->child[2]) y->child[2]->par=y;
 						y->keys[2]=z->keys[0];
 						y->info[2]=z->info[0];
 						y->child[3]=z->child[1];
+						if(y->child[3]) y->child[3]->par=y;
 						y->n=y->n+2;
 						
 						free(z->keys);
@@ -1612,22 +1629,33 @@ int DelNode(Btree* tr, int key, int rel)
 						if(ptr->n==1)
 						{
 							Node* parent=ptr->par;
-							free(ptr->keys);
-							free(ptr->info);
-							free(ptr->child);
-							ptr->keys=NULL;
-							ptr->info=NULL;
-							ptr->child=NULL;
 
 							if(ptr==tr->root) 
 							{
 								tr->root=y;
 								y->par=NULL;
 							}
-							else y->par=parent;
+							else 
+							{
+								y->par=parent;
+								for(int j=0; j<=parent->n; j++)
+								{
+									if(parent->child[j]==ptr)
+									{
+										parent->child[j]=y;
+										break;
+									}
+								}
+							}
+							free(ptr->keys);
+							free(ptr->info);
+							free(ptr->child);
+							ptr->keys=NULL;
+							ptr->info=NULL;
+							ptr->child=NULL;
 							free(ptr);
 							ptr=NULL;
-							for(int i=0; i<=y->n; i++) if(y->child[i]) y->child[i]->par=y;
+							//for(int i=0; i<=y->n; i++) if(y->child[i]) y->child[i]->par=y;
 						}
 						else
 						{
@@ -1640,6 +1668,7 @@ int DelNode(Btree* tr, int key, int rel)
 							ptr->child[ptr->n]=NULL;
 							ptr->n=ptr->n-1;
 						}
+						for(int i=0; i<=y->n; i++) if(y->child[i]) y->child[i]->par=y;
 						Btree* ntr=(Btree*)malloc(sizeof(Btree));
 						ntr->t=tr->t;
 						ntr->root=y;
@@ -1655,14 +1684,16 @@ int DelNode(Btree* tr, int key, int rel)
 					
 					if(y && z)
 					{
-						printf("y==NULL: %d\n", y==NULL);
-						printf("ptr==NULL: %d\n", ptr==NULL);
+					//	printf("y==NULL: %d\n", y==NULL);
+					//	printf("ptr==NULL: %d\n", ptr==NULL);
 						y->keys[1]=ptr->keys[ci];
 						y->info[1]=ptr->info[ci];
 						y->child[2]=z->child[0];
+						if(y->child[2]) y->child[2]->par=y;
 						y->keys[2]=z->keys[0];
 						y->info[2]=z->info[0];
 						y->child[3]=z->child[1];
+						if(y->child[3]) y->child[3]->par=y;
 						y->n=y->n+2;
 						
 						free(z->keys);
@@ -1677,6 +1708,24 @@ int DelNode(Btree* tr, int key, int rel)
 						if(ptr->n==1)
 						{
 							Node* parent=ptr->par;
+
+							if(!parent) 
+							{
+								tr->root=y;
+								y->par=NULL;
+							}
+							else 
+							{
+								y->par=parent;
+								for(int j=0; j<=parent->n; j++)
+								{
+									if(parent->child[j]==ptr)
+									{
+										parent->child[j]=y;
+										break;
+									}
+								}
+							}
 							free(ptr->keys);
 							free(ptr->info);
 							free(ptr->child);
@@ -1685,14 +1734,6 @@ int DelNode(Btree* tr, int key, int rel)
 							ptr->child=NULL;
 							free(ptr);
 							ptr=NULL;
-
-							if(!parent) 
-							{
-								tr->root=y;
-								y->par=NULL;
-							}
-							else y->par=parent;
-							for(int i=0; i<=y->n; i++) if(y->child[i]) y->child[i]->par=y;
 						}
 						else
 						{
@@ -1705,6 +1746,7 @@ int DelNode(Btree* tr, int key, int rel)
 							ptr->child[ptr->n]=NULL;
 							ptr->n=ptr->n-1;
 						}
+						for(int i=0; i<=y->n; i++) if(y->child[i]) y->child[i]->par=y;
 						Btree* ntr=(Btree*)malloc(sizeof(Btree));
 						ntr->t=tr->t;
 						ntr->root=y;
@@ -1727,6 +1769,7 @@ void show(Btree* tr, int level)
 		{
 			Btree* ntr=(Btree*)malloc(sizeof(Btree));
 			ntr->t=tr->t;
+			printf("ptr->child==NULL: %d\n", ptr->child==NULL);
 			ntr->root=ptr->child[i];
 			show(ntr, level+1);
 			free(ntr);
