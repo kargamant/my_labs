@@ -1454,7 +1454,7 @@ int DelNode(Btree* tr, int key, int rel)
 					if(ptr->n==0)
 					{
 						Node* parent=ptr->par;
-						if(ptr==tr->root)
+						if(!parent)
 						{
 							tr->root=y;
 							y->par=NULL;
@@ -1630,12 +1630,12 @@ int DelNode(Btree* tr, int key, int rel)
 						{
 							Node* parent=ptr->par;
 
-							if(ptr==tr->root) 
+							if(!parent) 
 							{
 								tr->root=y;
 								y->par=NULL;
 							}
-							else 
+							else
 							{
 								y->par=parent;
 								for(int j=0; j<=parent->n; j++)
@@ -1769,7 +1769,7 @@ void show(Btree* tr, int level)
 		{
 			Btree* ntr=(Btree*)malloc(sizeof(Btree));
 			ntr->t=tr->t;
-			printf("ptr->child==NULL: %d\n", ptr->child==NULL);
+			//printf("ptr->child==NULL: %d\n", ptr->child==NULL);
 			ntr->root=ptr->child[i];
 			show(ntr, level+1);
 			free(ntr);

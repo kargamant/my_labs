@@ -76,11 +76,11 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 		//printf("nodes: %lld\n", nodes);
 		for(int i=0; i<itr; i++)
 		{
-			printf("tree nodes, itr: %lld, %d\n", nodes, i);
-			show(tr, 0);
+		//	printf("tree nodes, itr: %lld, %d\n", nodes, i);
+		//	show(tr, 0);
 			//Testing of AddNode
 			int key=rand()%limit;
-			printf("inserting key: %d\n", key);
+		//	printf("inserting key: %d\n", key);
 			int size=str_limit;
 			char* info=(char*)calloc(size, size*sizeof(char));
 			for(char* ptr=info; ptr-info<size-1; ++ptr) *ptr=65+32*(rand()%2)+rand()%27;
@@ -88,8 +88,8 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 			AddNode(tr, key, info);
 			t2=clock();
 			add_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
-			printf("tree after inserting:\n");
-			show(tr, 0);
+		//	printf("tree after inserting:\n");
+		//	show(tr, 0);
 
 			//Testing of Traversing
 			t1=clock();
@@ -104,8 +104,8 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 			DelNode(tr, key, 1);
 			t2=clock();
 			del_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
-			printf("tree after deleting:\n");
-			show(tr, 0);
+		//	printf("tree after deleting:\n");
+		//	show(tr, 0);
 
 			//Testing of search
 			//key=rand()%limit;
@@ -155,9 +155,9 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 		nodes/=step;
 		//free(tr);
 		//tr=NULL;
-		erase(tr);
-		free(tr);
-		tr=NULL;
+		//erase(tr);
+		//free(tr);
+		//tr=NULL;
 		/*Node* start=Max(root);
 		while(start!=NULL)
 		{
