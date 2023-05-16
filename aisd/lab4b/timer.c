@@ -89,7 +89,7 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 			
 
 			//Testing of Delition
-			//key=rand()%limit;
+			key=rand()%limit;
 			t1=clock();
 			DelNode(tr, key, 1);
 			t2=clock();
