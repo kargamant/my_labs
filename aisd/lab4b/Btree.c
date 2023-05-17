@@ -1863,6 +1863,40 @@ void fimport(Btree* tr, char* fn)
 	fclose(fd);
 }
 
+void viz(Btree* tr, const char* fn)
+{
+	static int r=0;
+//	FILE* fd=NULL;
+//	if(!tr->root->par) fd=fopen(fn, "w+");
+	FILE* fd=fopen(fn, "a+");
+	Node* ptr=tr->root;
+	if(ptr)
+	{
+		fprintf(fd, "subgraph cluster_%d {\n", r);
+		for(int i=0; i<ptr->n; i++)
+		{
+			fprintf(fd, "%d\n", ptr->keys[i]);
+		}
+		fprintf(fd, "}\n");
+		for(int i=0; i<ptr->n; i++)
+		{
+			if(ptr->child[i]) fprintf(fd, "%d->%d\n", ptr->keys[i], ptr->child[i]->keys[0]);
+			if(i+1<=ptr->n && ptr->child[i+1]) fprintf(fd, "%d->%d\n", ptr->keys[i], ptr->child[i+1]->keys[0]);
+		}
+		r++;
+		for(int j=0; j<=ptr->n; j++)
+		{
+			Btree* ntr=(Btree*)malloc(sizeof(Btree));
+			ntr->t=tr->t;
+			ntr->root=ptr->child[j];
+			fclose(fd);
+			viz(ntr, fn);
+			free(ntr);
+		}
+	}
+	//fclose(fd);
+}
+
 //garbage that could be useful
 
 

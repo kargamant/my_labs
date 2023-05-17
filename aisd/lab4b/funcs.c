@@ -206,6 +206,16 @@ int Importv(Btree* tr)
 //	}
 	printf("Tree was successfully imported from %s\n", fn);
 	free(fn);
+
+	const char vfn[]="tree_pic.dot";
+	FILE* fd=fopen(vfn, "w+");
+	fprintf(fd, "digraph {\n");
+	fclose(fd);
+	viz(tr, vfn);
+	fd=fopen(vfn, "a+");
+	fprintf(fd, "}\n");
+	fclose(fd);
+
 	return EndView();
 }
 
@@ -448,7 +458,8 @@ int Timingv(Btree* tr)
 	if(input) return CERR_EOF;
 	
 	timing(n, limit, str_limit, itr, step);
-	printf("Timing results were written in directory that was passed to a function.\n");
+	printf("Timing results were written in directory \'timing\'.\n");
+	printf("Plots were built and saved at \'plots\'.\n");
 	return EndView();
 }
 

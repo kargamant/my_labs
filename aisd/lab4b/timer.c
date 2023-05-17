@@ -73,7 +73,7 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 		tr->root=generate(nodes, limit, str_limit)->root;
 		long double t1=0, t2=0;
 
-		//printf("nodes: %lld\n", nodes);
+		printf("nodes: %lld\n", nodes);
 		for(int i=0; i<itr; i++)
 		{
 		//	printf("tree nodes, itr: %lld, %d\n", nodes, i);
@@ -174,6 +174,8 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 	}
 	free(tt->info);
 	free(tt);
+	printf("\nBuilding plots\n");
+	system("python3 pyscripts/plot.py");
 }
 
 Row* Searchtt(TimingTable* vector, int ms, char* fn)

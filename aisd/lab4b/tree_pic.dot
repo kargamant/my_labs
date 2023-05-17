@@ -1,0 +1,30 @@
+digraph {
+subgraph cluster_0 {
+80
+}
+80->50
+80->100
+subgraph cluster_1 {
+50
+}
+50->30
+50->70
+subgraph cluster_2 {
+30
+}
+subgraph cluster_3 {
+70
+}
+subgraph cluster_4 {
+100
+}
+100->90
+100->150
+subgraph cluster_5 {
+90
+}
+subgraph cluster_6 {
+150
+200
+}
+}
