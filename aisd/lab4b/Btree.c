@@ -1379,7 +1379,23 @@ int DelNode(Btree* tr, int key, int rel)
 						free(ptr->info[pos].data);
 						ptr->info[pos].data=is;
 						free(ntr);
-						return ERR_OK;
+						return ERR_OK;	
+					//	Item* is=(Item*)malloc(sizeof(Item));
+					//	Item* gr=pk->info+pk->n-1;
+					//	while(gr)
+					//	{
+					//		is->data=strdup(gr->data);
+					//		if(gr->next) is->next=(Item*)malloc(sizeof(Item));
+					//		else is->next=NULL;
+					//		gr=gr->next;
+					//	}
+					//	int r=DelNode(ntr, ks, 1);
+					//	while(r==ERR_OK) r=DelNode(ntr, ks, 1);
+					//	ptr->keys[pos]=ks;
+					//	free(ptr->info[pos].data);
+					//	ptr->info[pos]=*is;
+					//	free(ntr);
+					//	return ERR_OK;
 					}
 				}
 				//right subtree case

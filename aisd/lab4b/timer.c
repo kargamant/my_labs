@@ -97,6 +97,12 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 			t2=clock();
 			trave_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
 			
+			//Testing of search
+			//key=rand()%limit;
+			t1=clock();
+			Search(tr, key);
+			t2=clock();
+			search_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
 
 			//Testing of Delition
 			//key=rand()%limit;
@@ -107,12 +113,6 @@ void timing(long long nodes, long long limit, long long str_limit, int itr, doub
 		//	printf("tree after deleting:\n");
 		//	show(tr, 0);
 
-			//Testing of search
-			//key=rand()%limit;
-			t1=clock();
-			Search(tr, key);
-			t2=clock();
-			search_t+=(long double)((t2-t1)/CLOCKS_PER_SEC);
 
 		//	printf("itr: %d\n", i);
 		//	show(tr, 0);
