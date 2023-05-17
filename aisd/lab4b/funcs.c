@@ -190,23 +190,9 @@ int console(int p, Btree* tr)
 
 //View functions 
 
-int Importv(Btree* tr)
+void GenerateImage(Btree* tr)
 {
-	//if(root->info) printf("Warning. if your tree is not empty then this function will nest new tree into current tree.\n");
-	printf("Enter filename: ");
-	char* fn=enter();
-	if(fcheck(fn)==CERR_EOF) return CERR_EOF;
-
-	fimport(tr, fn);
-	//int result=fimport(root, fn);
-//	if(result==ERR_EOF) 
-//	{
-//		free(fn);
-//		return CERR_EOF;
-//	}
-	printf("Tree was successfully imported from %s\n", fn);
-	free(fn);
-
+	//Making dot file
 	const char vfn[]="tree_pic.dot";
 	FILE* fd=fopen(vfn, "w+");
 	fprintf(fd, "digraph {\n");
@@ -215,7 +201,28 @@ int Importv(Btree* tr)
 	fd=fopen(vfn, "a+");
 	fprintf(fd, "}\n");
 	fclose(fd);
+	
+	//Rendering image
+	system("python3 pyscripts/viz.py");
+	
+	printf("Image of your tree was generated and saved at \'your_tree.png\'.\n");
+}
 
+int Importv(Btree* tr)
+{
+	//if(root->info) printf("Warning. if your tree is not empty then this function will nest new tree into current tree.\n");
+	printf("Enter filename: ");
+	char* fn=enter();
+	if(fcheck(fn)==CERR_EOF) return CERR_EOF;
+
+	int res=fimport(tr, fn);
+	if(res!=ERR_OK) printf("Error. This file does not exist.\n"); 
+	else
+	{
+		printf("Tree was successfully imported from %s\n", fn);
+		GenerateImage(tr);
+	}
+	free(fn);
 	return EndView();
 }
 
@@ -250,15 +257,8 @@ int Addv(Btree* tr)
 	t1=clock();
 	int result=AddNode(tr, key, data);
 	t2=clock();
-//	if(result==ERR_DUPL)
-//	{
-//		free(data);
-//		printf("Error. Node with this key has already been added to tree.\n");
-//	}
-	//printf("Node with key %d was successfully added to tree.\n", key);
 	
-	printf("Tree:\n");
-	//Traversing(root, FULL_TREE);
+	GenerateImage(tr);
 	printf("Excecution time %lf seconds.\n", (t2-t1)/CLOCKS_PER_SEC);
 	return EndView();
 }
@@ -282,6 +282,7 @@ int Delv(Btree* tr)
 	else if(result==ERR_IR) printf("Error. Incorrect number of element was entered.\n");
 	else printf("Key %d after number %d was successfully deleted from tree.\n", key, rel);
 
+	GenerateImage(tr);
 	printf("Excecution time %lf seconds.\n", (t2-t1)/CLOCKS_PER_SEC);
 	return EndView();
 }

@@ -32,7 +32,7 @@ Item* Search(Btree* tr, int key);
 int AddNode(Btree* tr, int key, char* info);
 Node* Split(Btree* tr, Node* x, int i);
 void show(Btree* tr, int level);
-void fimport(Btree* tr, char* fn);
+int fimport(Btree* tr, char* fn);
 int DelNode(Btree* tr, int key, int rel);
 void MergeNode(Node* y, Node* z, Btree* tr);
 void viz(Btree* tr, const char* fn);

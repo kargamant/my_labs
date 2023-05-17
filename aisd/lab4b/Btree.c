@@ -1849,9 +1849,10 @@ void show(Btree* tr, int level)
 	}*/
 }
 
-void fimport(Btree* tr, char* fn)
+int fimport(Btree* tr, char* fn)
 {
 	FILE* fd=fopen(fn, "r");
+	if(!fd) return -1203912;
 	while(!feof(fd))
 	{
 		int key=-1;
@@ -1861,6 +1862,7 @@ void fimport(Btree* tr, char* fn)
 		AddNode(tr, key, info);
 	}
 	fclose(fd);
+	return ERR_OK;
 }
 
 void viz(Btree* tr, const char* fn)

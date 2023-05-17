@@ -10,6 +10,7 @@ int getInt(int* n);
 int console(int p, Btree* tr);
 
 //view functions
+void GenerateImage(Btree* tr);
 int Importv(Btree* tr);
 int Traverv(Btree* tr);
 int Addv(Btree* tr);
