@@ -1875,15 +1875,27 @@ void viz(Btree* tr, const char* fn)
 	if(ptr)
 	{
 		fprintf(fd, "subgraph cluster_%d {\n", r);
-		for(int i=0; i<ptr->n; i++)
+		if(isLeaf(ptr))
 		{
-			fprintf(fd, "%d\n", ptr->keys[i]);
+			for(int i=ptr->n-1; i>=0; i--)
+			{
+				fprintf(fd, "%d\n", ptr->keys[i]);
+			}
+		}
+		else
+		{
+			for(int i=0; i<ptr->n; i++)
+			{
+				fprintf(fd, "%d\n", ptr->keys[i]);
+			}
 		}
 		fprintf(fd, "}\n");
-		for(int i=0; i<ptr->n; i++)
+		for(int i=ptr->n-1; i>=0; i--)
 		{
+			//if(ptr->child[i] && isLeaf(ptr->child[i])) fprintf(fd, "%d->%d\n", ptr->keys[i], ptr->child[i]->keys[ptr->child[i]->n-1]);
 			if(ptr->child[i]) fprintf(fd, "%d->%d\n", ptr->keys[i], ptr->child[i]->keys[0]);
-			if(i+1<=ptr->n && ptr->child[i+1]) fprintf(fd, "%d->%d\n", ptr->keys[i], ptr->child[i+1]->keys[0]);
+			//if(ptr->child[i+1] && isLeaf(ptr->child[i+1])) fprintf(fd, "%d->%d\n", ptr->keys[i], ptr->child[i+1]->keys[ptr->child[i+1]->n-1]);
+			if(ptr->child[i+1]) fprintf(fd, "%d->%d\n", ptr->keys[i], ptr->child[i+1]->keys[0]);
 		}
 		r++;
 		for(int j=0; j<=ptr->n; j++)
@@ -1891,12 +1903,11 @@ void viz(Btree* tr, const char* fn)
 			Btree* ntr=(Btree*)malloc(sizeof(Btree));
 			ntr->t=tr->t;
 			ntr->root=ptr->child[j];
-			fclose(fd);
 			viz(ntr, fn);
 			free(ntr);
 		}
 	}
-	//fclose(fd);
+	fclose(fd);
 }
 
 //garbage that could be useful

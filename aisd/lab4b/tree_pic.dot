@@ -1,60 +1,15 @@
 digraph {
-subgraph cluster_41 {
-80
-160
+subgraph cluster_19 {
+25
+20
+5
 }
-80->30
-80->115
-160->115
-160->190
-subgraph cluster_42 {
-30
+subgraph cluster_20 {
 50
 }
-30->10
-30->40
-50->40
-50->65
-subgraph cluster_43 {
-10
-20
-25
+subgraph cluster_18 {
+30
 }
-subgraph cluster_44 {
-40
-}
-subgraph cluster_45 {
-65
-70
-}
-subgraph cluster_46 {
-115
-140
-}
-115->90
-115->130
-140->130
-140->150
-subgraph cluster_47 {
-90
-110
-}
-subgraph cluster_48 {
-130
-}
-subgraph cluster_49 {
-150
-}
-subgraph cluster_50 {
-190
-}
-190->170
-190->200
-subgraph cluster_51 {
-170
-180
-}
-subgraph cluster_52 {
-200
-}
+30->5
+30->50
 }
