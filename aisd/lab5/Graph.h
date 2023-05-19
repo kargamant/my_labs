@@ -38,4 +38,13 @@ typedef enum Color
 	BLACK
 }Color;
 
+//methods
+Graph* GraphInit(int v);
+Vertex* VertexInit(char* id, Room type);
+Edge* EdgeInit(int w, int to);
+int* BFS(Graph* G, int vi, int* isExit);
+int* Dejkstra(Graph* G, int from, int to, List* result);
+int FindMin(Graph* G, int* dist, int* used);
+void AddNode(Graph* G, char* id, Room type);
 #endif
+
