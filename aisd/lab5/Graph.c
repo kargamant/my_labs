@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "Graph.h"
 #include "Queue.h"
 #include <limits.h>
@@ -10,14 +11,15 @@ Graph* GraphInit(int v)
 {
 	Graph* G=(Graph*)malloc(sizeof(Graph));
 	G->v=v;
-	G->vertex=(Vertex*)malloc(v*sizeof(Vertex));
+	G->vertex=create();
+	New(v, G->vertex);
 	return G;
 }
 
-Vertex* VertexInit(char* id, Room type)
+Vertex* VertexInit(Room type)
 {
 	Vertex* V=(Vertex*)malloc(sizeof(Vertex));
-	V->id=id;
+	//V->id=id;
 	V->type=type;
 	V->head=NULL;
 	return V;
@@ -34,8 +36,10 @@ Edge* EdgeInit(int w, int to)
 
 //Breadth-first-search
 //isExit will be a number of reachable exits.
-int* BFS(Graph* G, int vi, int* isExit)   
+int* BFS(Graph* G, char* vi_id, int* isExit)   
 {
+	int vi=Search(G->vertex, vi_id);
+	if(vi==-1) return NULL;
 	*isExit=0;
 
 	//colors, distances, pred
@@ -60,7 +64,7 @@ int* BFS(Graph* G, int vi, int* isExit)
 	//Visiting and coloring nodes
 	while(pop(Q, &u)!=ERR_EMPTY)
 	{
-		Edge* ptr=G->vertex[u].head;
+		Edge* ptr=G->vertex->ks[u].info->vertex->head;
 		while(ptr)
 		{
 			int to=ptr->to;
@@ -70,7 +74,7 @@ int* BFS(Graph* G, int vi, int* isExit)
 				dist[to]=dist[u]+ptr->w;
 				pred[to]=u;
 				push(Q, to);
-				if(G->vertex[to].type==EXIT) *isExit=*isExit+1;
+				if(G->vertex->ks[to].info->vertex->type==EXIT) *isExit=*isExit+1;
 			}
 			ptr=ptr->next;
 		}
@@ -80,8 +84,10 @@ int* BFS(Graph* G, int vi, int* isExit)
 }
 
 //From entrance to exit
-int* Dejkstra(Graph* G, int from, int to, List* result)
+int* Dejkstra(Graph* G, char* from_id, char* to_id, List* result)
 {
+	int from=Search(G->vertex, from_id);
+	int to=Search(G->vertex, to_id);
 	int dist[G->v];
 	int pred[G->v];
 	int used[G->v];
@@ -98,13 +104,14 @@ int* Dejkstra(Graph* G, int from, int to, List* result)
 	{
 		u=FindMin(G, dist, used);
 		used[u]=1;
-		Edge* pk=G->vertex[u].head;
+		Edge* pk=G->vertex->ks[u].info->vertex->head;
 		while(pk)
 		{
-			if(dist[pk->to]>dist[u]+G->vertex[u].w)
+			int pkto=pk->to;
+			if(dist[pkto]>dist[u]+G->vertex[u].w)
 			{
-				dist[pk->to]=dist[u]+G->vertex[u].w;
-				pred[pk->to]=u;
+				dist[pkto]=dist[u]+G->vertex[u].w;
+				pred[pkto]=u;
 			}
 			pk=pk->next;
 		}
@@ -129,21 +136,123 @@ int FindMin(Graph* G, int* dist, int* used)
 	return mini;
 }
 
-//Make an id check
-int AddNode(Graph* G, char* id, Room type)
+int AddVert(Graph* G, char* id, Room type)
 {
-	Vertex* V=VertexInit(id, type);
-	G->vertex=(Vertex*)realloc((G->v+1)*sizeof(Vertex));
-	G->vertex[G->v]=V;
+	int vi=Search(G->vertex, id);
+	if(vi!=-1) return ERR_DUPL;
+	if(G->vertex->msize<=G->v) G->vertex=rebuild(G->vertex);
+	add(G->vertex, id, type);
 	G->v+=1;
+	return ERR_OK;
+//	for(int i=0; i<G->v; i++)
+//	{
+//		if(!strcmp(G->vertex[i].id, id)) return ERR_DUPL;
+//	}
+//	Vertex* V=VertexInit(id, type);
+//	G->vertex=(Vertex*)realloc((G->v+1)*sizeof(Vertex));
+//	G->vertex[G->v]=V;
+//	G->v+=1;
+//	return ERR_OK;
 }
 
-//Make a check if such edge exist. If exist we can simply change the weight of it
-int AddEdge(Graph* G, int from, int to, int w)
+int AddEdge(Graph* G, char* from_id, char* to_id, int w)
 {
+	int from=Search(G->vertex, from_id);
+	int to=Search(G->vertex, to_id);
+	if(to==-1 || from==-1) return ERR_NF;
+
 	Edge* E=EdgeInit(w, to);
-	E->next=G->vertex[from].head;
+	E->next=G->vertex->ks[from].info->vertex->head;
 	G->vertex[from].head=E;
+	return ERR_OK;
 }
 
+int DelEdge(Graph* G, char* from_id, char* to_id, int w)
+{
+	int from=Search(G->vertex, from_id);
+	int to=Search(G->vertex, to_id);
+	
+	if(from==-1 || to==-1) return ERR_NF;
+	Edge* ptr=G->vertex->ks[from].info->vertex->head;
+	Edge* prev=G->vertex->ks[from].info->vertex->head;
+	while(ptr)
+	{
+		Edge* next=ptr->next;
+		if(ptr->to==to && ptr->w==w)
+		{
+			if(ptr==G->vertex->ks[from].info->vertex->head)
+			{
+				G->vertex->ks[from].info->vertex->head=next;
+				free(ptr);
+			}
+			else
+			{
+				prev->next=next;
+				free(ptr);
+			}
+		}
+		else prev=ptr;
+		ptr=next;
+	}
+}
+
+int DelVert(Graph* G, char* id)
+{
+	int res=Del(G->vertex, id);
+	if(res==-1) return ERR_NF;
+	else
+	{
+		G->v-=1;
+		for(KeySpace* ptr=G->vertex->ks; ptr-G->vertex->ks<G->vertex->msize; ++ptr)
+		{
+			if(ptr->busy==BUSY)
+			{
+				Edge* pk=ptr->info->vertex->head;
+				Edge* prev=ptr->info->vertex->head;
+				
+				while(pk)
+				{
+					Edge* next=pk->next;
+					if(pk->to==res)
+					{
+						if(pk!=ptr->info->vertex->head)
+						{
+							prev->next=next;
+							free(pk);
+						}
+						else 
+						{
+							ptr->info->vertex->head=next;
+							free(pk);
+						}
+					}
+					else prev=pk;
+					pk=next;
+				}
+			}
+		}
+	}
+	return ERR_OK;
+	/*Vertex* V=NULL;
+	for(int i=0; i<G->v; i++)
+	{
+		if(!strcmp(G->vertex[i].id, id)) 
+		{
+			V=G->vertex[i];
+			break;
+		}
+	}
+	if(!V) return ERR_NF;
+	Edge* ptr=V->head;
+	while(ptr)
+	{
+		Edge* next=ptr->next;
+		free(ptr);
+		ptr=next;
+	}
+	free(V->id);
+	free(V);
+	G->v-=1;
+	return ERR_OK;*/
+}
 
