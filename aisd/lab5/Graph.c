@@ -139,11 +139,12 @@ int FindMin(Graph* G, int* dist, int* used)
 int AddVert(Graph* G, char* id, Room type)
 {
 	int vi=Search(G->vertex, id);
-	if(vi!=-1) return ERR_DUPL;
-	if(G->vertex->msize<=G->v) G->vertex=rebuild(G->vertex);
-	add(G->vertex, id, type);
+	if(vi!=-1) return -1;
+	//To be made sooner
+	//if(G->vertex->msize<=G->v) G->vertex=rebuild(G->vertex);
+	int j=add(G->vertex, id, type);
 	G->v+=1;
-	return ERR_OK;
+	return j;
 //	for(int i=0; i<G->v; i++)
 //	{
 //		if(!strcmp(G->vertex[i].id, id)) return ERR_DUPL;
@@ -194,6 +195,7 @@ int DelEdge(Graph* G, char* from_id, char* to_id, int w)
 		else prev=ptr;
 		ptr=next;
 	}
+	return ERR_OK;
 }
 
 int DelVert(Graph* G, char* id)
@@ -231,28 +233,98 @@ int DelVert(Graph* G, char* id)
 				}
 			}
 		}
+	
 	}
 	return ERR_OK;
-	/*Vertex* V=NULL;
-	for(int i=0; i<G->v; i++)
-	{
-		if(!strcmp(G->vertex[i].id, id)) 
-		{
-			V=G->vertex[i];
-			break;
-		}
-	}
-	if(!V) return ERR_NF;
-	Edge* ptr=V->head;
-	while(ptr)
-	{
-		Edge* next=ptr->next;
-		free(ptr);
-		ptr=next;
-	}
-	free(V->id);
-	free(V);
-	G->v-=1;
-	return ERR_OK;*/
 }
+
+int VertUpdate(Graph* G, char* id, char* new_id, Room type)
+{
+	if(!strcmp(id, new_id))
+	{
+		int vo=Search(G->vertex, id);
+		G->vertex->ks[vo].info->vertex->type=type;
+		return ERR_OK;
+	}
+	int vo=Search(G->vertex, id);
+	
+	if(vo==-1) return ERR_NF;
+	else
+	{
+		int j=AddVert(G, new_id, type);
+		if(j==-1) return ERR_DUPL;
+		vo=Search(G->vertex, id);
+		G->vertex->ks[j].info->vertex->head=G->vertex->ks[vo].info->vertex->head;
+		G->vertex->ks[vo].info->vertex->head=NULL;
+		DelVert(G, id);	
+		return ERR_OK;
+	}
+}
+
+int EdgeUpdate(Graph* G, char* from_id, char* to_id, char* nfrom_id, char* nto_id, int w,int new_w)
+{
+	int from=Search(G->vertex, from_id);
+	int to=Search(G->vertex, to_id);
+	int nfrom=Search(G->vertex, nfrom_id);
+	int nto=Search(G->vertex, nto_id);
+	
+	if(from==-1 || to==-1 || nfrom==-1 || nto==-1) return ERR_NF;
+	Vertex* from_V=G->vertex->ks[from].info->vertex;
+	Edge* pk=from_V->head;
+	while(pk)
+	{
+		if(pk->to==to && pk->w==w) break;
+		pk=pk->next;
+	}
+	if(from==nfrom)
+	{
+		pk->to=nto;
+		pk->w=new_w;
+	}
+	else
+	{
+		AddEdge(G, nfrom_id, nto_id, new_w);
+		DelEdge(G, from_id, to_id, w);
+	}
+	return ERR_OK;
+}
+
+int Show(Graph* G)
+{
+	printf("Amount of vertices: %d\n", G->v);
+	if(G->v==0) return ERR_OK;
+	Table* t=G->vertex;
+	printf("id | Room type | (weight, to_ind)\n");
+	for(int i=0; i<t->msize; i++)
+	{
+		if(t->ks[i].busy==BUSY)
+		{
+			printf("\"%s\" | ", t->ks[i].key);
+			switch(t->ks[i].info->vertex->type)
+			{
+				case ENTER:
+					printf("ENTER | ");
+					break;
+				case TRANSIT:
+					printf("TRANSIT | ");
+					break;
+				case EXIT:
+					printf("EXIT | ");
+					break;
+			}
+			Edge* pk=t->ks[i].info->vertex->head;
+			while(pk)
+			{
+				printf("(%d, %d) ", pk->w, pk->to);
+				pk=pk->next;
+			}
+		}
+		printf("\n");
+	}
+	return ERR_OK;
+}
+
+
+
+
 

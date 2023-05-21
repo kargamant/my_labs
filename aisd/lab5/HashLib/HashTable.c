@@ -61,10 +61,10 @@ int add(Table* t, char* key, Room type)
 			t->ks[j].busy=BUSY;
 			t->ks[j].key=key;
 			t->ks[j].info->vertex->type=type;
-			return ERR_OK;
+			return j;
 		}
 	}
-	return ERR_FULL;
+	return -1;
 }
 
 int Del(Table* t, char* key)
