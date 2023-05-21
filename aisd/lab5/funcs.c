@@ -218,6 +218,9 @@ int Importv(Btree* tr)
 int Showv(Graph* G)
 {	
 	Show(G);
+	ImageGenerate(G, "labirint.dot");
+	system("python3 viz.py");
+	system("gthumb labirint.png");
 	return EndView();
 }
 
@@ -242,7 +245,7 @@ int AddVertv(Graph* G)
 	
 	int result=AddVert(G, id, type);
 	if(result==-1) printf("Error. Room with this id already exists.\n");
-	else printf("Vertex with id \"%s\" was successfully added to graph.\n");
+	else printf("Vertex with id \"%s\" was successfully added to graph.\n", id);
 	
 	return EndView();	
 }
@@ -266,6 +269,9 @@ int AddEdgev(Graph* G)
 	if(result==ERR_NF) printf("Error. No vertecis with from or to id.\n");
 	else printf("Edge beetween \"%s\" and \"%s\" was succesfully added.\n", from_id, to_id);
 
+	free(from_id);
+	free(to_id);
+
 	return EndView();
 }
 
@@ -278,6 +284,8 @@ int DelVertv(Graph* G)
 	int result=DelVert(G, id);
 	if(result==ERR_NF) printf("Error. No vertex with this id found.\n");
 	else printf("Vertex with id \"%s\" was successfully deleted.\n", id);
+
+	free(id);
 	return EndView();
 }
 
@@ -297,9 +305,11 @@ int DelEdgev(Graph* G)
 	if(input) return CERR_EOF;
 
 	int result=DelEdge(G, from_id, to_id, w);
-	if(result==EFF_NF) printf("Error. No vertecies with from or to id found.\n");
+	if(result==ERR_NF) printf("Error. No vertecies with from or to id found.\n");
 	else printf("Edge beetween \"%s\" and \"%s\" was succesfully deleted.\n", from_id, to_id);
 
+	free(from_id);
+	free(to_id);
 	return EndView();
 }
 
@@ -327,9 +337,10 @@ int VertUpdatev(Graph* G)
 	}while(type<0 || type>2);
 
 	int result=VertUpdate(G, id, new_id, type);
-	if(res==ERR_NF) printf("Error. No vertex with this id in graph.\n");
+	if(result==ERR_NF) printf("Error. No vertex with this id in graph.\n");
 	else printf("Data of this room was succesfully updated.\n");
 
+	free(id);
 	return EndView();
 }
 
@@ -359,12 +370,28 @@ int EdgeUpdatev(Graph* G)
 	
 	printf("Enter new weight of edge: ");
 	int new_w=0;
-	int input=getInt(&new_w);
+	input=getInt(&new_w);
 	if(input) return CERR_EOF;
 
 	int result=EdgeUpdate(G, from_id, to_id, nfrom_id, nto_id, w, new_w);
-	if(result==EFF_NF) printf("Error. Some of ids missing in graph.\n");	
+	if(result==ERR_NF) printf("Error. Some of ids missing in graph.\n");	
 	else printf("Information about this edge was successfully updated.\n");
 	
+	free(from_id);
+	free(to_id);
+	free(nfrom_id);
+	free(nto_id);
+
 	return EndView();
+}
+
+//Function that ends a view function
+int EndView()
+{
+	int i=0;
+	printf("Input any value to continue or EOF to stop.\n");
+	int cont=scanf("%d", &i);
+	scanf("%*[^\n]");
+	if(cont==EOF) return CERR_EOF;
+	return CERR_OK;
 }

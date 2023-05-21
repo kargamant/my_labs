@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Hash.h"
-#include "Graph.h"
+#include "../Graph.h"
 
 int New(int msize, Table* ht)
 {
@@ -12,7 +12,7 @@ int New(int msize, Table* ht)
 	for(KeySpace* ptr=ht->ks; ptr-ht->ks<ht->msize; ++ptr)
 	{
 		ptr->busy=FREE;
-		*ptr->key=0;
+		ptr->key="\0";
 		ptr->info=(Item*)malloc(sizeof(Item));
 		ptr->info->vertex=VertexInit(ENTER);
 	}
@@ -21,7 +21,7 @@ int New(int msize, Table* ht)
 
 Table* create()
 {
-	return (Table*)calloc(2, sizeof(Table));
+	return (Table*)malloc(sizeof(Table));
 }
 
 void erased(Table* t)
@@ -47,7 +47,7 @@ void erased(Table* t)
 		}
 		free(t->ks);
 	}
-	//free(t);
+	free(t);
 }
 
 

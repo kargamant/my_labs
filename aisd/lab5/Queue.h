@@ -10,12 +10,12 @@ typedef struct Queue
 	int* queue;
 }Queue;
 
-typedef enum ERR
+/*typedef enum ERR
 {
 	ERR_OK,
 	ERR_FULL,
 	ERR_EMPTY
-}ERR;
+}ERR;*/
 
 //methods
 

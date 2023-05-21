@@ -1,5 +1,6 @@
 #ifndef HASHT_H
 #define HASHT_H
+#include "Hash.h"
 
 typedef struct Item
 {
@@ -36,12 +37,12 @@ void erased(Table* t);
 int Search(Table* t, char* id);
 
 
-typedef enum ERR
+/*typedef enum ERR
 {
 	ERR_OK,
 	ERR_NF,
 	ERR_FULL
 
-}ERR;
+}ERR;*/
 
 #endif

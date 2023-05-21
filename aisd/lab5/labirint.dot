@@ -1,0 +1,7 @@
+digraph {
+a1
+a1->a3 [label=5, weight=5]
+a2
+a3
+a3->a2 [label=8, weight=8]
+}

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "Graph.h"
 #include "funcs.h"
-//#include "menue.h"
+#include "menue.h"
 
 int main()
 {
@@ -32,5 +32,8 @@ int main()
 		system("clear");
 	}while(1);
 	printf("Program stopped.\n");
+
+	erased(G->vertex);
+	free(G);
 	return 0;
 }

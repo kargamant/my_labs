@@ -7,7 +7,7 @@ typedef struct List
 	struct List* next;
 }List;
 
-void pop(List* L, int* u);
-void push(List* L, int info);
+void popl(List* L, int* u);
+void push_front(List* L, int info);
 List* L_init(int data);
 #endif

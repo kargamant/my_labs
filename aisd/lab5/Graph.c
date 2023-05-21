@@ -1,16 +1,16 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "Graph.h"
 #include "Queue.h"
 #include <limits.h>
 #define INF INT_MAX
 
-
 //Init functions
 Graph* GraphInit(int v)
 {
 	Graph* G=(Graph*)malloc(sizeof(Graph));
-	G->v=v;
+	G->v=0;
 	G->vertex=create();
 	New(v, G->vertex);
 	return G;
@@ -44,8 +44,8 @@ int* BFS(Graph* G, char* vi_id, int* isExit)
 
 	//colors, distances, pred
 	Color color[G->v];
-	int dist[G->v];
-	int pred[G->v];
+	int* dist=(int*)calloc(G->v, G->v*sizeof(int));
+	int* pred=(int*)calloc(G->v, G->v*sizeof(int));
 	Queue* Q=QueueInit(G->v);
 
 	//initializing
@@ -80,6 +80,7 @@ int* BFS(Graph* G, char* vi_id, int* isExit)
 		}
 		color[u]=BLACK;	
 	}
+	free(dist);
 	return pred;
 }
 
@@ -88,7 +89,7 @@ int* Dejkstra(Graph* G, char* from_id, char* to_id, List* result)
 {
 	int from=Search(G->vertex, from_id);
 	int to=Search(G->vertex, to_id);
-	int dist[G->v];
+	int* dist=(int*)calloc(G->v, G->v*sizeof(int));
 	int pred[G->v];
 	int used[G->v];
 	for(int i=0; i<G->v; i++)
@@ -108,9 +109,14 @@ int* Dejkstra(Graph* G, char* from_id, char* to_id, List* result)
 		while(pk)
 		{
 			int pkto=pk->to;
-			if(dist[pkto]>dist[u]+G->vertex[u].w)
+			Edge* upkto=G->vertex->ks[u].info->vertex->head;
+			while(upkto)
 			{
-				dist[pkto]=dist[u]+G->vertex[u].w;
+				if(upkto->to==pkto) break;
+			}
+			if(dist[pkto]>dist[u]+upkto->w)
+			{
+				dist[pkto]=dist[u]+upkto->w;
 				pred[pkto]=u;
 			}
 			pk=pk->next;
@@ -119,7 +125,7 @@ int* Dejkstra(Graph* G, char* from_id, char* to_id, List* result)
 	int k=to;
 	while(k!=-1)
 	{
-		push(result, k);
+		push_front(result, k);
 		k=pred[k];
 	}
 	return dist;
@@ -164,7 +170,7 @@ int AddEdge(Graph* G, char* from_id, char* to_id, int w)
 
 	Edge* E=EdgeInit(w, to);
 	E->next=G->vertex->ks[from].info->vertex->head;
-	G->vertex[from].head=E;
+	G->vertex->ks[from].info->vertex->head=E;
 	return ERR_OK;
 }
 
@@ -256,7 +262,21 @@ int VertUpdate(Graph* G, char* id, char* new_id, Room type)
 		vo=Search(G->vertex, id);
 		G->vertex->ks[j].info->vertex->head=G->vertex->ks[vo].info->vertex->head;
 		G->vertex->ks[vo].info->vertex->head=NULL;
-		DelVert(G, id);	
+		int res=Del(G->vertex, id);
+		for(KeySpace* ptr=G->vertex->ks; ptr-G->vertex->ks<G->vertex->msize; ++ptr)
+		{
+			if(ptr->busy==BUSY)
+			{
+				Edge* pk=ptr->info->vertex->head;
+					
+				while(pk)
+				{
+					if(pk->to==res) pk->to=j;
+					pk=pk->next;
+				}
+			}
+		}
+		//DelVert(G, id);
 		return ERR_OK;
 	}
 }
@@ -294,7 +314,7 @@ int Show(Graph* G)
 	printf("Amount of vertices: %d\n", G->v);
 	if(G->v==0) return ERR_OK;
 	Table* t=G->vertex;
-	printf("id | Room type | (weight, to_ind)\n");
+	printf("id | Room type | (weight, id)\n");
 	for(int i=0; i<t->msize; i++)
 	{
 		if(t->ks[i].busy==BUSY)
@@ -315,14 +335,42 @@ int Show(Graph* G)
 			Edge* pk=t->ks[i].info->vertex->head;
 			while(pk)
 			{
-				printf("(%d, %d) ", pk->w, pk->to);
+				printf("(%d, \"%s\") ", pk->w, G->vertex->ks[pk->to].key);
 				pk=pk->next;
 			}
+			printf("\n");
 		}
-		printf("\n");
 	}
 	return ERR_OK;
 }
+
+int ImageGenerate(Graph* G, char* fn)
+{
+	FILE* fd=fopen(fn, "w+");
+	fclose(fd);
+	fd=fopen(fn, "a+");
+	fprintf(fd, "digraph {\n");
+	for(int i=0; i<G->vertex->msize; i++)
+	{
+		if(G->vertex->ks[i].busy==BUSY)
+		{
+			fprintf(fd, "%s\n", G->vertex->ks[i].key);
+			Edge* pk=G->vertex->ks[i].info->vertex->head;
+			while(pk)
+			{
+				fprintf(fd, "%s->%s [label=%d, weight=%d]\n", G->vertex->ks[i].key, G->vertex->ks[pk->to].key, pk->w, pk->w);
+				pk=pk->next;
+			}
+		}
+	}
+	fprintf(fd, "}");
+	fclose(fd);
+}
+
+
+
+
+
 
 
 

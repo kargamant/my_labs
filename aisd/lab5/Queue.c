@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "Queue.h"
+#include "Graph.h"
 
 Queue* QueueInit(int capacity)
 {
