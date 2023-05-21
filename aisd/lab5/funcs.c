@@ -172,7 +172,7 @@ int fcheck(char* fnd)
 //Main Controller function
 int console(int p, Graph* G)
 {	
-	int (*view[])(Graph*)={Showv, AddVertv, AddEdgev, DelVertv, DelEdgev, VertUpdatev, EdgeUpdatev}; //BFSv, Dejkstrav
+	int (*view[])(Graph*)={Showv, AddVertv, AddEdgev, DelVertv, DelEdgev, VertUpdatev, EdgeUpdatev, BFSv}; //Dejkstrav
 	return view[p](G);	
 }
 
@@ -214,6 +214,46 @@ int Importv(Btree* tr)
 	free(fn);
 	return EndView();
 }*/
+
+int BFSv(Graph* G)
+{
+	int isExit=0;
+	printf("Enter id of starting room: ");
+	char* vi_id=enter();
+	if(!vi_id) return CERR_EOF;
+
+	List* path=L_init();
+	int* distances=NULL;
+	int* predators=NULL;
+	BFS(G, vi_id, &isExit, path, &distances, &predators);
+	printf("path: ");
+	Node* pt=path->head;
+	while(pt)
+	{
+		Node* next=pt->next;
+		printf("\"%s\" ", G->vertex->ks[pt->data].key);
+		pt=next;
+	}
+	printf("\n");
+
+	printf("distances: ");
+	pt=path->head;
+	while(pt)
+	{
+		Node* next=pt->next;
+		printf("%d ", distances[pt->data]);
+		free(pt);
+		pt=next;
+	}
+	printf("\n");
+
+	printf("Exits reachable from \"%s\": %d\n", vi_id, isExit);
+	free(path);
+	free(vi_id);
+	free(distances);
+	free(predators);
+	return EndView();	
+}
 
 int Showv(Graph* G)
 {	

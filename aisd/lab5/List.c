@@ -1,23 +1,20 @@
 #include <stdlib.h>
 #include "List.h"
 
-List* L_init(int data)
+List* L_init()
 {
 	List* x=(List*)malloc(sizeof(List));
-	x->data=data;
-	x->next=NULL;
+	x->head=NULL;
+	x->tail=NULL;
 	return x;
 }
 
-void push_front(List* L, int info)
+void push_back(List* L, int info)
 {
-	List* x=L_init(info);
-	x->next=L;
-	L=x;
-}
-
-void popl(List* L, int* u)
-{
-	*u=L->data;
-	L=L->next;
+	Node* x=(Node*)malloc(sizeof(Node));
+	x->data=info;
+	x->next=NULL;
+	if(L->tail) L->tail->next=x;
+	else L->head=x;
+	L->tail=x;
 }

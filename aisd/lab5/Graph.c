@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include "Graph.h"
 #include "Queue.h"
-#include <limits.h>
-#define INF INT_MAX
 
 //Init functions
 Graph* GraphInit(int v)
@@ -36,20 +34,20 @@ Edge* EdgeInit(int w, int to)
 
 //Breadth-first-search
 //isExit will be a number of reachable exits.
-int* BFS(Graph* G, char* vi_id, int* isExit)   
+int BFS(Graph* G, char* vi_id, int* isExit, List* result, int** distances, int** predators)   
 {
 	int vi=Search(G->vertex, vi_id);
-	if(vi==-1) return NULL;
+	if(vi==-1) return -1;
 	*isExit=0;
 
 	//colors, distances, pred
-	Color color[G->v];
-	int* dist=(int*)calloc(G->v, G->v*sizeof(int));
-	int* pred=(int*)calloc(G->v, G->v*sizeof(int));
-	Queue* Q=QueueInit(G->v);
+	Color color[G->vertex->msize];
+	int* dist=(int*)calloc(G->vertex->msize, G->vertex->msize*sizeof(int));
+	int* pred=(int*)calloc(G->vertex->msize, G->vertex->msize*sizeof(int));
+	Queue* Q=QueueInit(G->vertex->msize);
 
 	//initializing
-	for(int i=0; i<G->v; i++)
+	for(int i=0; i<G->vertex->msize; i++)
 	{
 		color[i]=WHITE;
 		dist[i]=INF;
@@ -61,6 +59,8 @@ int* BFS(Graph* G, char* vi_id, int* isExit)
 	push(Q, vi);
 	int u=0;
 	
+	push_back(result, vi);
+	*isExit+=G->vertex->ks[vi].info->vertex->type==EXIT;
 	//Visiting and coloring nodes
 	while(pop(Q, &u)!=ERR_EMPTY)
 	{
@@ -73,15 +73,23 @@ int* BFS(Graph* G, char* vi_id, int* isExit)
 				color[to]=GREY;
 				dist[to]=dist[u]+ptr->w;
 				pred[to]=u;
+				push_back(result, to);
 				push(Q, to);
-				if(G->vertex->ks[to].info->vertex->type==EXIT) *isExit=*isExit+1;
+				*isExit+=G->vertex->ks[to].info->vertex->type==EXIT;
+			}
+			
+			if(dist[to]>dist[u]+ptr->w)
+			{
+				dist[to]=dist[u]+ptr->w;
+				pred[to]=u;
 			}
 			ptr=ptr->next;
 		}
 		color[u]=BLACK;	
 	}
-	free(dist);
-	return pred;
+	*distances=dist;
+	*predators=pred;
+	return ERR_OK;
 }
 
 //From entrance to exit
@@ -125,7 +133,7 @@ int* Dejkstra(Graph* G, char* from_id, char* to_id, List* result)
 	int k=to;
 	while(k!=-1)
 	{
-		push_front(result, k);
+		push_back(result, k);
 		k=pred[k];
 	}
 	return dist;
@@ -296,6 +304,7 @@ int EdgeUpdate(Graph* G, char* from_id, char* to_id, char* nfrom_id, char* nto_i
 		if(pk->to==to && pk->w==w) break;
 		pk=pk->next;
 	}
+	if(!pk) return ERR_NF;
 	if(from==nfrom)
 	{
 		pk->to=nto;

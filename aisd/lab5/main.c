@@ -17,7 +17,7 @@ int main()
 		"Delete edge\n",
 		"Change data of vertex\n",
 		"Change data of edge\n",
-		//"Make Breadth-first search(BFS)\n",
+		"Make Breadth-first search(BFS)\n",
 		//"Find minimum path beetween vertices(Dejkstra)\n",
 	};
 	
@@ -25,8 +25,8 @@ int main()
 	//main cycle
 	do
 	{
-		int p=menue(options, 7);
-		if(p==8) break;
+		int p=menue(options, 8);
+		if(p==9) break;
 		int res=console(p, G);
 		if(res==CERR_EOF) break;
 		system("clear");

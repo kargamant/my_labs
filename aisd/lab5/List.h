@@ -1,13 +1,18 @@
 #ifndef LIST_H
 #define LIST_H
 
-typedef struct List
+typedef struct Node
 {
 	int data;
-	struct List* next;
+	struct Node* next;
+}Node;
+
+typedef struct List
+{
+	Node* head;
+	Node* tail;
 }List;
 
-void popl(List* L, int* u);
-void push_front(List* L, int info);
-List* L_init(int data);
+void push_back(List* L, int info);
+List* L_init();
 #endif

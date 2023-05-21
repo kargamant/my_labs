@@ -1,6 +1,8 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 #include "List.h"
+#include <limits.h>
+#define INF INT_MAX
 
 //Availiable room types in labirint
 typedef enum Room
@@ -45,7 +47,7 @@ typedef enum Color
 Graph* GraphInit(int v);
 Vertex* VertexInit(Room type);
 Edge* EdgeInit(int w, int to);
-int* BFS(Graph* G, char* vi_id, int* isExit);
+int BFS(Graph* G, char* vi_id, int* isExit, List* result, int** distances, int** predators);
 int* Dejkstra(Graph* G, char* from_id, char* to_id, List* result);
 int FindMin(Graph* G, int* dist, int* used);
 int AddVert(Graph* G, char* id, Room type);

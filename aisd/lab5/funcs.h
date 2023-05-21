@@ -12,7 +12,7 @@ int console(int p, Graph* G);
 //view functions
 //void GenerateImage(Graph* G);
 //int Importv(Graph* G);
-//int BFSv(Graph* G);
+int BFSv(Graph* G);
 //int Dejkstrav(Graph* G);
 int AddVertv(Graph* G);
 int AddEdgev(Graph* G);
