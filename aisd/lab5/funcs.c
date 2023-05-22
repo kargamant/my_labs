@@ -172,7 +172,7 @@ int fcheck(char* fnd)
 //Main Controller function
 int console(int p, Graph* G)
 {	
-	int (*view[])(Graph*)={Showv, AddVertv, AddEdgev, DelVertv, DelEdgev, VertUpdatev, EdgeUpdatev, BFSv}; //Dejkstrav
+	int (*view[])(Graph*)={Showv, AddVertv, AddEdgev, DelVertv, DelEdgev, VertUpdatev, EdgeUpdatev, BFSv, Dejkstrav};
 	return view[p](G);	
 }
 
@@ -215,6 +215,33 @@ int Importv(Btree* tr)
 	return EndView();
 }*/
 
+int Dejkstrav(Graph* G)
+{
+	printf("Enter id of starting room: ");
+	char* from_id=enter();
+	if(!from_id) return CERR_EOF;
+
+	printf("Enter to_id room: ");
+	char* to_id=enter();
+	if(!to_id) return CERR_EOF;
+
+	List* res=L_init();
+	int length=Dejkstra(G, from_id, to_id, res);
+	printf("Length of the journey: %d\n", length);
+	Node* pk=res->head;
+	printf("Path: ");
+	while(pk)
+	{
+		Node* next=pk->next;
+		printf("\"%s\" ", G->vertex->ks[pk->data].key);
+		free(pk);
+		pk=next;
+	}
+	printf("\n");
+
+	return EndView();
+}
+
 int BFSv(Graph* G)
 {
 	int isExit=0;
@@ -248,6 +275,7 @@ int BFSv(Graph* G)
 	printf("\n");
 
 	printf("Exits reachable from \"%s\": %d\n", vi_id, isExit);
+	if(G->vertex->ks[Search(G->vertex, vi_id)].info->vertex->type!=ENTER) printf("\nWarning. Consider that start vertex of BFS was not a room of type ENTER, as it supposed to be.\n\n");
 	free(path);
 	free(vi_id);
 	free(distances);

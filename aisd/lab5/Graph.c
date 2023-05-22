@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "Graph.h"
 #include "Queue.h"
+#include "Heap.h"
 
 //Init functions
 Graph* GraphInit(int v)
@@ -93,14 +94,15 @@ int BFS(Graph* G, char* vi_id, int* isExit, List* result, int** distances, int**
 }
 
 //From entrance to exit
-int* Dejkstra(Graph* G, char* from_id, char* to_id, List* result)
+int Dejkstra(Graph* G, char* from_id, char* to_id, List* result)
 {
 	int from=Search(G->vertex, from_id);
 	int to=Search(G->vertex, to_id);
-	int* dist=(int*)calloc(G->v, G->v*sizeof(int));
-	int pred[G->v];
-	int used[G->v];
-	for(int i=0; i<G->v; i++)
+	int* dist=(int*)calloc(G->vertex->msize, G->vertex->msize*sizeof(int));
+	int* pred=(int*)calloc(G->vertex->msize, G->vertex->msize*sizeof(int));
+	int* used=(int*)calloc(G->vertex->msize, G->vertex->msize*sizeof(int));
+	Heap* H=HeapInit(G->vertex->msize);
+	for(int i=0; i<G->vertex->msize; i++)
 	{
 		dist[i]=INF;
 		used[i]=0;
@@ -108,35 +110,45 @@ int* Dejkstra(Graph* G, char* from_id, char* to_id, List* result)
 	}
 	dist[from]=0;
 
-	int u=0;
-	while(u!=0 || !used[0])
+	for(int i=0; i<G->vertex->msize; i++)
 	{
-		u=FindMin(G, dist, used);
-		used[u]=1;
+		pushH(H, i, dist);
+	}
+
+	while(H->size!=0)
+	{
+		int u=ExtrMin(H, dist);
+		//u=FindMin(G, dist, used);
 		Edge* pk=G->vertex->ks[u].info->vertex->head;
 		while(pk)
 		{
 			int pkto=pk->to;
-			Edge* upkto=G->vertex->ks[u].info->vertex->head;
+			/*Edge* upkto=G->vertex->ks[u].info->vertex->head;
 			while(upkto)
 			{
 				if(upkto->to==pkto) break;
-			}
-			if(dist[pkto]>dist[u]+upkto->w)
+				upkto=upkto->next;
+			}*/
+			if(dist[pkto]>dist[u]+pk->w && dist[u]!=INF)
 			{
-				dist[pkto]=dist[u]+upkto->w;
+				dist[pkto]=dist[u]+pk->w;
 				pred[pkto]=u;
 			}
 			pk=pk->next;
 		}
 	}
 	int k=to;
-	while(k!=-1)
+	while(k!=-1 && !used[k])
 	{
 		push_back(result, k);
+		used[k]=1;
+		//printf("k: %d\n", k);
 		k=pred[k];
 	}
-	return dist;
+	int shortest=dist[to];
+	free(dist);
+	free(pred);
+	return shortest;
 }
 
 int FindMin(Graph* G, int* dist, int* used)

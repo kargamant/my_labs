@@ -18,15 +18,15 @@ int main()
 		"Change data of vertex\n",
 		"Change data of edge\n",
 		"Make Breadth-first search(BFS)\n",
-		//"Find minimum path beetween vertices(Dejkstra)\n",
+		"Find minimum path beetween vertices(Dejkstra)\n",
 	};
 	
 	system("clear");
 	//main cycle
 	do
 	{
-		int p=menue(options, 8);
-		if(p==9) break;
+		int p=menue(options, 9);
+		if(p==10) break;
 		int res=console(p, G);
 		if(res==CERR_EOF) break;
 		system("clear");

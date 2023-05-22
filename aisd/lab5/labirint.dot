@@ -1,15 +1,13 @@
 digraph {
-t6
-t6->f5 [label=5, weight=5]
-d3
-d3->a2 [label=10, weight=10]
-d3->f5 [label=1, weight=1]
-f5
-f5->a2 [label=2, weight=2]
+b100
+b100->a3 [label=1, weight=1]
+b9
+b9->b100 [label=2, weight=2]
 a1
-a1->d3 [label=9, weight=9]
-a1->t6 [label=7, weight=7]
+a1->a2 [label=3, weight=3]
 a2
-a2->f5 [label=3, weight=3]
-a2->d3 [label=1, weight=1]
+a2->a3 [label=5, weight=5]
+a2->b9 [label=1, weight=1]
+a3
+a3->a1 [label=7, weight=7]
 }

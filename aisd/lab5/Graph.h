@@ -48,7 +48,7 @@ Graph* GraphInit(int v);
 Vertex* VertexInit(Room type);
 Edge* EdgeInit(int w, int to);
 int BFS(Graph* G, char* vi_id, int* isExit, List* result, int** distances, int** predators);
-int* Dejkstra(Graph* G, char* from_id, char* to_id, List* result);
+int Dejkstra(Graph* G, char* from_id, char* to_id, List* result);
 int FindMin(Graph* G, int* dist, int* used);
 int AddVert(Graph* G, char* id, Room type);
 int AddEdge(Graph* G, char* from_id, char* to_id, int w);
