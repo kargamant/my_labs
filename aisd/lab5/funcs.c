@@ -172,7 +172,7 @@ int fcheck(char* fnd)
 //Main Controller function
 int console(int p, Graph* G)
 {	
-	int (*view[])(Graph*)={Showv, AddVertv, AddEdgev, DelVertv, DelEdgev, VertUpdatev, EdgeUpdatev, BFSv, Dejkstrav};
+	int (*view[])(Graph*)={Showv, AddVertv, AddEdgev, DelVertv, DelEdgev, VertUpdatev, EdgeUpdatev, BFSv, Dejkstrav, Importv};
 	return view[p](G);	
 }
 
@@ -196,24 +196,17 @@ int console(int p, Graph* G)
 	
 	printf("Image of your tree was generated and saved at \'your_tree.png\'.\n");
 }
-
-int Importv(Btree* tr)
+*/
+int Importv(Graph* G)
 {
-	//if(root->info) printf("Warning. if your tree is not empty then this function will nest new tree into current tree.\n");
 	printf("Enter filename: ");
 	char* fn=enter();
 	if(fcheck(fn)==CERR_EOF) return CERR_EOF;
 
-	int res=fimport(tr, fn);
-	if(res!=ERR_OK) printf("Error. This file does not exist.\n"); 
-	else
-	{
-		printf("Tree was successfully imported from %s\n", fn);
-		GenerateImage(tr);
-	}
+	fimport(G, fn);
 	free(fn);
 	return EndView();
-}*/
+}
 
 int Dejkstrav(Graph* G)
 {

@@ -1,13 +1,19 @@
 digraph {
-b100
-b100->a3 [label=1, weight=1]
-b9
-b9->b100 [label=2, weight=2]
+e85
+e85->q7 [label=10, weight=10]
+e85->w4 [label=1, weight=1]
+e85->a1 [label=1, weight=1]
+w4
+q7
+q7->a1 [label=4, weight=4]
+q7->w4 [label=5, weight=5]
+q7->a2 [label=10, weight=10]
 a1
-a1->a2 [label=3, weight=3]
+a1->w4 [label=20, weight=20]
+a1->a2 [label=6, weight=6]
+a1->b2 [label=4, weight=4]
 a2
-a2->a3 [label=5, weight=5]
-a2->b9 [label=1, weight=1]
-a3
-a3->a1 [label=7, weight=7]
+b2
+b2->q7 [label=1, weight=1]
+b2->e85 [label=4, weight=4]
 }

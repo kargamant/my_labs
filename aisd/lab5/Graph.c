@@ -101,23 +101,30 @@ int Dejkstra(Graph* G, char* from_id, char* to_id, List* result)
 	int* dist=(int*)calloc(G->vertex->msize, G->vertex->msize*sizeof(int));
 	int* pred=(int*)calloc(G->vertex->msize, G->vertex->msize*sizeof(int));
 	int* used=(int*)calloc(G->vertex->msize, G->vertex->msize*sizeof(int));
-	Heap* H=HeapInit(G->vertex->msize);
+	Heap* H=HeapInit(G->v);
+	int where[G->vertex->msize];
 	for(int i=0; i<G->vertex->msize; i++)
 	{
 		dist[i]=INF;
 		used[i]=0;
 		pred[i]=-1;
 	}
-	dist[from]=0;
-
 	for(int i=0; i<G->vertex->msize; i++)
 	{
-		pushH(H, i, dist);
+		if(G->vertex->ks[i].busy==BUSY) 
+		{
+			pushH(H, i, dist, where);
+		}
 	}
+	dist[from]=0;
+	SiftUp(H, where[from], dist, where);
 
 	while(H->size!=0)
 	{
-		int u=ExtrMin(H, dist);
+		int u=ExtrMin(H, dist, where);
+		if(dist[u]==INF) break;
+		used[u]=1;
+		//push_back(result, u);
 		//u=FindMin(G, dist, used);
 		Edge* pk=G->vertex->ks[u].info->vertex->head;
 		while(pk)
@@ -129,25 +136,29 @@ int Dejkstra(Graph* G, char* from_id, char* to_id, List* result)
 				if(upkto->to==pkto) break;
 				upkto=upkto->next;
 			}*/
-			if(dist[pkto]>dist[u]+pk->w && dist[u]!=INF)
+			if(dist[pkto]>dist[u]+pk->w)
 			{
 				dist[pkto]=dist[u]+pk->w;
 				pred[pkto]=u;
+				if(where[pkto]!=-1) SiftUp(H, where[pkto], dist, where);
 			}
 			pk=pk->next;
 		}
 	}
+
 	int k=to;
-	while(k!=-1 && !used[k])
+	while(k!=-1)
 	{
 		push_back(result, k);
-		used[k]=1;
+		//used[k]=1;
 		//printf("k: %d\n", k);
 		k=pred[k];
 	}
 	int shortest=dist[to];
 	free(dist);
 	free(pred);
+	free(used);
+	eraseH(H);	
 	return shortest;
 }
 
@@ -388,10 +399,28 @@ int ImageGenerate(Graph* G, char* fn)
 	fclose(fd);
 }
 
-
-
-
-
+void fimport(Graph* G, char* fn)
+{
+	FILE* fd=fopen(fn, "r+");
+	int n=0;
+	fscanf(fd, "%d\n", &n);
+	for(int i=0; i<n; i++)
+	{
+		char* id=(char*)malloc(81*sizeof(char));
+		int type=0;
+		fscanf(fd, "%s %d\n", id, &type);
+		AddVert(G, id, type);
+	}
+	while(!feof(fd))
+	{
+		char* from_id=(char*)malloc(81*sizeof(char));
+		char* to_id=(char*)malloc(81*sizeof(char));
+		int w=0;
+		fscanf(fd, "%s %s %d\n", from_id, to_id, &w);
+		AddEdge(G, from_id, to_id, w);
+	}
+	fclose(fd);
+}
 
 
 

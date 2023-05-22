@@ -58,6 +58,7 @@ int VertUpdate(Graph* G, char* id, char* new_id, Room type);
 int EdgeUpdate(Graph* G, char* from_id, char* to_id, char* nfrom_id, char* nto_id, int w,int new_w);
 int Show(Graph* G);
 int ImageGenerate(Graph* G, char* fn);
+void fimport(Graph* G, char* fn);
 
 typedef enum ERRORS
 {
