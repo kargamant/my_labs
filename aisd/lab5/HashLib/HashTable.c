@@ -87,6 +87,7 @@ int Del(Table* t, char* key)
 				ptr=NULL;
 				ptr=next;
 			}
+			t->ks[j].info->vertex->head=NULL;
 			return j;
 		}
 	}

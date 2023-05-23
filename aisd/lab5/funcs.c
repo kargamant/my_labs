@@ -220,18 +220,38 @@ int Dejkstrav(Graph* G)
 
 	List* res=L_init();
 	int length=Dejkstra(G, from_id, to_id, res);
-	printf("Length of the journey: %d\n", length);
-	Node* pk=res->head;
-	printf("Path: ");
-	while(pk)
+	free(from_id);
+	free(to_id);
+	if(length==-1) printf("Error. From or to id is not in graph.\n");
+	else
 	{
-		Node* next=pk->next;
-		printf("\"%s\" ", G->vertex->ks[pk->data].key);
-		free(pk);
-		pk=next;
+		printf("Length of the journey: %d\n", length);
+		Node* pk=res->head;
+		printf("Path: ");
+		int n=0;
+		while(pk)
+		{
+			Node* next=pk->next;
+			n++;
+			//printf("\"%s\" ", G->vertex->ks[pk->data].key);
+			pk=next;
+		}
+		char* reverse[n];
+		pk=res->head;
+		int t=1;
+		while(pk)
+		{
+			Node* next=pk->next;
+			reverse[n-t]=G->vertex->ks[pk->data].key;
+			t++;
+			free(pk);
+			pk=next;
+		}
+	
+		for(int i=0; i<n; i++) printf("\"%s\" ", reverse[i]);
+		printf("\n");
 	}
-	printf("\n");
-
+	free(res);
 	return EndView();
 }
 
@@ -245,7 +265,8 @@ int BFSv(Graph* G)
 	List* path=L_init();
 	int* distances=NULL;
 	int* predators=NULL;
-	BFS(G, vi_id, &isExit, path, &distances, &predators);
+	int t=BFS(G, vi_id, &isExit, path, &distances, &predators);
+	if(t==-1) goto er;
 	printf("path: ");
 	Node* pt=path->head;
 	while(pt)
@@ -269,6 +290,8 @@ int BFSv(Graph* G)
 
 	printf("Exits reachable from \"%s\": %d\n", vi_id, isExit);
 	if(G->vertex->ks[Search(G->vertex, vi_id)].info->vertex->type!=ENTER) printf("\nWarning. Consider that start vertex of BFS was not a room of type ENTER, as it supposed to be.\n\n");
+	er:
+		printf("Error. Id you have entered is not in graph.\n");
 	free(path);
 	free(vi_id);
 	free(distances);
@@ -398,7 +421,16 @@ int VertUpdatev(Graph* G)
 	}while(type<0 || type>2);
 
 	int result=VertUpdate(G, id, new_id, type);
-	if(result==ERR_NF) printf("Error. No vertex with this id in graph.\n");
+	if(result==-1) 
+	{
+		printf("Error. No vertex with this id in graph.\n");
+		free(new_id);
+	}
+	else if(result==-2)
+	{
+		printf("Error. Vertex with new_id is already in graph.\n");
+		free(new_id);
+	}
 	else printf("Data of this room was succesfully updated.\n");
 
 	free(id);

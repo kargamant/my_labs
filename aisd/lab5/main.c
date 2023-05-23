@@ -6,7 +6,7 @@
 
 int main()
 {
-	Graph* G=GraphInit(10);
+	Graph* G=GraphInit(500);
 
 	//options for menue
 	const char* options[]={

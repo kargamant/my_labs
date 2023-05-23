@@ -1,19 +1,16 @@
 digraph {
-e85
-e85->q7 [label=10, weight=10]
-e85->w4 [label=1, weight=1]
-e85->a1 [label=1, weight=1]
-w4
-q7
-q7->a1 [label=4, weight=4]
-q7->w4 [label=5, weight=5]
-q7->a2 [label=10, weight=10]
-a1
-a1->w4 [label=20, weight=20]
-a1->a2 [label=6, weight=6]
-a1->b2 [label=4, weight=4]
-a2
-b2
-b2->q7 [label=1, weight=1]
-b2->e85 [label=4, weight=4]
+a
+a->a [label=1, weight=1]
+b
+d
+d->b [label=3, weight=3]
+d->b [label=2, weight=2]
+e
+f
+f->a [label=6, weight=6]
+f->e [label=17, weight=17]
+f->g [label=3, weight=3]
+f->g [label=2, weight=2]
+g
+g->e [label=5, weight=5]
 }

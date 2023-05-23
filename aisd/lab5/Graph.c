@@ -90,6 +90,8 @@ int BFS(Graph* G, char* vi_id, int* isExit, List* result, int** distances, int**
 	}
 	*distances=dist;
 	*predators=pred;
+	free(Q->queue);
+	free(Q);
 	return ERR_OK;
 }
 
@@ -98,6 +100,7 @@ int Dejkstra(Graph* G, char* from_id, char* to_id, List* result)
 {
 	int from=Search(G->vertex, from_id);
 	int to=Search(G->vertex, to_id);
+	if(from==-1 || to==-1) return -1;
 	int* dist=(int*)calloc(G->vertex->msize, G->vertex->msize*sizeof(int));
 	int* pred=(int*)calloc(G->vertex->msize, G->vertex->msize*sizeof(int));
 	int* used=(int*)calloc(G->vertex->msize, G->vertex->msize*sizeof(int));
@@ -280,16 +283,17 @@ int VertUpdate(Graph* G, char* id, char* new_id, Room type)
 	if(!strcmp(id, new_id))
 	{
 		int vo=Search(G->vertex, id);
+		if(vo==-1) return -1;
 		G->vertex->ks[vo].info->vertex->type=type;
 		return ERR_OK;
 	}
 	int vo=Search(G->vertex, id);
 	
-	if(vo==-1) return ERR_NF;
+	if(vo==-1) return -1;
 	else
 	{
 		int j=AddVert(G, new_id, type);
-		if(j==-1) return ERR_DUPL;
+		if(j==-1) return -2;
 		vo=Search(G->vertex, id);
 		G->vertex->ks[j].info->vertex->head=G->vertex->ks[vo].info->vertex->head;
 		G->vertex->ks[vo].info->vertex->head=NULL;
@@ -406,23 +410,54 @@ void fimport(Graph* G, char* fn)
 	fscanf(fd, "%d\n", &n);
 	for(int i=0; i<n; i++)
 	{
-		char* id=(char*)malloc(81*sizeof(char));
+		char* id=(char*)malloc(2*sizeof(char));
 		int type=0;
 		fscanf(fd, "%s %d\n", id, &type);
+		//id=(char*)realloc(id, strlen(id)*sizeof(char));
 		AddVert(G, id, type);
 	}
 	while(!feof(fd))
 	{
-		char* from_id=(char*)malloc(81*sizeof(char));
-		char* to_id=(char*)malloc(81*sizeof(char));
+		char* from_id=(char*)malloc(2*sizeof(char));
+		char* to_id=(char*)malloc(2*sizeof(char));
 		int w=0;
 		fscanf(fd, "%s %s %d\n", from_id, to_id, &w);
+		//from_id=(char*)realloc(from_id, strlen(from_id)*sizeof(char));
+		//to_id=(char*)realloc(to_id, strlen(to_id)*sizeof(char));
 		AddEdge(G, from_id, to_id, w);
+		free(from_id);
+		free(to_id);
 	}
 	fclose(fd);
 }
 
+/*
+Graph* Raif(Graph* G)
+{
+	Vertex* entres=(Vertex*)malloc(1*sizeof(Vertex));
+	int ens=0;
+	Vertex* exits=(Vertex*)malloc(1*sizeof(Vertex));
+	int exs=0;
+	for(int i=0; i<G->vertex->msize; i++)
+	{
+		if(G->vertex->ks[i].busy==BUSY && G->vertex->ks[i].info->vertex->type==ENTER)
+		{
+			entres[ens]=*G->vertex->ks[i].info->vertex;
+			ens++;
+			if(i!=G->vertex->msize-1) entres=(Vertex*)realloc(entres, (ens+1)*sizeof(Vertex));
+		}
+		
+		if(G->vertex->ks[i].busy==BUSY && G->vertex->ks[i].info->vertex->type==EXIT)
+		{
+			entres[exs]=*G->vertex->ks[i].info->vertex;
+			exs++;
+			if(i!=G->vertex->msize-1) exits=(Vertex*)realloc(exits, (exs+1)*sizeof(Vertex));
+		}
+	}
+	for(int i=0; i<ens; i++)
+	{
+		List* result=L_init();
 
-
-
-
+	}
+}
+*/
