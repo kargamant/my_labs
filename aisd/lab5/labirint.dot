@@ -1,16 +1,9 @@
 digraph {
 a
+a->d [label=5, weight=5]
 a->a [label=1, weight=1]
 b
 d
 d->b [label=3, weight=3]
 d->b [label=2, weight=2]
-e
-f
-f->a [label=6, weight=6]
-f->e [label=17, weight=17]
-f->g [label=3, weight=3]
-f->g [label=2, weight=2]
-g
-g->e [label=5, weight=5]
 }

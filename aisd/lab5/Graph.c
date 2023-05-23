@@ -431,8 +431,60 @@ void fimport(Graph* G, char* fn)
 	fclose(fd);
 }
 
+int KraskalCmp(Kraskal* a, Kraskal* b)
+{
+	return a->w-b->w;
+}
+
+int* Kraskala(Graph* G)
+{
+	Kraskal* edges=(Kraskal*)malloc(sizeof(Kraskal));
+	int* color=(int*)malloc(G->vertex->msize*sizeof(int));
+	int n=0;
+	for(int i=0; i<G->vertex->msize; i++)
+	{
+		color[i]=i;
+		Edge* pk=G->vertex->ks[i].info->vertex->head;
+		while(pk)
+		{
+			edges[n].from=i;
+			edges[n].to=pk->to;
+			edges[n].w=pk->w;
+			n++;
+			if(pk->next) edges=(Kraskal*)realloc(edges, (n+1)*sizeof(Kraskal));
+			pk=pk->next;
+		}
+		edges=(Kraskal*)realloc(edges, (n+1)*sizeof(Kraskal));
+	}
+	qsort(edges, n, sizeof(Kraskal), (int(*)(const void*, const void*))KraskalCmp);	
+	for(int i=0; i<n; i++)
+	{
+		Kraskal* e=edges+i;
+		if(color[e->from]!=color[e->to])
+		{
+			int color_from=color[e->from];
+			int color_to=color[e->to];
+			for(int j=0; j<G->vertex->msize; j++)
+			{
+				if(color[j]==color_from) color[j]=color_to;
+			}
+			printf("edge: (\"%s\", \"%s\", w%d)\n", G->vertex->ks[e->from].key, G->vertex->ks[e->to].key, e->w);
+			/*printf("graph coloring:\n");
+			printf("vertex | color\n");
+			for(int i=0; i<G->vertex->msize; i++)
+			{
+				if(G->vertex->ks[i].busy==BUSY)
+				{
+					printf("\"%s\" | %d\n", G->vertex->ks[i].key, color[i]);
+				}
+			}*/
+		}
+	}
+	free(edges);
+	return color;
+}
 /*
-Graph* Raif(Graph* G)
+Graph* Raif_Saitgaliev(Graph* G)
 {
 	Vertex* entres=(Vertex*)malloc(1*sizeof(Vertex));
 	int ens=0;
@@ -459,5 +511,5 @@ Graph* Raif(Graph* G)
 		List* result=L_init();
 
 	}
-}
-*/
+}*/
+

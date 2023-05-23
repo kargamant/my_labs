@@ -172,7 +172,7 @@ int fcheck(char* fnd)
 //Main Controller function
 int console(int p, Graph* G)
 {	
-	int (*view[])(Graph*)={Showv, AddVertv, AddEdgev, DelVertv, DelEdgev, VertUpdatev, EdgeUpdatev, BFSv, Dejkstrav, Importv};
+	int (*view[])(Graph*)={Showv, AddVertv, AddEdgev, DelVertv, DelEdgev, VertUpdatev, EdgeUpdatev, BFSv, Dejkstrav, Importv, Kraskalav};
 	return view[p](G);	
 }
 
@@ -197,6 +197,23 @@ int console(int p, Graph* G)
 	printf("Image of your tree was generated and saved at \'your_tree.png\'.\n");
 }
 */
+
+int Kraskalav(Graph* G)
+{
+	int* color=Kraskala(G);
+	printf("graph coloring:\n");
+	printf("vertex | color\n");
+	for(int i=0; i<G->vertex->msize; i++)
+	{
+		if(G->vertex->ks[i].busy==BUSY)
+		{
+			printf("\"%s\" | %d\n", G->vertex->ks[i].key, color[i]);
+		}
+	}
+	free(color);
+	return EndView();
+}
+
 int Importv(Graph* G)
 {
 	printf("Enter filename: ");

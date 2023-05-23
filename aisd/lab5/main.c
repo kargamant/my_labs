@@ -20,14 +20,15 @@ int main()
 		"Make Breadth-first search(BFS)\n",
 		"Find minimum path beetween vertices(Dejkstra)\n",
 		"Import graph from text file\n",
+		"Mininmum spanning tree(Kraskala)\n",
 	};
 	
 	system("clear");
 	//main cycle
 	do
 	{
-		int p=menue(options, 10);
-		if(p==11) break;
+		int p=menue(options, 11);
+		if(p==12) break;
 		int res=console(p, G);
 		if(res==CERR_EOF) break;
 		system("clear");

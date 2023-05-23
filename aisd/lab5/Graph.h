@@ -43,6 +43,13 @@ typedef enum Color
 	BLACK
 }Color;
 
+typedef struct Kraskal
+{
+	int from;
+	int to;
+	int w;
+}Kraskal;
+
 //methods
 Graph* GraphInit(int v);
 Vertex* VertexInit(Room type);
@@ -59,6 +66,7 @@ int EdgeUpdate(Graph* G, char* from_id, char* to_id, char* nfrom_id, char* nto_i
 int Show(Graph* G);
 int ImageGenerate(Graph* G, char* fn);
 void fimport(Graph* G, char* fn);
+int* Kraskala(Graph* G);
 
 typedef enum ERRORS
 {
