@@ -64,9 +64,9 @@ int DelVert(Graph* G, char* id);
 int VertUpdate(Graph* G, char* id, char* new_id, Room type);
 int EdgeUpdate(Graph* G, char* from_id, char* to_id, char* nfrom_id, char* nto_id, int w,int new_w);
 int Show(Graph* G);
-int ImageGenerate(Graph* G, char* fn);
+int ImageGenerate(Graph* G, char* fn, Kraskal* edges, int e, int* vertecies, int v);
 void fimport(Graph* G, char* fn);
-int* Kraskala(Graph* G);
+Kraskal* Kraskala(Graph* G, int* ms_size);
 
 typedef enum ERRORS
 {

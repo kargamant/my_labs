@@ -380,7 +380,7 @@ int Show(Graph* G)
 	return ERR_OK;
 }
 
-int ImageGenerate(Graph* G, char* fn)
+int ImageGenerate(Graph* G, char* fn, Kraskal* edges, int e, int* vertecies, int v)
 {
 	FILE* fd=fopen(fn, "w+");
 	fclose(fd);
@@ -390,11 +390,37 @@ int ImageGenerate(Graph* G, char* fn)
 	{
 		if(G->vertex->ks[i].busy==BUSY)
 		{
-			fprintf(fd, "%s\n", G->vertex->ks[i].key);
+			int is_colored=0;
+			if(vertecies)
+			{
+				for(int j=0; j<v; j++)
+				{
+					if(i==vertecies[j])
+					{
+						is_colored=1;
+						break;
+					}
+				}
+			}
+			if(is_colored) fprintf(fd, "%s[color=\"red\"]\n", G->vertex->ks[i].key);
+			else fprintf(fd, "%s\n", G->vertex->ks[i].key);
 			Edge* pk=G->vertex->ks[i].info->vertex->head;
 			while(pk)
 			{
-				fprintf(fd, "%s->%s [label=%d, weight=%d]\n", G->vertex->ks[i].key, G->vertex->ks[pk->to].key, pk->w, pk->w);
+				is_colored=0;
+				if(edges)
+				{
+					for(int j=0; j<e; j++)
+					{
+						if(edges[j].from==i && edges[j].to==pk->to && edges[j].w==pk->w)
+						{
+							is_colored=1;
+							break;
+						}
+					}
+				}
+				if(is_colored) fprintf(fd, "%s->%s [label=%d, weight=%d, color=\"red\"]\n", G->vertex->ks[i].key, G->vertex->ks[pk->to].key, pk->w, pk->w);
+				else fprintf(fd, "%s->%s [label=%d, weight=%d]\n", G->vertex->ks[i].key, G->vertex->ks[pk->to].key, pk->w, pk->w);
 				pk=pk->next;
 			}
 		}
@@ -436,10 +462,12 @@ int KraskalCmp(Kraskal* a, Kraskal* b)
 	return a->w-b->w;
 }
 
-int* Kraskala(Graph* G)
+Kraskal* Kraskala(Graph* G, int* ms_size)
 {
 	Kraskal* edges=(Kraskal*)malloc(sizeof(Kraskal));
 	int* color=(int*)malloc(G->vertex->msize*sizeof(int));
+	Kraskal* MST=(Kraskal*)malloc(sizeof(Kraskal));
+	int mst=0;
 	int n=0;
 	for(int i=0; i<G->vertex->msize; i++)
 	{
@@ -469,19 +497,15 @@ int* Kraskala(Graph* G)
 				if(color[j]==color_from) color[j]=color_to;
 			}
 			printf("edge: (\"%s\", \"%s\", w%d)\n", G->vertex->ks[e->from].key, G->vertex->ks[e->to].key, e->w);
-			/*printf("graph coloring:\n");
-			printf("vertex | color\n");
-			for(int i=0; i<G->vertex->msize; i++)
-			{
-				if(G->vertex->ks[i].busy==BUSY)
-				{
-					printf("\"%s\" | %d\n", G->vertex->ks[i].key, color[i]);
-				}
-			}*/
+			MST[mst]=*e;
+			mst++;
+			if(i<n-1) MST=(Kraskal*)realloc(MST, (mst+1)*sizeof(Kraskal));
 		}
 	}
 	free(edges);
-	return color;
+	free(color);
+	*ms_size=mst;
+	return MST;
 }
 /*
 Graph* Raif_Saitgaliev(Graph* G)

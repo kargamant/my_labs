@@ -179,38 +179,18 @@ int console(int p, Graph* G)
 
 //View functions 
 
-/*void GenerateImage(Btree* tr)
-{
-	//Making dot file
-	const char vfn[]="tree_pic.dot";
-	FILE* fd=fopen(vfn, "w+");
-	fprintf(fd, "digraph {\n");
-	fclose(fd);
-	viz(tr, vfn);
-	fd=fopen(vfn, "a+");
-	fprintf(fd, "}\n");
-	fclose(fd);
-	
-	//Rendering image
-	system("python3 pyscripts/viz.py");
-	
-	printf("Image of your tree was generated and saved at \'your_tree.png\'.\n");
-}
-*/
+
 
 int Kraskalav(Graph* G)
 {
-	int* color=Kraskala(G);
-	printf("graph coloring:\n");
-	printf("vertex | color\n");
-	for(int i=0; i<G->vertex->msize; i++)
-	{
-		if(G->vertex->ks[i].busy==BUSY)
-		{
-			printf("\"%s\" | %d\n", G->vertex->ks[i].key, color[i]);
-		}
-	}
-	free(color);
+	int mst=0;
+	Kraskal* MST=Kraskala(G, &mst);
+	
+
+	ImageGenerate(G, "labirint.dot", MST, mst, NULL, 0);
+	system("python3 viz.py");
+	system("gthumb labirint.png");
+	free(MST);
 	return EndView();
 }
 
@@ -245,6 +225,8 @@ int Dejkstrav(Graph* G)
 		printf("Length of the journey: %d\n", length);
 		Node* pk=res->head;
 		printf("Path: ");
+		//searching for edges
+
 		int n=0;
 		while(pk)
 		{
@@ -265,8 +247,44 @@ int Dejkstrav(Graph* G)
 			pk=next;
 		}
 	
-		for(int i=0; i<n; i++) printf("\"%s\" ", reverse[i]);
+		//preparing to draw
+		int draw[n];
+		for(int i=0; i<n; i++) 
+		{
+			printf("\"%s\" ", reverse[i]);
+			draw[i]=Search(G->vertex, reverse[i]);
+		}
+
+		Kraskal* path=(Kraskal*)malloc(sizeof(Kraskal));
+		int pth=0;
+		for(int j=0; j<n-1; j++)
+		{
+			int minw=INF;
+			Edge* pk=G->vertex->ks[draw[j]].info->vertex->head;
+			while(pk)
+			{
+				if(pk->w < minw && pk->to==draw[j+1]) 
+				{
+					minw=pk->w;
+				}
+				pk=pk->next;
+			}
+			path[pth].from=draw[j];
+			path[pth].to=draw[j+1];
+			path[pth].w=minw;
+			pth++;
+			if(j<n-2) path=(Kraskal*)realloc(path, (pth+1)*sizeof(Kraskal));
+		}
 		printf("\n");
+		for(int i=0; i<pth; i++)
+		{
+			printf("edge: (%d, %d, w%d)\n", path[i].from, path[i].to, path[i].w);
+		}
+		if(length==INF) ImageGenerate(G, "labirint.dot", NULL, 0, NULL, 0);
+		else ImageGenerate(G, "labirint.dot", path, pth, draw, n);
+		system("python3 viz.py");
+		system("gthumb labirint.png");
+		free(path);
 	}
 	free(res);
 	return EndView();
@@ -319,7 +337,7 @@ int BFSv(Graph* G)
 int Showv(Graph* G)
 {	
 	Show(G);
-	ImageGenerate(G, "labirint.dot");
+	ImageGenerate(G, "labirint.dot", NULL, 0, NULL, 0);
 	system("python3 viz.py");
 	system("gthumb labirint.png");
 	return EndView();

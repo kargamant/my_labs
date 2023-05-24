@@ -1,9 +1,22 @@
 digraph {
 a
 a->d [label=5, weight=5]
+a->c [label=3, weight=3]
 a->a [label=1, weight=1]
 b
+b->c [label=7, weight=7]
+c[color="red"]
+c->f [label=6, weight=6, color="red"]
+c->d [label=2, weight=2]
 d
+d->c [label=2, weight=2]
 d->b [label=3, weight=3]
 d->b [label=2, weight=2]
+e
+f[color="red"]
+f->e [label=17, weight=17]
+f->g [label=3, weight=3]
+f->g [label=2, weight=2, color="red"]
+g[color="red"]
+g->e [label=5, weight=5]
 }
