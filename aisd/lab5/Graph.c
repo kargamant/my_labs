@@ -402,8 +402,22 @@ int ImageGenerate(Graph* G, char* fn, Kraskal* edges, int e, int* vertecies, int
 					}
 				}
 			}
+			if(G->vertex->ks[i].info->vertex->type==ENTER || G->vertex->ks[i].info->vertex->type==EXIT)
+			{
+				fprintf(fd, "subgraph cluster_%d{\n", i);
+				switch(G->vertex->ks[i].info->vertex->type)
+				{
+					case ENTER:
+						fprintf(fd, "label=\"ENTER\"\n");
+						break;
+					case EXIT:
+						fprintf(fd, "label=\"EXIT\"\n");
+						break;
+				}
+			}
 			if(is_colored) fprintf(fd, "%s[color=\"red\"]\n", G->vertex->ks[i].key);
 			else fprintf(fd, "%s\n", G->vertex->ks[i].key);
+			if(G->vertex->ks[i].info->vertex->type==ENTER || G->vertex->ks[i].info->vertex->type==EXIT) fprintf(fd, "}\n");
 			Edge* pk=G->vertex->ks[i].info->vertex->head;
 			while(pk)
 			{

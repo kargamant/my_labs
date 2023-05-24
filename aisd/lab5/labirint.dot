@@ -1,22 +1,30 @@
 digraph {
-a
+subgraph cluster_97{
+label="ENTER"
+a[color="red"]
+}
 a->d [label=5, weight=5]
-a->c [label=3, weight=3]
+a->c [label=3, weight=3, color="red"]
 a->a [label=1, weight=1]
-b
-b->c [label=7, weight=7]
 c[color="red"]
 c->f [label=6, weight=6, color="red"]
 c->d [label=2, weight=2]
+subgraph cluster_100{
+label="ENTER"
 d
+}
 d->c [label=2, weight=2]
-d->b [label=3, weight=3]
-d->b [label=2, weight=2]
-e
+e[color="red"]
+subgraph cluster_102{
+label="EXIT"
 f[color="red"]
+}
 f->e [label=17, weight=17]
 f->g [label=3, weight=3]
 f->g [label=2, weight=2, color="red"]
+subgraph cluster_103{
+label="ENTER"
 g[color="red"]
-g->e [label=5, weight=5]
+}
+g->e [label=5, weight=5, color="red"]
 }
