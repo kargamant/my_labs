@@ -3,18 +3,25 @@ Labs from algorythms and data structures mephi course
 
 ## Main tasks
 [lab1](https://github.com/kargamant/my_labs/files/11892364/lab1.1.pdf)
+_Matrices and diffrent types of 2-dimensional arrays._
 
 [lab2](https://github.com/kargamant/my_labs/files/11892385/lab2.5.pdf)
+_Elementary data structures - stack, queue, deck._
 
 [lab3ab](https://github.com/kargamant/my_labs/files/11892388/lab3.10.pdf)
+_Tables - linear, ordered, with busy-field modification_
 
 [lab3cd](https://github.com/kargamant/my_labs/files/11892390/lab3cd.2.pdf)
+_Hash-tables - with linear, quadratic, double-hash probing._
 
 [lab4a](https://github.com/kargamant/my_labs/files/11892392/lab4a.5.pdf)
+_BST - binary search trees._
 
 [lab4b](https://github.com/kargamant/my_labs/files/11892394/lab4b1.3.pdf)
+_Self-balanced trees - AVL, red black, B-tree._
 
 [lab5](https://github.com/kargamant/my_labs/files/11892395/lab5.6.pdf)
+_Graph algorithms and applications._
 
 ## Individual tasks
 
