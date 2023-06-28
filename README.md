@@ -38,3 +38,14 @@ _Graph algorithms and applications._
 [lab4b_var228](https://github.com/kargamant/my_labs/files/11892466/4LbVGVhvixPStFVsFguVb.1.pdf)
 
 [lab5_var214](https://github.com/kargamant/my_labs/files/11892469/bKHtmBtkRjd3lavhLrTpc.1.pdf)
+
+## Subjective complexity ranking
+
+1 - the most hard individual task
+last one - the least
+
+**1. Lab4b💀**
+**2. Lab5😈**
+**3. Lab3cd😎**
+
+
