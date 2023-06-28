@@ -44,8 +44,10 @@ _Graph algorithms and applications._
 1 - the most hard individual task
 last one - the least
 
-**1. Lab4b💀**
-**2. Lab5😈**
-**3. Lab3cd😎**
-
-
+**1. Lab4b💀**\\
+**2. Lab5😈**\\
+**3. Lab3cd😱**\\
+**4. Lab4a😎**\\
+**5. Lab3ab😊**\\
+**6. Lab2👌**\\
+**7. Lab1👴**
