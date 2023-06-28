@@ -41,7 +41,7 @@ _Graph algorithms and applications._
 
 ## Subjective complexity ranking
 
-1 - the most hard individual task
+1 - the most hard individual task\
 last one - the least
 
 **1. Lab4b💀**\
