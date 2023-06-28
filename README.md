@@ -2,7 +2,7 @@
 Labs from algorythms and data structures mephi course
 
 ## Main tasks
-[lab1](https://github.com/kargamant/my_labs/files/11892364/lab1.1.pdf)__
+[lab1](https://github.com/kargamant/my_labs/files/11892364/lab1.1.pdf)\
 _Matrices and diffrent types of 2-dimensional arrays._
 
 [lab2](https://github.com/kargamant/my_labs/files/11892385/lab2.5.pdf)__
