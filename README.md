@@ -51,3 +51,17 @@ last one - the least
 **5. Lab3ab😊**\
 **6. Lab2👌**\
 **7. Lab1👴**
+
+## Gists with tasks and solution code for exam preparation
+
+_Tasks_
+[Pythagorean triples](https://github.com/kargamant/my_labs/assets/54020145/fcdea385-7a8a-46fc-ba32-26d2669ec318)\
+[Robin Hood hashing](https://github.com/kargamant/my_labs/assets/54020145/4fe8c525-a496-4c03-9e8f-10646013c9fb)\
+[Polygon queue](https://github.com/kargamant/my_labs/assets/54020145/21439e98-09a8-4d7a-8232-e61254215541)\
+[Graphs and ambulance](https://github.com/kargamant/my_labs/assets/54020145/2d5b9689-5d19-476e-8b41-81efa767d89f)\
+\
+_Solutions(not all)_
+[PythTree](https://gist.github.com/kargamant/3244cf14bbd04141afcd1ed231a911c9)\
+[robin](https://gist.github.com/kargamant/eccb79433230306dfe7912a160e8969a)\
+[PolygonQ](https://gist.github.com/kargamant/388151f5fa8a3629e6ce8140a4d389d7)\
+[Ambulance](https://gist.github.com/kargamant/d4eb85062024ded7af3827023196d2e9)\
